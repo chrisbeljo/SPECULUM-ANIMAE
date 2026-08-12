@@ -561,22 +561,17 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
 
       {step==="menu" && (
         <>
-          <div className="tarot-menu-title radiestesia-intro">
+          <div className="tarot-menu-title system-intro-title radiestesia-intro">
             <h1>Péndulo</h1>
             <span>OBSERVACIÓN · EQUILIBRIO · ORIENTACIÓN</span>
-            <div className="rider-history">
-              <p>La radiestesia es una evolución moderna de la rabdomancia, práctica milenaria utilizada para localizar agua y minerales mediante varas. El término se consolidó en el siglo XX, combinando raíces latinas y griegas que aluden a la "sensibilidad a las radiaciones".</p>
-              <p>En su definición contemporánea, busca captar campos energéticos, frecuencias o información oculta a través de instrumentos amplificadores — principalmente el péndulo y las varillas — que funcionan como extensiones de la percepción del operador.</p>
-              <p>Desde una perspectiva científica, su mecanismo se explica por el efecto ideomotor: micromovimientos musculares involuntarios generados por el subconsciente al procesar un estímulo mental o pregunta. El instrumento no detecta por sí solo; amplifica y hace visible lo que el sistema nervioso ya está procesando.</p>
-              <p>Sus aplicaciones tradicionales incluyen la búsqueda de elementos físicos, el análisis energético de espacios, y como herramienta de apoyo en la toma de decisiones o procesos de introspección.</p>
-            </div>
+            <p className="system-introduction">La radiestesia es una evolución moderna de la rabdomancia, práctica utilizada históricamente para localizar agua y minerales mediante varas. En su uso contemporáneo, el péndulo funciona como un amplificador de micromovimientos involuntarios —conocidos como efecto ideomotor— y puede emplearse como herramienta simbólica de observación, introspección y apoyo para ordenar una decisión.</p>
           </div>
-          <section className="spread-menu-section">
+          <section className="spread-menu-section radiestesia-menu">
             <span className="mini-label">ELIGE EL ENFOQUE</span>
-            <div className="radiestesia-focus-grid">
-              {focuses.map((f,idx)=><details className="radiestesia-focus-card" style={{"--focus":f.color} as CSSProperties} key={f.label} open={idx===0}>
-                <summary><span className="focus-symbol">{f.symbol}</span><div><b>{f.label}</b><small>{f.description}</small></div><em>{f.subcats.length} consultas</em><i>+</i></summary>
-                <div className="radiestesia-focus-options">{f.subcats.map(subcat=><button key={subcat} onClick={()=>{setSelectedFocusIdx(idx);setFocus(f.label);setQuestion(subcat);setStep("question");window.scrollTo({top:0,behavior:"smooth"})}}><span>{subcat}</span><b>→</b></button>)}</div>
+            <div className="spread-category-grid radiestesia-focus-grid">
+              {focuses.map((f,idx)=><details className={`radiestesia-focus-card spread-group-${idx+1}`} key={f.label}>
+                <summary><span className="spread-symbol"><i>{f.symbol}</i></span><div><b>{f.label}</b><small>{f.subcats.length} consultas</small></div><em>+</em></summary>
+                <div className="spread-options radiestesia-focus-options">{f.subcats.map(subcat=><button key={subcat} onClick={()=>{setSelectedFocusIdx(idx);setFocus(f.label);setQuestion(subcat);setStep("question");window.scrollTo({top:0,behavior:"smooth"})}}>{subcat}<span>→</span></button>)}</div>
               </details>)}
             </div>
           </section>

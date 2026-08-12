@@ -18,32 +18,23 @@
 .oracle-shuffle-stage .shuffle-guidance{grid-column:1;grid-row:1}.oracle-shuffle-stage .oracle-method-note{grid-column:2;grid-row:1;align-self:center;justify-self:end}.oracle-shuffle-stage .deck-touch-area{grid-column:1/-1;grid-row:2}@media(max-width:900px){.oracle-shuffle-stage{grid-template-rows:auto auto 440px!important}.oracle-shuffle-stage .shuffle-guidance{grid-column:1;grid-row:1}.oracle-shuffle-stage .oracle-method-note{grid-column:1;grid-row:2;justify-self:center}.oracle-shuffle-stage .deck-touch-area{grid-column:1;grid-row:3}}
 
 /* Radiestesia / Péndulo */
-.radiestesia-site{--focus:#9333ea;min-height:100vh;background:radial-gradient(circle at 12% 5%,rgba(64,70,171,.2),transparent 30%),radial-gradient(circle at 86% 12%,rgba(106,46,145,.22),transparent 34%),linear-gradient(180deg,#0b0912 0%,#08070e 62%,#0b0811 100%);font-family:"DM Sans",system-ui,sans-serif;color:#f5eee4;overflow:hidden}
-.radiestesia-site:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 0 48%,rgba(217,181,101,.025) 48.2% 48.4%,transparent 48.6%);opacity:.8}
-.radiestesia-site .radiestesia-back{border-color:rgba(217,181,101,.28);background:rgba(10,8,14,.44);backdrop-filter:blur(12px)}
-.radiestesia-intro{max-width:900px!important;padding-top:18px}
-.radiestesia-intro h1{margin-bottom:12px!important;font:600 clamp(64px,9vw,112px)/.92 "Gilda Display",serif!important;letter-spacing:-.055em!important;background:linear-gradient(110deg,#fff9ed 10%,#d6c0e6 55%,#f8dc91);-webkit-background-clip:text;background-clip:text;color:transparent}
-.radiestesia-intro>span,.radiestesia-question-head>span{color:#d9b565!important;letter-spacing:.27em!important;font-size:10px!important}
-.radiestesia-intro .rider-history{max-width:780px;margin:48px auto 0;padding:31px 34px;border:1px solid rgba(217,181,101,.16);border-radius:18px;background:linear-gradient(145deg,rgba(31,23,42,.72),rgba(12,10,18,.76));box-shadow:0 30px 80px rgba(0,0,0,.25);columns:2;column-gap:34px;text-align:left}
-.radiestesia-intro .rider-history p{margin:0 0 17px;color:#c8becb;font-size:13px!important;line-height:1.72!important;break-inside:avoid}
-.radiestesia-site .spread-menu-section{max-width:1080px;padding-bottom:100px}
-.radiestesia-site .spread-menu-section>.mini-label{display:block;margin:0 0 18px;color:#e6bb61}
-.radiestesia-focus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.radiestesia-focus-card{position:relative;border:1px solid color-mix(in srgb,var(--focus) 55%,#54465f);border-radius:18px;background:radial-gradient(circle at 88% 5%,color-mix(in srgb,var(--focus) 22%,transparent),transparent 42%),linear-gradient(145deg,rgba(28,22,39,.97),rgba(11,9,16,.98));overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.26);transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
-.radiestesia-focus-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--focus) 84%,#fff);box-shadow:0 22px 65px color-mix(in srgb,var(--focus) 16%,transparent)}
-.radiestesia-focus-card summary{min-height:114px;padding:22px;display:grid;grid-template-columns:54px 1fr auto 22px;align-items:center;gap:15px;cursor:pointer;list-style:none}
-.radiestesia-focus-card summary::-webkit-details-marker{display:none}
-.focus-symbol{width:52px;height:52px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--focus) 70%,#fff);border-radius:50%;color:#fff;font:25px "Gilda Display",serif;background:linear-gradient(145deg,color-mix(in srgb,var(--focus) 68%,#1a1323),rgba(12,9,17,.9));box-shadow:0 8px 24px color-mix(in srgb,var(--focus) 25%,transparent)}
-.radiestesia-focus-card summary div b,.radiestesia-focus-card summary div small{display:block}
-.radiestesia-focus-card summary div b{font:600 22px/1.15 "Gilda Display",serif;color:#f7f0e7}
-.radiestesia-focus-card summary div small{margin-top:6px;color:#a89cac;font-size:10px!important}
-.radiestesia-focus-card summary em{padding:6px 9px;border:1px solid rgba(217,181,101,.23);border-radius:20px;color:#d9b565;font:normal 8px/1 "DM Sans";letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
-.radiestesia-focus-card summary>i{color:#a99eb0;font-style:normal;font-size:18px;transition:transform .3s ease}
-.radiestesia-focus-card[open] summary>i{transform:rotate(45deg);color:#f8dc91}
-.radiestesia-focus-options{padding:4px 18px 18px;display:grid;grid-template-columns:1fr 1fr;gap:8px;animation:pendulumReveal .35s ease both}
-.radiestesia-focus-options button{min-height:64px;padding:12px 13px;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(255,255,255,.025);color:#d7cdd9;transition:.25s ease}
-.radiestesia-focus-options button:hover{border-color:color-mix(in srgb,var(--focus) 60%,#d9b565);background:color-mix(in srgb,var(--focus) 10%,rgba(255,255,255,.03));color:#fff;transform:translateX(2px)}
-.radiestesia-focus-options button span{font-size:11px!important;line-height:1.35;flex:1}.radiestesia-focus-options button b{color:#d9b565}
+.radiestesia-site{--focus:#9333ea;min-height:100vh;background-color:#08070e;background-image:radial-gradient(circle at 42% 16%,rgba(67,39,76,.28),transparent 34%),linear-gradient(180deg,#0b0912,#08070e 65%);font-family:"DM Sans",system-ui,sans-serif;color:#f5eee4;overflow:hidden}
+.radiestesia-site:before{display:none}
+.radiestesia-site .radiestesia-back{background:none;backdrop-filter:none}
+.radiestesia-intro{max-width:940px!important;margin-bottom:38px!important;padding-top:0}
+.radiestesia-intro h1{margin:0 0 14px!important;color:#fff7ed!important;font:600 clamp(68px,8vw,96px)/.96 "DM Sans",system-ui,sans-serif!important;letter-spacing:-.055em!important;background:none!important;-webkit-text-fill-color:currentColor}
+.radiestesia-intro>span,.radiestesia-question-head>span{color:#d6b66d!important;letter-spacing:.28em!important;font-size:12px!important}
+.radiestesia-intro .system-introduction{max-width:820px;margin:38px auto 0;padding-top:30px;border-top:1px solid rgba(201,167,106,.28);color:#c8becb;text-align:left;font-size:16px!important;line-height:1.75!important}
+.radiestesia-site .radiestesia-menu{max-width:1120px;padding:42px;margin-bottom:76px;background:linear-gradient(145deg,#191121,#0e0a14)}
+.radiestesia-site .radiestesia-menu>.mini-label{margin-bottom:24px;color:#d6b66d}
+.radiestesia-focus-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.radiestesia-focus-grid .radiestesia-focus-card{transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
+.radiestesia-focus-grid .radiestesia-focus-card:hover{transform:translateY(-3px);box-shadow:0 13px 30px rgba(0,0,0,.45)}
+.radiestesia-focus-grid .spread-group-1{border-color:#6d443f;background:linear-gradient(145deg,#203b59,#101c2c)}
+.radiestesia-focus-grid .spread-group-2{border-color:#70445f;background:linear-gradient(145deg,#493158,#231a31)}
+.radiestesia-focus-grid .spread-group-3{border-color:#45664e;background:linear-gradient(145deg,#173f2d,#0b2117)}
+.radiestesia-focus-grid .spread-group-4{border-color:#705b35;background:linear-gradient(145deg,#382b16,#1a1209)}
+.radiestesia-focus-grid .radiestesia-focus-options{animation:pendulumReveal .35s ease both}
 .radiestesia-question-head{max-width:720px!important}.radiestesia-question-head h1{font:600 clamp(43px,6vw,72px)/1 "Gilda Display",serif!important;margin:16px 0 14px!important}.radiestesia-question-head p{max-width:620px;margin:auto;color:#ada2b2}
 .pendulum-ready-card{width:min(860px,calc(100% - 32px));margin:25px auto 100px;padding:22px;border:1px solid color-mix(in srgb,var(--focus) 55%,#5a4a65);border-radius:20px;background:linear-gradient(145deg,rgba(27,20,37,.92),rgba(12,9,17,.95));box-shadow:0 35px 90px rgba(0,0,0,.4)}
 .pendulum-ready-card>label{margin:0 0 9px;color:#d9b565;font-size:9px!important;letter-spacing:.17em}.pendulum-ready-card textarea{margin:0 0 18px;min-height:90px;padding:15px 17px;border-color:rgba(217,181,101,.22);background:#09070dc4;font-size:15px!important;line-height:1.6;resize:vertical}
@@ -80,6 +71,6 @@
 @keyframes pendulumReveal{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes needleArrive{from{opacity:0;transform:rotate(-26deg) scale(.86)}to{opacity:1;transform:none}}
 @keyframes intensityGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@media(max-width:900px){.radiestesia-result-grid{grid-template-columns:1fr}.radiestesia-board-panel{max-width:620px;width:100%;margin:auto}.radiestesia-intro .rider-history{columns:1}.radiestesia-focus-card summary{grid-template-columns:50px 1fr 22px}.radiestesia-focus-card summary em{display:none}}
-@media(max-width:760px){.radiestesia-site .radiestesia-back{top:84px}.radiestesia-intro{padding-left:18px!important;padding-right:18px!important}.radiestesia-intro h1{font-size:64px!important}.radiestesia-intro .rider-history{margin-top:33px;padding:23px 20px}.radiestesia-site .spread-menu-section{padding-left:15px;padding-right:15px}.radiestesia-focus-grid{grid-template-columns:1fr}.radiestesia-focus-card summary{min-height:96px;padding:17px}.radiestesia-focus-options{grid-template-columns:1fr}.pendulum-ready-card{padding:12px}.pendulum-photo-action{height:62vh;min-height:400px}.pendulum-ready-copy{left:17px;right:17px;bottom:17px;display:block}.pendulum-ready-copy small{display:block;margin-bottom:13px}.pendulum-ready-copy b{display:inline-block}.casting-heading{padding-top:14px}.pendulum-casting-stage{aspect-ratio:4/5;max-height:650px}.pendulum-casting-stage>img{object-position:center}.pendulum-rig{height:57%}.radiestesia-result{padding-top:16px}.radiestesia-board-panel{padding:14px}.radiestesia-interpretation-panel{padding:28px 22px}.radiestesia-result-actions{flex-wrap:wrap}.radiestesia-result-actions button{flex:1;white-space:nowrap}.radiestesia-result-actions .new-consultation{margin-left:0;flex-basis:100%}}
+@media(max-width:900px){.radiestesia-result-grid{grid-template-columns:1fr}.radiestesia-board-panel{max-width:620px;width:100%;margin:auto}.radiestesia-focus-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.radiestesia-site .radiestesia-back{top:84px}.radiestesia-intro{padding-left:18px!important;padding-right:18px!important}.radiestesia-intro h1{font-size:55px!important}.radiestesia-intro>span{font-size:10px!important;letter-spacing:.2em!important}.radiestesia-intro .system-introduction{margin-top:30px;padding-top:24px;font-size:14px!important}.radiestesia-site .radiestesia-menu{padding:26px 17px;margin-bottom:58px}.radiestesia-focus-grid{grid-template-columns:1fr}.pendulum-ready-card{padding:12px}.pendulum-photo-action{height:62vh;min-height:400px}.pendulum-ready-copy{left:17px;right:17px;bottom:17px;display:block}.pendulum-ready-copy small{display:block;margin-bottom:13px}.pendulum-ready-copy b{display:inline-block}.casting-heading{padding-top:14px}.pendulum-casting-stage{aspect-ratio:4/5;max-height:650px}.pendulum-casting-stage>img{object-position:center}.pendulum-rig{height:57%}.radiestesia-result{padding-top:16px}.radiestesia-board-panel{padding:14px}.radiestesia-interpretation-panel{padding:28px 22px}.radiestesia-result-actions{flex-wrap:wrap}.radiestesia-result-actions button{flex:1;white-space:nowrap}.radiestesia-result-actions .new-consultation{margin-left:0;flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){.radiestesia-site *{scroll-behavior:auto!important}.pendulum-rig,.casting-status>i,.board-needle,.intensity-fill,.radiestesia-board-panel,.radiestesia-interpretation-panel{animation-duration:.01ms!important;animation-iteration-count:1!important}}
