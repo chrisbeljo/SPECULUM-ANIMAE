@@ -613,8 +613,6 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
             {castPhase==="swinging"?<>
               <img className="real-pendulum-background" src="/oracles/pendulum/silver-witness-hand-background.png" alt="Mano sosteniendo el péndulo durante la consulta"/>
               <img className="real-pendulum-layer" src="/oracles/pendulum/silver-witness-pendulum-cutout.png" alt="Péndulo de plata oscilando"/>
-              <span className="casting-vignette"/>
-              <span className="casting-status"><i/> TOCA DE NUEVO PARA CONSULTAR EL TABLERO</span>
             </>:<>
               <img className="radiestesia-board-image" src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero de radiestesia con respuestas e intensidad"/>
               <span className="board-pendulum-arm" aria-hidden="true"><i/><b/></span>
@@ -622,7 +620,6 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
               {castPhase==="stopped"&&<span className="casting-status">VER INTERPRETACIÓN <b>→</b></span>}
             </>}
           </button>
-          <p className="casting-question">“{question}”</p>
         </div>
       )}
 
