@@ -536,7 +536,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
    interpretAngle(newAngle,Math.round(intensity_val));
    setIsAnimating(false);
    setCastPhase("stopped");
-  },4600);
+  },7200);
  }
 
  function revealResult(){
@@ -611,7 +611,6 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
               <img className="radiestesia-board-image" src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero de radiestesia con respuestas e intensidad"/>
               <span className="board-swing-axis" aria-hidden="true"><i/><b className="board-swing-traveler"/></span>
               <span className="board-center-mark" aria-hidden="true"/>
-              {castPhase==="stopped"&&<span className="casting-status">VER INTERPRETACIÓN <b>→</b></span>}
             </>}
           </button>
         </div>
