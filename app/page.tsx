@@ -10,6 +10,7 @@ import { buildOracleEditorialOutput } from "./oracle-analysis";
 import { castIChing, getIChingCounsel, ichingConsultations, interpretIChing, interpretRuneSpread, runeMeanings, runeReadingGroups, type IChingConsultation, type IChingLine, type RuneSpread } from "./ancient-systems";
 import { riderDeck as tarot } from "./rider-deck";
 import { useAIInterpretation, toAICards, type AICard } from "./use-ai-interpretation";
+import PendulumExperience from "./components/PendulumExperience";
 
 type Method = "tarot" | "runes" | "iching" | "numerology" | "angels";
 type Result = { method: Method; title: string; raw_result: unknown; themes: string[]; obstacles: string[]; opportunities: string[]; advice: string[]; interpretation: string };
@@ -496,6 +497,15 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
  const [response,setResponse]=useState<string|null>(null);
  const [reading,setReading]=useState<Result|null>(null);
 
+ useEffect(()=>{
+  if(step==="pendulum-image"){
+    const newAngle=Math.random()*360;
+    const newIntensity=30+Math.random()*70;
+    setAngle(newAngle);
+    setIntensity(Math.round(newIntensity));
+  }
+ },[step]);
+
  const radiestesiaCards=[{num:1,label:"Pregunta",card:question||"Sin pregunta",reversed:false}];
  const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:focus?`Consulta radiestésica - ${focus}`:"",cards:radiestesiaCards,question});
 
@@ -596,7 +606,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
                       setSelectedFocusIdx(focusIndex);
                       setFocus(focusItem.label);
                       setQuestion(subcategory);
-                      setStep("question");
+                      setStep("pendulum-image");
                     }}
                   >
                     {subcategory}
@@ -624,7 +634,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
                   <button
                     key={idx}
                     style={{textAlign:"center",border:`2px solid ${focuses[selectedFocusIdx].color}`,borderRadius:"8px",padding:"1.5rem",background:"rgba(0,0,0,0.3)",cursor:"pointer",transition:"all 0.2s"}}
-                    onClick={()=>{setQuestion(subcat);setStep("question")}}
+                    onClick={()=>{setQuestion(subcat);setStep("pendulum-image")}}
                   >
                     <span style={{display:"block",fontSize:"1.1em",fontWeight:"bold",marginBottom:"0.5rem",color:focuses[selectedFocusIdx].color}}>{subcat}</span>
                     <span style={{display:"block",fontSize:"0.8em",opacity:0.6}}>Consulta sobre</span>
@@ -633,6 +643,21 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
               </div>
             </div>
           </section>
+        </>
+      )}
+
+      {step==="pendulum-image" && (
+        <>
+          <button className="system-back" onClick={returnToMenu}>← Volver al menú</button>
+          <PendulumExperience
+            enfoque={focus}
+            angulo={angle}
+            intensidad={intensity}
+            interpretacion={isLoading ? <p>Generando interpretación…</p> : <div dangerouslySetInnerHTML={{__html: aiInterpretation?.replace(/\n/g, "<br/>") || ""}} />}
+          />
+          <div style={{textAlign:"center", marginTop:"2rem", marginBottom:"2rem"}}>
+            <button className="primary" onClick={returnToMenu}>← Otra consulta</button>
+          </div>
         </>
       )}
 
