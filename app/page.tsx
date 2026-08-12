@@ -543,12 +543,6 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
   },14100);
  }
 
- function revealResult(){
-  if(castPhase!=="stopped")return;
-  setStep("result");
-  window.scrollTo({top:0,behavior:"smooth"});
- }
-
  function interpretAngle(ang:number,int:number){
   const normalized=Math.max(-75,Math.min(75,ang));
   let resp="";
@@ -607,7 +601,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
       {step==="casting" && (
         <div className="radiestesia-casting radiestesia-board-casting" style={{"--focus":selectedFocus?.color||"#9333ea","--swing-span":`${48+intensity*.42}%`} as CSSProperties}>
           <div className="casting-heading"><span>{focus.toUpperCase()}</span><h1>{castPhase==="swinging"?"Observa el movimiento":castPhase==="board"?"El péndulo busca una dirección":"La señal está marcada"}</h1><p>{castPhase==="swinging"?"Mantén la pregunta presente. Cuando estés listo, toca de nuevo la imagen.":castPhase==="board"?"La oscilación pierde amplitud mientras se orienta sobre el tablero.":"El péndulo se ha detenido en un área del tablero."}</p></div>
-          <button className={`pendulum-casting-stage ${castPhase}`} style={{"--target-angle":`${angle}deg`} as CSSProperties} onClick={castPhase==="swinging"?readBoard:revealResult} disabled={isAnimating} aria-label={castPhase==="swinging"?"Cambiar al tablero y realizar la lectura":castPhase==="stopped"?"Ver la interpretación":"El péndulo está buscando una dirección"}>
+          <div className={`pendulum-casting-stage ${castPhase}`} style={{"--target-angle":`${angle}deg`} as CSSProperties} aria-live="polite">
             {castPhase==="swinging"?<>
               <img className="real-pendulum-background" src="/oracles/pendulum/silver-witness-hand-background.png" alt="Mano sosteniendo el péndulo durante la consulta"/>
               <img className="real-pendulum-layer" src="/oracles/pendulum/silver-witness-pendulum-cutout.png" alt="Péndulo de plata oscilando"/>
@@ -616,33 +610,16 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
               <span className="board-swing-axis" aria-hidden="true"><i/><b className="board-swing-traveler"/></span>
               <span className="board-center-mark" aria-hidden="true"/>
             </>}
-          </button>
-        </div>
-      )}
-
-      {step==="result" && reading && (
-        <div className="radiestesia-result" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties}>
-          <div className="page-title">
-            <span className="mini-label">{focus.toUpperCase()} · RESPUESTA RADIESTÉSICA</span>
-            <h1>Lo que señala el péndulo</h1>
           </div>
-          <div className="radiestesia-result-grid">
-            <section className="radiestesia-board-panel"><div className="board-frame"><img src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero circular de radiestesia"/><svg viewBox="0 0 400 400" className="board-needle" aria-hidden="true"><defs><linearGradient id="needleGold" x1="0" x2="1"><stop stopColor="#876126"/><stop offset=".55" stopColor="#ffe4a0"/><stop offset="1" stopColor="#b4863e"/></linearGradient></defs><line x1="200" y1="200" x2={boardX} y2={boardY} stroke="url(#needleGold)" strokeWidth="4"/><path d={`M ${boardX} ${boardY} l -10 -5 l 3 11 z`} fill="#f8dc91"/><circle cx="200" cy="200" r="9" fill="#d9b565" stroke="#fff0bc" strokeWidth="2"/></svg></div><div className="board-meta"><span className={`result-badge ${answerTone}`}>{resultAnswer.toUpperCase()}</span><small>DIRECCIÓN · {Math.round(angle)}°</small></div></section>
-            <section className="radiestesia-interpretation-panel">
-              <span className="mini-label">RESPUESTA</span><div className={`answer-word ${answerTone}`}>{resultAnswer}</div>
-              <div className="intensity-heading"><span>INTENSIDAD DE LA SEÑAL</span><b>{intensity}%</b></div><div className="intensity-bar"><div className="intensity-fill" style={{width:`${intensity}%`}}/></div>
-              <div className="reading-divider"/>
-              <span className="mini-label">MENSAJE E INTERPRETACIÓN</span><h2>Lo que el péndulo revela</h2>
-              <div className="interpretation-copy">
-              {isLoading ? (
-                <p className="interpretation-loading">Generando una interpretación para tu consulta…</p>
-              ) : radiestesiaSections.length>0 ? (
-                <div className="radiestesia-ai-sections">{radiestesiaSections.map(section=><article key={section.id}><h3>{section.title}</h3><p dangerouslySetInnerHTML={{__html:section.body}}/></article>)}</div>
-              ) : <p dangerouslySetInnerHTML={{__html:markdownToHtml(reading.interpretation)}}/>}
-              </div><blockquote>“{question}”</blockquote>
-            </section>
-          </div>
-          <div className="radiestesia-result-actions"><button onClick={returnToMenu}>← Elegir otro enfoque</button><button onClick={onBack}>← Volver al inicio</button><button className="new-consultation" onClick={()=>{setStep("question");setQuestion("");setAngle(0);setIntensity(0);setResponse(null);setReading(null)}}>Otra consulta <span>↗</span></button></div>
+          {castPhase==="stopped"&&reading&&<section className="radiestesia-inline-interpretation radiestesia-interpretation-panel">
+            <div className="radiestesia-inline-answer"><div><span className="mini-label">RESPUESTA</span><div className={`answer-word ${answerTone}`}>{resultAnswer}</div></div><div><span className="mini-label">INTENSIDAD</span><b>{intensity}%</b></div></div>
+            <div className="intensity-bar"><div className="intensity-fill" style={{width:`${intensity}%`}}/></div>
+            <div className="reading-divider"/>
+            <span className="mini-label">INTERPRETACIÓN DE CODE</span><h2>Lo que señala el péndulo</h2>
+            <div className="interpretation-copy">{isLoading?<p className="interpretation-loading">Code está interpretando la consulta…</p>:radiestesiaSections.length>0?<div className="radiestesia-ai-sections">{radiestesiaSections.map(section=><article key={section.id}><h3>{section.title}</h3><p dangerouslySetInnerHTML={{__html:section.body}}/></article>)}</div>:<p dangerouslySetInnerHTML={{__html:markdownToHtml(reading.interpretation)}}/>}</div>
+            <blockquote>“{question}”</blockquote>
+            <div className="radiestesia-result-actions"><button onClick={returnToMenu}>← Elegir otro enfoque</button><button onClick={onBack}>← Volver al inicio</button></div>
+          </section>}
         </div>
       )}
     </section>
