@@ -124,3 +124,34 @@
 .system-intro-title{max-width:940px;margin-bottom:38px}.system-introduction{max-width:820px;margin:25px auto 0;padding-top:22px;border-top:1px solid rgba(214,182,109,.28);color:#c9becd;font-size:15px;line-height:1.8;text-align:left}@media(max-width:600px){.system-introduction{font-size:14px;line-height:1.72;text-align:left}}
 /* Preparación: instrucciones y controles antes del mazo */
 .tarot-step-shuffle .tarot-shuffle-stage{min-height:690px;grid-template-columns:1fr 1fr;grid-template-rows:auto 500px;column-gap:60px;row-gap:12px}.tarot-step-shuffle .shuffle-guidance{grid-column:1;grid-row:1;align-self:center;justify-self:start}.tarot-step-shuffle .stage-reversed-option{grid-column:2;grid-row:1;align-self:center;justify-self:end}.tarot-step-shuffle .deck-touch-area{grid-column:1/-1;grid-row:2;align-self:center;justify-self:center}@media(max-width:900px){.tarot-step-shuffle .tarot-shuffle-stage{grid-template-columns:1fr;grid-template-rows:auto auto 440px}.tarot-step-shuffle .shuffle-guidance{grid-column:1;grid-row:1;justify-self:center;text-align:center}.tarot-step-shuffle .stage-reversed-option{grid-column:1;grid-row:2;justify-self:center}.tarot-step-shuffle .deck-touch-area{grid-column:1;grid-row:3}}
+
+/* El mazo móvil se adapta al panel y conserva su eje en el centro. */
+@media(max-width:600px){
+  .tarot-step-shuffle .tarot-shuffle-stage{
+    width:100%;
+    min-width:0;
+    padding:26px 16px 30px;
+    grid-template-rows:auto auto 410px;
+    overflow:hidden;
+  }
+  .tarot-step-shuffle .deck-touch-area{
+    width:100%;
+    min-width:0;
+    justify-self:stretch;
+    overflow:visible;
+  }
+  .tarot-step-shuffle .animated-deck{
+    width:100%;
+    max-width:340px;
+    height:410px;
+    margin:0 auto;
+    transform:none;
+  }
+  .tarot-step-shuffle .shuffle-card{
+    left:50%;
+    top:52px;
+    width:min(180px,58vw);
+    height:min(280px,90vw);
+    margin-left:calc(min(180px,58vw) / -2);
+  }
+}
