@@ -64,6 +64,43 @@ body header.site-header{height:76px;justify-content:flex-end;padding:0 max(22px,
 footer.site-footer{padding:48px max(20px,6vw) 38px;display:flex;flex-direction:column;align-items:center;gap:34px;background:linear-gradient(180deg,#0a080d,#050406);text-align:center}.site-footer .footer-socials{position:static;height:auto;margin:0;display:flex;gap:38px;border:0;background:none}.footer-socials span,.footer-legal nav span{color:#c4b8c8;font-size:11px;letter-spacing:.1em}.footer-socials span{min-width:72px;position:relative;display:flex;flex-direction:column;align-items:center;gap:9px}.footer-socials span img{width:27px;height:27px;display:block;object-fit:contain;filter:drop-shadow(0 0 9px rgba(201,167,106,.22))}.footer-socials span b{font-size:10px;font-weight:500;letter-spacing:.08em}.footer-socials span:after{content:"PRÓXIMAMENTE";display:block;margin-top:-3px;color:#766b7d;font-size:6px;letter-spacing:.16em}.footer-brand{display:flex;flex-direction:column;align-items:center}.footer-brand>img{width:clamp(210px,25vw,310px);height:auto;border:0;border-radius:0;object-fit:contain;filter:drop-shadow(0 0 24px rgba(198,133,56,.18)) drop-shadow(0 24px 28px #0008)}.footer-brand strong{margin-top:15px;color:#dbbd86;font:18px "Gilda Display",serif;letter-spacing:.2em}.footer-brand small{margin-top:6px;color:#756b79;font-size:7px;letter-spacing:.27em}.footer-legal{max-width:850px;padding-top:24px;border-top:1px solid #28202d}.footer-legal nav{position:static;height:auto;margin:0 0 17px;display:flex;justify-content:center;gap:26px;border:0;background:none}.footer-legal p{max-width:780px;margin:0 auto 14px;color:#857a89;font-size:9px;line-height:1.75}.footer-legal>small{color:#5f5663;font-size:8px}
 @media(max-width:800px){body header.site-header{height:68px;padding:0 14px}.header-actions{gap:8px}.language-menu select{min-width:98px;padding:8px 25px 8px 10px}.site-header .menu-toggle{margin-left:0}.site-header nav{top:68px!important}.home-disciplines{padding-top:28px}.home-disciplines-head:before{width:230px}.home-disciplines-head h1{font-size:42px}.site-footer .footer-socials,.footer-legal nav{position:static!important;height:auto!important;flex-direction:row!important;flex-wrap:wrap;justify-content:center!important;padding:0!important;border:0!important;background:none!important}.site-footer{padding-bottom:38px!important}}
 @media(max-width:480px){.site-header nav{left:0!important;right:0!important}.footer-socials{gap:18px!important}.footer-brand>img{width:210px;height:auto}.footer-legal nav{gap:15px!important}}
+.feedback-container{display:flex;flex-direction:column;gap:32px}
+.feedback-intro{padding:28px;border:1px solid #3a2c4a;border-radius:16px;background:linear-gradient(145deg,#1a1625,#0f0c18)}
+.construction-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;margin-bottom:18px;border:1px solid #4a3f54;border-radius:20px;background:rgba(201,167,106,.08);color:#d7b76e;font-size:10px;font-weight:600;letter-spacing:.08em}
+.construction-badge span{font-size:16px}
+.feedback-intro h2{margin:0 0 12px;font-size:28px;font-family:"Gilda Display",serif}
+.feedback-intro p{margin:0;color:#cfc5d1;line-height:1.7}
+.feedback-intro strong{color:#d7b76e;font-weight:600}
+.feedback-form{margin-bottom:0}
+.feedback-form label{display:block;margin-bottom:14px}
+.feedback-form label>span{display:block;margin-bottom:8px;color:#d7b76e;font-size:12px;font-weight:600;letter-spacing:.08em}
+.feedback-form textarea,.feedback-form input{width:100%;padding:12px 14px;border:1px solid #3a2c4a;border-radius:10px;background:#14101c;color:#f5eee4;font-family:"DM Sans",system-ui,sans-serif;font-size:13px;line-height:1.6}
+.feedback-form textarea{resize:vertical;min-height:120px}
+.feedback-form textarea:focus,.feedback-form input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,167,106,.1)}
+.feedback-form .form-actions{display:flex;gap:12px;margin-top:18px}
+.feedback-form button{padding:11px 18px;border:1px solid #44354f;border-radius:8px;background:#100c17;color:#d8cfdd;font-size:12px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s}
+.feedback-form button:hover{border-color:var(--gold);background:#16101f}
+.feedback-form button.primary{border-color:var(--gold);background:var(--gold);color:#160f1e}
+.feedback-form button.primary:hover{background:#d9b565}
+.feedback-form .note{margin-top:14px;color:#8d7f91;font-size:10px;line-height:1.6}
+.newsletter-form{margin-bottom:0}
+.newsletter-form h3{margin:0 0 12px;font-size:20px;font-family:"Gilda Display",serif}
+.newsletter-form>p{margin:0 0 18px;color:#cfc5d1;font-size:13px;line-height:1.7}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.form-grid label{display:block}
+.form-grid label>span{display:block;margin-bottom:6px;color:#d7b76e;font-size:11px;font-weight:600;letter-spacing:.08em}
+.contact-method{display:block;margin-bottom:18px}
+.contact-method>span{display:block;margin-bottom:10px;color:#d7b76e;font-size:12px;font-weight:600;letter-spacing:.08em}
+.radio-group{display:flex;gap:18px}
+.radio-group label{display:flex;align-items:center;gap:8px;color:#d8cfdd;font-size:12px;cursor:pointer}
+.radio-group input[type="radio"]{cursor:pointer;accent-color:var(--gold)}
+.footer-metrics{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap}
+.footer-metrics .metric{display:flex;flex-direction:column;align-items:center;gap:6px}
+.footer-metrics .metric .label{color:#8d7f91;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.footer-metrics .metric .value{color:#d7b76e;font-size:18px;font-weight:700}
+.feedback-button{padding:9px 16px;border:1px solid #44354f;border-radius:8px;background:transparent;color:#d8cfdd;font-size:11px;font-weight:600;letter-spacing:.08em;cursor:pointer;transition:border-color .2s,background .2s}
+.feedback-button:hover{border-color:var(--gold);background:rgba(201,167,106,.08)}
+@media(max-width:800px){.footer-metrics{gap:18px}.footer-metrics .metric .value{font-size:16px}}
 .rune-system-site .ancient-intro,.iching-system-site .ancient-intro{display:none}
 .rune-preparation{min-height:620px;grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:12px;align-items:start}.rune-shuffle-guidance{max-width:560px;margin:0;color:#f1e7ec;font-size:22px;line-height:1.5}.rune-preparation .rune-bag{align-self:center;justify-self:center;margin:auto}@media(max-width:800px){.rune-preparation{min-height:570px;padding:28px 22px;gap:0}.rune-shuffle-guidance{font-size:18px;text-align:left}.rune-preparation .rune-bag{margin:auto}}
 .rune-preparation{min-height:700px;grid-template-rows:auto 1fr;gap:20px}.rune-shuffle-guidance{max-width:880px;justify-self:center;margin:0 auto;color:#f7efe7;font-size:clamp(25px,2.25vw,36px);font-weight:600;line-height:1.35;text-align:center;text-wrap:balance}.rune-preparation .rune-bag{width:min(470px,86vw);height:min(470px,86vw);position:relative;isolation:isolate}.rune-bag-photo{width:100%;height:100%;position:absolute;inset:0;z-index:2;display:block;object-fit:contain;user-select:none;pointer-events:none}.rune-bag>i{width:62px;height:62px;left:calc(50% - 31px);top:-45px;z-index:3;border:2px solid #9b713d;background:radial-gradient(circle at 34% 28%,#ddb06a,#8a5a2c 68%,#432814);box-shadow:inset 0 0 10px #3a1e0a88,0 8px 16px #0008;opacity:0;transform:none}.rune-bag.shuffling .rune-bag-photo{animation:rune-bag-pulse 1.15s ease-in-out infinite}.rune-bag.shuffling>i{opacity:0;animation:rune-enter-bag 2.7s cubic-bezier(.32,.02,.36,1) infinite;animation-delay:calc(var(--i)*.24s)}@keyframes rune-enter-bag{0%{opacity:0;transform:translate(calc((var(--i) - 4)*24px),-45px) rotate(calc((var(--i) - 4)*19deg)) scale(.72)}12%{opacity:1}48%{opacity:1;transform:translate(calc((var(--i) - 4)*11px),105px) rotate(calc((var(--i) - 4)*-22deg)) scale(1)}72%{opacity:1;transform:translate(calc((var(--i) - 4)*4px),190px) rotate(calc((var(--i) - 4)*31deg)) scale(.82)}82%,100%{opacity:0;transform:translate(0,225px) rotate(calc((var(--i) - 4)*44deg)) scale(.48)}}@keyframes rune-bag-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.012) translateY(2px)}}@media(max-width:800px){.rune-preparation{min-height:610px;padding:30px 20px;gap:8px}.rune-shuffle-guidance{font-size:clamp(22px,6vw,29px);text-align:center}.rune-preparation .rune-bag{width:min(390px,92vw);height:min(390px,92vw);transform:none;margin:auto}.rune-bag>i{width:50px;height:50px;left:calc(50% - 25px);font-size:24px}}
