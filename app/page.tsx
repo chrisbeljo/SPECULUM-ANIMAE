@@ -10,7 +10,6 @@ import { buildOracleEditorialOutput } from "./oracle-analysis";
 import { castIChing, getIChingCounsel, ichingConsultations, interpretIChing, interpretRuneSpread, runeMeanings, runeReadingGroups, type IChingConsultation, type IChingLine, type RuneSpread } from "./ancient-systems";
 import { riderDeck as tarot } from "./rider-deck";
 import { useAIInterpretation, toAICards, type AICard } from "./use-ai-interpretation";
-import PendulumExperience from "./components/PendulumExperience";
 
 type Method = "tarot" | "runes" | "iching" | "numerology" | "angels";
 type Result = { method: Method; title: string; raw_result: unknown; themes: string[]; obstacles: string[]; opportunities: string[]; advice: string[]; interpretation: string };
@@ -487,7 +486,7 @@ function NumberGrid({data}:{data:ReturnType<typeof numerology>}){return <div cla
 function Daily({daily}:{daily:typeof tarot[number]}){const day=reduceNumber([...String(new Date().getFullYear()),String(new Date().getMonth()+1).padStart(2,"0"),String(new Date().getDate()).padStart(2,"0")].join("").split("").reduce((a,b)=>a+Number(b),0)),rune=runes[new Date().getDate()%runes.length];return <section className="workspace"><div className="page-title"><span className="mini-label">RITUAL COTIDIANO</span><h1>Guía del día</h1><p>La misma selección global se mantiene durante la fecha local actual.</p></div><div className="daily-grid"><article><span className="mini-label">CARTA DEL DÍA</span><div className="big-card"><img src={daily.image} alt={daily.name}/></div><h2>{daily.name}</h2><p>{daily.general}</p><strong>Reflexión</strong><p>{daily.advice}</p></article><article><span className="mini-label">RUNA DEL DÍA</span><RuneToken symbol={rune.symbol} name={rune.name}/><h2>{rune.name}</h2><p>{rune.meaning}</p></article><article><span className="mini-label">NÚMERO DEL DÍA</span><b className="big-number">{day}</b><h2>{numberMeanings[day]}</h2><p>Suma reducida de los dígitos de la fecha: {new Date().toLocaleDateString()}.</p></article></div></section>}
 
 function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
- const [step,setStep]=useState<"menu"|"focus"|"subcats"|"pendulum-image"|"question"|"casting"|"result">("menu");
+ const [step,setStep]=useState<"menu"|"question"|"casting"|"result">("menu");
  const [focus,setFocus]=useState("");
  const [selectedFocusIdx,setSelectedFocusIdx]=useState<number|null>(null);
  const [question,setQuestion]=useState("");
@@ -496,36 +495,32 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
  const [isAnimating,setIsAnimating]=useState(false);
  const [response,setResponse]=useState<string|null>(null);
  const [reading,setReading]=useState<Result|null>(null);
-
- useEffect(()=>{
-  if(step==="pendulum-image"){
-    const newAngle=Math.random()*360;
-    const newIntensity=30+Math.random()*70;
-    setAngle(newAngle);
-    setIntensity(Math.round(newIntensity));
-  }
- },[step]);
+ const [castPhase,setCastPhase]=useState<"swinging"|"waiting">("swinging");
 
  const radiestesiaCards=[{num:1,label:"Pregunta",card:question||"Sin pregunta",reversed:false}];
  const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:focus?`Consulta radiestésica - ${focus}`:"",cards:radiestesiaCards,question});
+ const radiestesiaSections=useMemo(()=>parseAIInterpretation(aiInterpretation||""),[aiInterpretation]);
 
- const pendulumX=100+Math.sin((angle*Math.PI)/180)*60;
- const pendulumY=80+Math.cos((angle*Math.PI)/180)*60;
  const boardX=200+Math.cos(((angle-90)*Math.PI)/180)*120;
  const boardY=200+Math.sin(((angle-90)*Math.PI)/180)*120;
 
  const focuses=[
-   {label:"Decisiones",color:"#3b82f6",borderColor:"border-blue-500",subcats:["¿Debo tomar esta acción?","¿Es el momento correcto?","¿Hay obstáculos ocultos?","¿Beneficiará a mis objetivos?"]},
-   {label:"Claridad",color:"#9333ea",borderColor:"border-purple-600",subcats:["¿Entiendo la verdadera naturaleza?","¿Qué estoy perdiendo de vista?","¿Cuál es el siguiente paso?","¿Hay factores ocultos?"]},
-   {label:"Energía y flujo",color:"#16a34a",borderColor:"border-green-600",subcats:["¿Está fluyendo positivamente?","¿Hay bloqueo o resistencia?","¿Es este el mejor camino?","¿Debo acelerar o esperar?"]},
-   {label:"Relaciones",color:"#e11d48",borderColor:"border-rose-600",subcats:["¿Hay armonía en esto?","¿Es el momento para comunicar?","¿Hay incompatibilidad fundamental?","¿Debo confiar?"]}
+   {label:"Decisiones",color:"#3b82f6",symbol:"↗",description:"Elecciones, tiempos y consecuencias",subcats:["¿Debo tomar esta acción?","¿Es el momento correcto?","¿Hay obstáculos ocultos?","¿Beneficiará a mis objetivos?"]},
+   {label:"Claridad",color:"#9333ea",symbol:"◉",description:"Perspectiva, comprensión y dirección",subcats:["¿Entiendo la verdadera naturaleza?","¿Qué estoy perdiendo de vista?","¿Cuál es el siguiente paso?","¿Hay factores ocultos?"]},
+   {label:"Energía y flujo",color:"#16a34a",symbol:"≈",description:"Impulso, bloqueos y ritmo",subcats:["¿Está fluyendo positivamente?","¿Hay bloqueo o resistencia?","¿Es este el mejor camino?","¿Debo acelerar o esperar?"]},
+   {label:"Relaciones",color:"#e11d48",symbol:"◇",description:"Armonía, comunicación y confianza",subcats:["¿Hay armonía en esto?","¿Es el momento para comunicar?","¿Hay incompatibilidad fundamental?","¿Debo confiar?"]}
  ];
 
- function returnToMenu(){setStep("menu");window.scrollTo({top:0,behavior:"smooth"})}
+ const selectedFocus=selectedFocusIdx===null?null:focuses[selectedFocusIdx];
+ const resultAnswer=reading?(reading.raw_result as {response:string}).response:"";
+ const answerTone=resultAnswer.includes("No")||resultAnswer.includes("no")?"no":resultAnswer.includes("Neutral")?"neutral":"yes";
+
+ function returnToMenu(){setStep("menu");setCastPhase("swinging");window.scrollTo({top:0,behavior:"smooth"})}
 
  function startCasting(){
   if(!question.trim()){alert("Formúlate una pregunta clara"); return}
   setStep("casting");
+  setCastPhase("swinging");
   setIsAnimating(true);
   const newAngle=Math.random()*360;
   const intensity_val=30+Math.random()*70;
@@ -533,9 +528,15 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
    setAngle(newAngle);
    setIntensity(Math.round(intensity_val));
    setIsAnimating(false);
-   interpretAngle(newAngle,intensity_val);
-   setStep("result");
-  },3500);
+   setCastPhase("waiting");
+  },3150);
+ }
+
+ function revealResult(){
+  if(castPhase!=="waiting")return;
+  interpretAngle(angle,intensity);
+  setStep("result");
+  window.scrollTo({top:0,behavior:"smooth"});
  }
 
  function interpretAngle(ang:number,int:number){
@@ -554,195 +555,86 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
 
  return (
     <section className={`tarot-classic-site radiestesia-site tarot-step-${step}`}>
-      <button className="system-back" onClick={step==="menu"?onBack:returnToMenu}>
+      <button className="system-back radiestesia-back" onClick={step==="menu"?onBack:returnToMenu}>
         {step==="menu"?"← Volver al Inicio":"← Elegir otro enfoque"}
       </button>
 
       {step==="menu" && (
-  <>
-    <div className="tarot-menu-title system-intro-title">
-      <h1>Péndulo</h1>
-      <span>OBSERVACIÓN · EQUILIBRIO · ORIENTACIÓN</span>
-
-      <div className="system-introduction">
-        <p>La radiestesia es una evolución moderna de la rabdomancia, práctica milenaria utilizada para localizar agua y minerales mediante varas. El término se consolidó en el siglo XX, combinando raíces latinas y griegas que aluden a la "sensibilidad a las radiaciones".</p>
-        <p>En su definición contemporánea, busca captar campos energéticos, frecuencias o información oculta a través de instrumentos amplificadores — principalmente el péndulo y las varillas — que funcionan como extensiones de la percepción del operador.</p>
-        <p>Desde una perspectiva científica, su mecanismo se explica por el efecto ideomotor: micromovimientos musculares involuntarios generados por el subconsciente al procesar un estímulo mental o pregunta. El instrumento no detecta por sí solo; amplifica y hace visible lo que el sistema nervioso ya está procesando.</p>
-        <p>Sus aplicaciones tradicionales incluyen la búsqueda de elementos físicos, el análisis energético de espacios, y como herramienta de apoyo en la toma de decisiones o procesos de introspección.</p>
-      </div>
-    </div>
-
-    <section className="spread-menu-section radiestesia-menu">
-      <span className="mini-label">ELIGE EL ENFOQUE</span>
-
-      <div className="spread-category-grid">
-        {focuses.map((focusItem, focusIndex) => {
-          const symbols = ["⇄", "◇", "⚡", "♡"];
-
-          return (
-            <details
-              className={`spread-group-${focusIndex + 1}`}
-              key={focusItem.label}
-            >
-              <summary>
-                <span className="spread-symbol">
-                  <i>{symbols[focusIndex]}</i>
-                </span>
-
-                <div>
-                  <b>{focusItem.label}</b>
-                  <small>{focusItem.subcats.length} consultas</small>
-                </div>
-
-                <em>+</em>
-              </summary>
-
-              <div className="spread-options">
-                {focusItem.subcats.map((subcategory) => (
-                  <button
-                    type="button"
-                    key={subcategory}
-                    onClick={() => {
-                      setSelectedFocusIdx(focusIndex);
-                      setFocus(focusItem.label);
-                      setQuestion(subcategory);
-                      setStep("pendulum-image");
-                    }}
-                  >
-                    {subcategory}
-                    <span>→</span>
-                  </button>
-                ))}
-              </div>
-            </details>
-          );
-        })}
-      </div>
-    </section>
-  </>
-)}
-
-      {step==="subcats" && selectedFocusIdx !== null && (
         <>
-          <button className="system-back" onClick={()=>setStep("menu")}>← Volver al menú</button>
-          <div className="tarot-menu-title"><h1>{focus}</h1></div>
+          <div className="tarot-menu-title radiestesia-intro">
+            <h1>Péndulo</h1>
+            <span>OBSERVACIÓN · EQUILIBRIO · ORIENTACIÓN</span>
+            <div className="rider-history">
+              <p>La radiestesia es una evolución moderna de la rabdomancia, práctica milenaria utilizada para localizar agua y minerales mediante varas. El término se consolidó en el siglo XX, combinando raíces latinas y griegas que aluden a la "sensibilidad a las radiaciones".</p>
+              <p>En su definición contemporánea, busca captar campos energéticos, frecuencias o información oculta a través de instrumentos amplificadores — principalmente el péndulo y las varillas — que funcionan como extensiones de la percepción del operador.</p>
+              <p>Desde una perspectiva científica, su mecanismo se explica por el efecto ideomotor: micromovimientos musculares involuntarios generados por el subconsciente al procesar un estímulo mental o pregunta. El instrumento no detecta por sí solo; amplifica y hace visible lo que el sistema nervioso ya está procesando.</p>
+              <p>Sus aplicaciones tradicionales incluyen la búsqueda de elementos físicos, el análisis energético de espacios, y como herramienta de apoyo en la toma de decisiones o procesos de introspección.</p>
+            </div>
+          </div>
           <section className="spread-menu-section">
-            <span className="mini-label">SELECCIONA UNA OPCIÓN</span>
-            <div className="spread-category-grid">
-              <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"1.5rem"}}>
-                {focuses[selectedFocusIdx].subcats.map((subcat,idx)=>(
-                  <button
-                    key={idx}
-                    style={{textAlign:"center",border:`2px solid ${focuses[selectedFocusIdx].color}`,borderRadius:"8px",padding:"1.5rem",background:"rgba(0,0,0,0.3)",cursor:"pointer",transition:"all 0.2s"}}
-                    onClick={()=>{setQuestion(subcat);setStep("pendulum-image")}}
-                  >
-                    <span style={{display:"block",fontSize:"1.1em",fontWeight:"bold",marginBottom:"0.5rem",color:focuses[selectedFocusIdx].color}}>{subcat}</span>
-                    <span style={{display:"block",fontSize:"0.8em",opacity:0.6}}>Consulta sobre</span>
-                  </button>
-                ))}
-              </div>
+            <span className="mini-label">ELIGE EL ENFOQUE</span>
+            <div className="radiestesia-focus-grid">
+              {focuses.map((f,idx)=><details className="radiestesia-focus-card" style={{"--focus":f.color} as CSSProperties} key={f.label} open={idx===0}>
+                <summary><span className="focus-symbol">{f.symbol}</span><div><b>{f.label}</b><small>{f.description}</small></div><em>{f.subcats.length} consultas</em><i>+</i></summary>
+                <div className="radiestesia-focus-options">{f.subcats.map(subcat=><button key={subcat} onClick={()=>{setSelectedFocusIdx(idx);setFocus(f.label);setQuestion(subcat);setStep("question");window.scrollTo({top:0,behavior:"smooth"})}}><span>{subcat}</span><b>→</b></button>)}</div>
+              </details>)}
             </div>
           </section>
         </>
       )}
 
-      {step==="pendulum-image" && (
-        <>
-          <button className="system-back" onClick={returnToMenu}>← Volver al menú</button>
-          <PendulumExperience
-            enfoque={focus}
-            angulo={angle}
-            intensidad={intensity}
-            interpretacion={isLoading ? <p>Generando interpretación…</p> : <div dangerouslySetInnerHTML={{__html: aiInterpretation?.replace(/\n/g, "<br/>") || ""}} />}
-          />
-          <div style={{textAlign:"center", marginTop:"2rem", marginBottom:"2rem"}}>
-            <button className="primary" onClick={returnToMenu}>← Otra consulta</button>
-          </div>
-        </>
-      )}
-
       {step==="question" && (
         <>
-          <button className="system-back" onClick={returnToMenu}>← Elegir otro enfoque</button>
-          <div className="tarot-menu-title"><h1>{focus}</h1></div>
-          <form onSubmit={e=>{e.preventDefault();startCasting()}} style={{maxWidth:"600px",margin:"2rem auto"}}>
-            <textarea
-              placeholder="Escribe tu pregunta con claridad..."
-              value={question}
-              onChange={e=>setQuestion(e.target.value)}
-              required
-              style={{width:"100%",minHeight:"120px",padding:"1rem",borderRadius:"4px",border:"1px solid rgba(212,175,55,0.3)",background:"rgba(0,0,0,0.3)",color:"#fff",fontFamily:"inherit"}}
-            />
-            <div style={{display:"flex",gap:"1rem",marginTop:"1.5rem",justifyContent:"center"}}>
-              <button type="submit" className="primary">Lanzar péndulo</button>
-              <button type="button" className="ghost" onClick={returnToMenu}>Atrás</button>
-            </div>
+          <div className="tarot-menu-title radiestesia-question-head"><span>{focus.toUpperCase()}</span><h1>Formula tu pregunta</h1><p>Ajusta la consulta sugerida o escribe una pregunta concreta que pueda orientarse con una respuesta pendular.</p></div>
+          <form className="pendulum-ready-card" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties} onSubmit={e=>{e.preventDefault();startCasting()}}>
+            <label htmlFor="pendulum-question">TU CONSULTA</label>
+            <textarea id="pendulum-question" placeholder="Escribe tu pregunta con claridad…" value={question} onChange={e=>setQuestion(e.target.value)} required/>
+            <button className="pendulum-photo-action" type="submit">
+              <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata sostenido por una mano"/>
+              <span className="pendulum-photo-shade"/>
+              <span className="pendulum-ready-copy"><small>Antes de activar, respira y concéntrate en tu pregunta sobre {focus.toLowerCase()}.</small><b>ACTIVAR PÉNDULO <i>→</i></b></span>
+            </button>
+            <button type="button" className="radiestesia-text-link" onClick={returnToMenu}>← Elegir otro enfoque</button>
           </form>
         </>
       )}
 
       {step==="casting" && (
-        <div className="radiestesia-casting">
-          <div className="casting-display">
-            <div className="pendulum-container" style={{opacity:isAnimating?1:0.3}}>
-              <svg viewBox="0 0 200 300" className="pendulum">
-                <g>
-                  <line x1="100" y1="20" x2="100" y2="80" stroke="#ccc" strokeWidth="1"/>
-                  <line x1="100" y1="80" x2={pendulumX} y2={pendulumY} stroke="#d4af37" strokeWidth="3"/>
-                  <circle cx={pendulumX} cy={pendulumY} r="12" fill="#c0a878" stroke="#8b7355" strokeWidth="1"/>
-                </g>
-              </svg>
-              <p className="casting-text">Concentrándose en la pregunta...</p>
-            </div>
-          </div>
+        <div className="radiestesia-casting" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties}>
+          <div className="casting-heading"><span>{focus.toUpperCase()}</span><h1>{castPhase==="swinging"?"El péndulo está en movimiento…":"El movimiento ha terminado"}</h1><p>{castPhase==="swinging"?"Mantén tu atención en la pregunta y observa sin intentar dirigir la respuesta.":"La lectura está lista. Toca la imagen para revelar la dirección."}</p></div>
+          <button className={`pendulum-casting-stage ${castPhase}`} onClick={revealResult} disabled={isAnimating} aria-label={castPhase==="waiting"?"Ver la respuesta del péndulo":"Péndulo en movimiento"}>
+            <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata durante la consulta"/>
+            <span className="casting-vignette"/>
+            <span className="pendulum-rig" aria-hidden="true"><i className="pendulum-chain"/><i className="pendulum-bob"/><i className="pendulum-shadow"/></span>
+            <span className="casting-status">{castPhase==="swinging"?<><i/> LEYENDO EL MOVIMIENTO</>:<>VER LA RESPUESTA <b>→</b></>}</span>
+          </button>
+          <p className="casting-question">“{question}”</p>
         </div>
       )}
 
       {step==="result" && reading && (
-        <div className="radiestesia-result">
+        <div className="radiestesia-result" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties}>
           <div className="page-title">
-            <span className="mini-label">RESPUESTA RADIESTÉSICA</span>
-            <h1>Respuesta del péndulo</h1>
+            <span className="mini-label">{focus.toUpperCase()} · RESPUESTA RADIESTÉSICA</span>
+            <h1>Lo que señala el péndulo</h1>
           </div>
-          <div className="result-display">
-            <div className="board-and-answer">
-              <div className="tablero-visual">
-                <svg viewBox="0 0 400 400" className="radiestesia-board">
-                  <circle cx="200" cy="200" r="180" stroke="#d4af37" strokeWidth="2" fill="none"/>
-                  <circle cx="200" cy="200" r="140" stroke="#d4af37" strokeWidth="1" fill="none" opacity="0.5"/>
-                  <circle cx="200" cy="200" r="100" stroke="#d4af37" strokeWidth="1" fill="none" opacity="0.3"/>
-                  <text x="200" y="30" textAnchor="middle" fontSize="12" fill="#d4af37">NO</text>
-                  <text x="350" y="205" textAnchor="start" fontSize="12" fill="#d4af37">NEUTRAL</text>
-                  <text x="200" y="390" textAnchor="middle" fontSize="12" fill="#d4af37">SÍ</text>
-                  <text x="50" y="205" textAnchor="end" fontSize="12" fill="#d4af37">SÍ</text>
-                  <circle cx="200" cy="200" r="8" fill="#d4af37"/>
-                  <line x1="200" y1="200" x2={boardX} y2={boardY} stroke="#c0a878" strokeWidth="3" opacity="0.7"/>
-                  <circle cx={boardX} cy={boardY} r="6" fill="#c0a878"/>
-                </svg>
-              </div>
-              <div className="response-card">
-                <h2>La respuesta</h2>
-                <p className="big-response">{response}</p>
-                <p className="response-note">Pregunta: "{question}"</p>
-                <div className="intensity-bar">
-                  <div className="intensity-fill" style={{width: `${intensity}%`}}/>
-                </div>
-              </div>
-            </div>
-            <div className="interpretation">
+          <div className="radiestesia-result-grid">
+            <section className="radiestesia-board-panel"><div className="board-frame"><img src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero circular de radiestesia"/><svg viewBox="0 0 400 400" className="board-needle" aria-hidden="true"><defs><linearGradient id="needleGold" x1="0" x2="1"><stop stopColor="#876126"/><stop offset=".55" stopColor="#ffe4a0"/><stop offset="1" stopColor="#b4863e"/></linearGradient></defs><line x1="200" y1="200" x2={boardX} y2={boardY} stroke="url(#needleGold)" strokeWidth="4"/><path d={`M ${boardX} ${boardY} l -10 -5 l 3 11 z`} fill="#f8dc91"/><circle cx="200" cy="200" r="9" fill="#d9b565" stroke="#fff0bc" strokeWidth="2"/></svg></div><div className="board-meta"><span className={`result-badge ${answerTone}`}>{resultAnswer.toUpperCase()}</span><small>DIRECCIÓN · {Math.round(angle)}°</small></div></section>
+            <section className="radiestesia-interpretation-panel">
+              <span className="mini-label">RESPUESTA</span><div className={`answer-word ${answerTone}`}>{resultAnswer}</div>
+              <div className="intensity-heading"><span>INTENSIDAD DE LA SEÑAL</span><b>{intensity}%</b></div><div className="intensity-bar"><div className="intensity-fill" style={{width:`${intensity}%`}}/></div>
+              <div className="reading-divider"/>
+              <span className="mini-label">MENSAJE E INTERPRETACIÓN</span><h2>Lo que el péndulo revela</h2>
+              <div className="interpretation-copy">
               {isLoading ? (
-                <p style={{fontStyle: "italic", opacity: 0.7}}>Generando narrativa…</p>
-              ) : (
-                <p>{aiInterpretation || reading.interpretation}</p>
-              )}
-            </div>
-            <div className="actions">
-              <button className="primary" onClick={() => {setStep("focus");setQuestion("");setAngle(0);setIntensity(0);setResponse(null);setReading(null)}}>
-                Otra consulta
-              </button>
-              <button className="ghost" onClick={onBack}>Volver al menú</button>
-            </div>
+                <p className="interpretation-loading">Generando una interpretación para tu consulta…</p>
+              ) : radiestesiaSections.length>0 ? (
+                <div className="radiestesia-ai-sections">{radiestesiaSections.map(section=><article key={section.id}><h3>{section.title}</h3><p dangerouslySetInnerHTML={{__html:section.body}}/></article>)}</div>
+              ) : <p dangerouslySetInnerHTML={{__html:markdownToHtml(reading.interpretation)}}/>}
+              </div><blockquote>“{question}”</blockquote>
+            </section>
           </div>
+          <div className="radiestesia-result-actions"><button onClick={returnToMenu}>← Elegir otro enfoque</button><button onClick={onBack}>← Volver al inicio</button><button className="new-consultation" onClick={()=>{setStep("question");setQuestion("");setAngle(0);setIntensity(0);setResponse(null);setReading(null)}}>Otra consulta <span>↗</span></button></div>
         </div>
       )}
     </section>
