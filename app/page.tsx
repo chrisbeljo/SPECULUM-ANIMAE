@@ -495,7 +495,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
  const [isAnimating,setIsAnimating]=useState(false);
  const [response,setResponse]=useState<string|null>(null);
  const [reading,setReading]=useState<Result|null>(null);
- const [castPhase,setCastPhase]=useState<"swinging"|"waiting">("swinging");
+ const [castPhase,setCastPhase]=useState<"swinging"|"board"|"stopped">("swinging");
 
  const radiestesiaCards=[{num:1,label:"Pregunta",card:question||"Sin pregunta",reversed:false}];
  const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:focus?`Consulta radiestésica - ${focus}`:"",cards:radiestesiaCards,question});
@@ -521,33 +521,41 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
   if(!question.trim()){alert("Formúlate una pregunta clara"); return}
   setStep("casting");
   setCastPhase("swinging");
-  setIsAnimating(true);
-  const newAngle=Math.random()*360;
+  setIsAnimating(false);
+  window.scrollTo({top:0,behavior:"smooth"});
+ }
+
+ function readBoard(){
+  if(castPhase!=="swinging")return;
+  const newAngle=-72+Math.random()*144;
   const intensity_val=30+Math.random()*70;
+  setAngle(newAngle);
+  setIntensity(Math.round(intensity_val));
+  setCastPhase("board");
+  setIsAnimating(true);
   setTimeout(()=>{
-   setAngle(newAngle);
-   setIntensity(Math.round(intensity_val));
+   interpretAngle(newAngle,Math.round(intensity_val));
    setIsAnimating(false);
-   setCastPhase("waiting");
-  },3150);
+   setCastPhase("stopped");
+  },4600);
  }
 
  function revealResult(){
-  if(castPhase!=="waiting")return;
-  interpretAngle(angle,intensity);
+  if(castPhase!=="stopped")return;
   setStep("result");
   window.scrollTo({top:0,behavior:"smooth"});
  }
 
  function interpretAngle(ang:number,int:number){
-  const normalized=(ang+360)%360;
+  const normalized=Math.max(-75,Math.min(75,ang));
   let resp="";
-  if(normalized<45||normalized>=315)resp="Probablemente no";
-  else if(normalized<90)resp="No";
-  else if(normalized<135)resp="Neutral";
-  else if(normalized<225)resp="Probablemente sí";
-  else if(normalized<270)resp="Sí";
-  else resp="Neutral";
+  if(normalized<-55)resp="No definitivo";
+  else if(normalized<-30)resp="No";
+  else if(normalized<-10)resp="Probablemente no";
+  else if(normalized<=10)resp="Neutral";
+  else if(normalized<=35)resp="Probablemente sí";
+  else if(normalized<=60)resp="Sí";
+  else resp="Sí definitivo";
   setResponse(`${resp} · ${int}%`);
   const build:Result={method:"radiestesia",title:"Radiestesia · Consulta pendular",raw_result:{angle:normalized,intensity:int,response:resp},themes:["intuición","dirección","equilibrio"],obstacles:[],opportunities:[resp],advice:["Observe el movimiento sin forzar una interpretación."],interpretation:`El péndulo responde a tu pregunta con ${resp.toLowerCase()} a una intensidad del ${int}%. En la radiestesia, el movimiento es un reflejo del campo energético; usa esta información como orientación simbólica para reflexionar sobre tu pregunta.`};
   setReading(build);
@@ -593,8 +601,6 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
             <p className="radiestesia-activation-guidance">Antes de tocar el péndulo, respira y concéntrate en lo que quieres saber.</p>
             <button className="pendulum-photo-action" type="button" onClick={startCasting} aria-label="Activar el péndulo para iniciar la consulta">
               <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata sostenido por una mano"/>
-              <span className="pendulum-photo-shade" aria-hidden="true"/>
-              <span className="pendulum-activation-label">ACTIVAR PÉNDULO <i>→</i></span>
             </button>
           </section>
         </>
@@ -602,12 +608,19 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
 
       {step==="casting" && (
         <div className="radiestesia-casting" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties}>
-          <div className="casting-heading"><span>{focus.toUpperCase()}</span><h1>{castPhase==="swinging"?"El péndulo está en movimiento…":"El movimiento ha terminado"}</h1><p>{castPhase==="swinging"?"Mantén tu atención en la pregunta y observa sin intentar dirigir la respuesta.":"La lectura está lista. Toca la imagen para revelar la dirección."}</p></div>
-          <button className={`pendulum-casting-stage ${castPhase}`} onClick={revealResult} disabled={isAnimating} aria-label={castPhase==="waiting"?"Ver la respuesta del péndulo":"Péndulo en movimiento"}>
-            <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata durante la consulta"/>
-            <span className="casting-vignette"/>
-            <span className="pendulum-rig" aria-hidden="true"><i className="pendulum-chain"/><i className="pendulum-bob"/><i className="pendulum-shadow"/></span>
-            <span className="casting-status">{castPhase==="swinging"?<><i/> LEYENDO EL MOVIMIENTO</>:<>VER LA RESPUESTA <b>→</b></>}</span>
+          <div className="casting-heading"><span>{focus.toUpperCase()}</span><h1>{castPhase==="swinging"?"Observa el movimiento":castPhase==="board"?"El péndulo busca una dirección":"La señal está marcada"}</h1><p>{castPhase==="swinging"?"Mantén la pregunta presente. Cuando estés listo, toca de nuevo la imagen.":castPhase==="board"?"La oscilación pierde amplitud mientras se orienta sobre el tablero.":"El péndulo se ha detenido en un área del tablero."}</p></div>
+          <button className={`pendulum-casting-stage ${castPhase}`} style={{"--target-angle":`${angle}deg`} as CSSProperties} onClick={castPhase==="swinging"?readBoard:revealResult} disabled={isAnimating} aria-label={castPhase==="swinging"?"Cambiar al tablero y realizar la lectura":castPhase==="stopped"?"Ver la interpretación":"El péndulo está buscando una dirección"}>
+            {castPhase==="swinging"?<>
+              <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata oscilando durante la consulta"/>
+              <span className="casting-vignette"/>
+              <span className="pendulum-rig" aria-hidden="true"><i className="pendulum-chain"/><i className="pendulum-bob"/><i className="pendulum-shadow"/></span>
+              <span className="casting-status"><i/> TOCA DE NUEVO PARA CONSULTAR EL TABLERO</span>
+            </>:<>
+              <img className="radiestesia-board-image" src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero de radiestesia con respuestas e intensidad"/>
+              <span className="board-pendulum-arm" aria-hidden="true"><i/><b/></span>
+              <span className="board-center-mark" aria-hidden="true"/>
+              {castPhase==="stopped"&&<span className="casting-status">VER INTERPRETACIÓN <b>→</b></span>}
+            </>}
           </button>
           <p className="casting-question">“{question}”</p>
         </div>
