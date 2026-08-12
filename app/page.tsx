@@ -564,7 +564,12 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
           <div className="tarot-menu-title system-intro-title radiestesia-intro">
             <h1>Péndulo</h1>
             <span>OBSERVACIÓN · EQUILIBRIO · ORIENTACIÓN</span>
-            <p className="system-introduction">La radiestesia es una evolución moderna de la rabdomancia, práctica utilizada históricamente para localizar agua y minerales mediante varas. En su uso contemporáneo, el péndulo funciona como un amplificador de micromovimientos involuntarios —conocidos como efecto ideomotor— y puede emplearse como herramienta simbólica de observación, introspección y apoyo para ordenar una decisión.</p>
+            <div className="system-introduction radiestesia-introduction-copy">
+              <p>La radiestesia es una evolución moderna de la rabdomancia, práctica milenaria utilizada para localizar agua y minerales mediante varas. El término se consolidó en el siglo XX, combinando raíces latinas y griegas que aluden a la &quot;sensibilidad a las radiaciones&quot;.</p>
+              <p>En su definición contemporánea, busca captar campos energéticos, frecuencias o información oculta a través de instrumentos amplificadores — principalmente el péndulo y las varillas — que funcionan como extensiones de la percepción del operador.</p>
+              <p>Desde una perspectiva científica, su mecanismo se explica por el <strong>efecto ideomotor</strong>: micromovimientos musculares involuntarios generados por el subconsciente al procesar un estímulo mental o pregunta. El instrumento no detecta por sí solo; amplifica y hace visible lo que el sistema nervioso ya está procesando.</p>
+              <p>Sus aplicaciones tradicionales incluyen la búsqueda de elementos físicos, el análisis energético de espacios, y como herramienta de apoyo en la toma de decisiones o procesos de introspección.</p>
+            </div>
           </div>
           <section className="spread-menu-section radiestesia-menu">
             <span className="mini-label">ELIGE EL ENFOQUE</span>

@@ -25,6 +25,7 @@
 .radiestesia-intro h1{margin:0 0 14px!important;color:#fff7ed!important;font:600 clamp(68px,8vw,96px)/.96 "DM Sans",system-ui,sans-serif!important;letter-spacing:-.055em!important;background:none!important;-webkit-text-fill-color:currentColor}
 .radiestesia-intro>span,.radiestesia-question-head>span{color:#d6b66d!important;letter-spacing:.28em!important;font-size:12px!important}
 .radiestesia-intro .system-introduction{max-width:820px;margin:38px auto 0;padding-top:30px;border-top:1px solid rgba(201,167,106,.28);color:#c8becb;text-align:left;font-size:16px!important;line-height:1.75!important}
+.radiestesia-introduction-copy p{margin:0 0 16px}.radiestesia-introduction-copy p:last-child{margin-bottom:0}.radiestesia-introduction-copy strong{color:#f3e7d8;font-weight:700}
 .radiestesia-site .radiestesia-menu{max-width:1120px;padding:42px;margin-bottom:76px;background:linear-gradient(145deg,#191121,#0e0a14)}
 .radiestesia-site .radiestesia-menu>.mini-label{margin-bottom:24px;color:#d6b66d}
 .radiestesia-focus-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
