@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <radialGradient id="board" cx="50%" cy="88%" r="95%">
+      <stop offset="0" stop-color="#24202a"/>
+      <stop offset=".55" stop-color="#121117"/>
+      <stop offset="1" stop-color="#08080c"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f0d89b"/><stop offset=".5" stop-color="#b88943"/><stop offset="1" stop-color="#f3dfa9"/>
+    </linearGradient>
+    <filter id="paper"><feTurbulence baseFrequency=".55" numOctaves="2" seed="7" result="n"/><feBlend in="SourceGraphic" in2="n" mode="soft-light"/></filter>
+    <style>
+      .line{fill:none;stroke:#caa568;stroke-width:3}.fine{fill:none;stroke:#caa568;stroke-width:1.5;opacity:.75}
+      .major{fill:#f4e6c4;font:700 27px Georgia,serif;letter-spacing:3px;text-anchor:middle}
+      .minor{fill:#d8c49a;font:600 20px Arial,sans-serif;letter-spacing:1.5px;text-anchor:middle}
+      .number{fill:#f0dba7;font:700 22px Arial,sans-serif;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1600" height="1000" rx="42" fill="url(#board)"/>
+  <rect x="25" y="25" width="1550" height="950" rx="30" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <rect x="42" y="42" width="1516" height="916" rx="22" fill="none" stroke="#6d5634" stroke-width="1.5"/>
+  <g opacity=".09" filter="url(#paper)"><rect x="45" y="45" width="1510" height="910" fill="#d9c6a0"/></g>
+
+  <!-- Semicírculo de respuesta -->
+  <path class="line" d="M155 750 A645 645 0 0 1 1445 750"/>
+  <path class="fine" d="M255 750 A545 545 0 0 1 1345 750"/>
+  <path class="fine" d="M360 750 A440 440 0 0 1 1240 750"/>
+  <line class="line" x1="800" y1="750" x2="155" y2="750"/>
+  <line class="line" x1="800" y1="750" x2="219" y2="470"/>
+  <line class="line" x1="800" y1="750" x2="398" y2="247"/>
+  <line class="line" x1="800" y1="750" x2="657" y2="121"/>
+  <line class="line" x1="800" y1="750" x2="943" y2="121"/>
+  <line class="line" x1="800" y1="750" x2="1202" y2="247"/>
+  <line class="line" x1="800" y1="750" x2="1381" y2="470"/>
+  <line class="line" x1="800" y1="750" x2="1445" y2="750"/>
+
+  <!-- Encabezado con reserva visual propia -->
+  <rect x="515" y="35" width="570" height="82" rx="14" fill="#111015" opacity=".96"/>
+  <text x="800" y="72" class="major" font-size="38">TABLERO DE RADIESTESIA</text>
+  <text x="800" y="103" class="minor" font-size="17">RESPUESTA · INTENSIDAD · CLARIDAD</text>
+
+  <!-- Etiquetas de respuesta -->
+  <text x="261" y="653" class="minor" transform="rotate(68 261 653)">NO DEFINITIVO</text>
+  <text x="355" y="443" class="minor" transform="rotate(46 355 443)">NO</text>
+  <text x="470" y="242" class="minor" transform="rotate(25 470 242)">PROBABLEMENTE NO</text>
+  <text x="800" y="225" class="minor">NEUTRAL</text>
+  <text x="1130" y="242" class="minor" transform="rotate(-25 1130 242)">PROBABLEMENTE SÍ</text>
+  <text x="1245" y="443" class="minor" transform="rotate(-46 1245 443)">SÍ</text>
+  <text x="1339" y="653" class="minor" transform="rotate(-68 1339 653)">SÍ DEFINITIVO</text>
+
+  <!-- Escala porcentual interior -->
+  <path d="M360 750 A440 440 0 0 1 1240 750" fill="none" stroke="#f0d89b" stroke-width="5"/>
+  <g class="number">
+    <text x="400" y="750">0</text><text x="420" y="626">10</text><text x="468" y="515">20</text>
+    <text x="565" y="426">30</text><text x="676" y="370">40</text><text x="800" y="350">50</text>
+    <text x="924" y="370">60</text><text x="1035" y="426">70</text><text x="1132" y="515">80</text>
+    <text x="1180" y="626">90</text><text x="1200" y="750">100</text>
+  </g>
+  <text x="800" y="438" class="minor" font-size="15">PORCENTAJE · INTENSIDAD</text>
+
+  <!-- Punto de suspensión -->
+  <circle cx="800" cy="750" r="72" fill="#0b0a0e" stroke="url(#gold)" stroke-width="4"/>
+  <circle cx="800" cy="750" r="48" fill="none" stroke="#79613d" stroke-width="2"/>
+  <circle cx="800" cy="750" r="8" fill="#ead49f"/>
+  <path d="M800 692v116M742 750h116" stroke="#caa568" stroke-width="1.5" opacity=".6"/>
+  <text x="800" y="852" class="major" font-size="20">PUNTO DE INICIO</text>
+  <text x="800" y="888" class="minor" font-size="15">Sostén el péndulo sobre el centro · formula una pregunta clara</text>
+  <text x="800" y="925" fill="#988362" font-family="Arial,sans-serif" font-size="13" letter-spacing="1" text-anchor="middle">Herramienta simbólica de reflexión · no sustituye evaluación profesional</text>
+</svg>
