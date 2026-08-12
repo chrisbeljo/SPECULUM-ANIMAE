@@ -525,7 +525,11 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
 
  function readBoard(){
   if(castPhase!=="swinging")return;
-  const newAngle=-72+Math.random()*144;
+  const sectorAngles=[-67,-45,-22,0,22,45,67];
+  const availableAngles=sectorAngles.filter(sector=>Math.abs(sector-angle)>12);
+  const randomValue=typeof crypto!=="undefined"&&crypto.getRandomValues?crypto.getRandomValues(new Uint32Array(1))[0]/4294967296:Math.random();
+  const selectedSector=availableAngles[Math.floor(randomValue*availableAngles.length)]??sectorAngles[0];
+  const newAngle=selectedSector+(Math.random()*8-4);
   const intensity_val=30+Math.random()*70;
   setAngle(newAngle);
   setIntensity(Math.round(intensity_val));
@@ -536,7 +540,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
    interpretAngle(newAngle,Math.round(intensity_val));
    setIsAnimating(false);
    setCastPhase("stopped");
-  },7200);
+  },10600);
  }
 
  function revealResult(){
