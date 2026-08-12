@@ -540,7 +540,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
    interpretAngle(newAngle,Math.round(intensity_val));
    setIsAnimating(false);
    setCastPhase("stopped");
-  },10600);
+  },14100);
  }
 
  function revealResult(){
