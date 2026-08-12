@@ -609,7 +609,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
               <img className="real-pendulum-layer" src="/oracles/pendulum/silver-witness-pendulum-cutout.png" alt="Péndulo de plata oscilando"/>
             </>:<>
               <img className="radiestesia-board-image" src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero de radiestesia con respuestas e intensidad"/>
-              <span className="board-pendulum-arm" aria-hidden="true"><i/><b/></span>
+              <span className="board-swing-axis" aria-hidden="true"><i/><b className="board-swing-traveler"/></span>
               <span className="board-center-mark" aria-hidden="true"/>
               {castPhase==="stopped"&&<span className="casting-status">VER INTERPRETACIÓN <b>→</b></span>}
             </>}
