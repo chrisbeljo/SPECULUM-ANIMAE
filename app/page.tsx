@@ -585,17 +585,18 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
 
       {step==="question" && (
         <>
-          <div className="tarot-menu-title radiestesia-question-head"><span>{focus.toUpperCase()}</span><h1>Formula tu pregunta</h1><p>Ajusta la consulta sugerida o escribe una pregunta concreta que pueda orientarse con una respuesta pendular.</p></div>
-          <form className="pendulum-ready-card" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties} onSubmit={e=>{e.preventDefault();startCasting()}}>
-            <label htmlFor="pendulum-question">TU CONSULTA</label>
-            <textarea id="pendulum-question" placeholder="Escribe tu pregunta con claridad…" value={question} onChange={e=>setQuestion(e.target.value)} required/>
-            <button className="pendulum-photo-action" type="submit">
+          <div className="tarot-classic-head radiestesia-activation-head">
+            <h1>{question}</h1>
+            <p>{selectedFocus?.description}</p>
+          </div>
+          <section className="radiestesia-activation-stage" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties}>
+            <p className="radiestesia-activation-guidance">Antes de tocar el péndulo, respira y concéntrate en lo que quieres saber.</p>
+            <button className="pendulum-photo-action" type="button" onClick={startCasting} aria-label="Activar el péndulo para iniciar la consulta">
               <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata sostenido por una mano"/>
-              <span className="pendulum-photo-shade"/>
-              <span className="pendulum-ready-copy"><small>Antes de activar, respira y concéntrate en tu pregunta sobre {focus.toLowerCase()}.</small><b>ACTIVAR PÉNDULO <i>→</i></b></span>
+              <span className="pendulum-photo-shade" aria-hidden="true"/>
+              <span className="pendulum-activation-label">ACTIVAR PÉNDULO <i>→</i></span>
             </button>
-            <button type="button" className="radiestesia-text-link" onClick={returnToMenu}>← Elegir otro enfoque</button>
-          </form>
+          </section>
         </>
       )}
 
