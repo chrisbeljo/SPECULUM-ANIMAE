@@ -499,7 +499,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
  const [pendulumActive,setPendulumActive]=useState(false);
 
  const radiestesiaCards=[{num:1,label:"Pregunta",card:question||"Sin pregunta",reversed:false}];
- const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:focus?`Consulta radiestésica - ${focus}`:"",cards:radiestesiaCards,question});
+ const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:focus?`Consulta radiestésica - ${focus} (Intensidad: ${intensity}%, Ángulo: ${angle}°)`:"",cards:radiestesiaCards,question});
  const radiestesiaSections=useMemo(()=>parseAIInterpretation(aiInterpretation||""),[aiInterpretation]);
 
  const boardX=200+Math.cos(((angle-90)*Math.PI)/180)*120;
@@ -553,7 +553,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
   else if(normalized<=35)resp="Probablemente sí";
   else if(normalized<=60)resp="Sí";
   else resp="Sí definitivo";
-  setResponse(`${resp} · ${int}%`);
+  setResponse(resp);
   const build:Result={method:"radiestesia",title:"Radiestesia · Consulta pendular",raw_result:{angle:normalized,intensity:int,response:resp},themes:["intuición","dirección","equilibrio"],obstacles:[],opportunities:[resp],advice:["Observe el movimiento sin forzar una interpretación."],interpretation:`El péndulo responde a tu pregunta con ${resp.toLowerCase()} a una intensidad del ${int}%. En la radiestesia, el movimiento es un reflejo del campo energético; usa esta información como orientación simbólica para reflexionar sobre tu pregunta.`};
   setReading(build);
  }
