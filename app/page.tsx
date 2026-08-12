@@ -605,7 +605,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
       )}
 
       {step==="casting" && (
-        <div className="radiestesia-casting" style={{"--focus":selectedFocus?.color||"#9333ea"} as CSSProperties}>
+        <div className="radiestesia-casting radiestesia-board-casting" style={{"--focus":selectedFocus?.color||"#9333ea","--swing-span":`${48+intensity*.42}%`} as CSSProperties}>
           <div className="casting-heading"><span>{focus.toUpperCase()}</span><h1>{castPhase==="swinging"?"Observa el movimiento":castPhase==="board"?"El péndulo busca una dirección":"La señal está marcada"}</h1><p>{castPhase==="swinging"?"Mantén la pregunta presente. Cuando estés listo, toca de nuevo la imagen.":castPhase==="board"?"La oscilación pierde amplitud mientras se orienta sobre el tablero.":"El péndulo se ha detenido en un área del tablero."}</p></div>
           <button className={`pendulum-casting-stage ${castPhase}`} style={{"--target-angle":`${angle}deg`} as CSSProperties} onClick={castPhase==="swinging"?readBoard:revealResult} disabled={isAnimating} aria-label={castPhase==="swinging"?"Cambiar al tablero y realizar la lectura":castPhase==="stopped"?"Ver la interpretación":"El péndulo está buscando una dirección"}>
             {castPhase==="swinging"?<>
