@@ -499,7 +499,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
  const [pendulumActive,setPendulumActive]=useState(false);
 
  const radiestesiaCards=[{num:1,label:"Pregunta",card:question||"Sin pregunta",reversed:false}];
- const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:focus?`Consulta radiestésica - ${focus} (Intensidad: ${intensity}%, Ángulo: ${angle}°)`:"",cards:radiestesiaCards,question});
+ const {interpretation:aiInterpretation,isLoading}=useAIInterpretation({discipline:"radiestesia",spread:castPhase==="board"||castPhase==="stopped"?`Consulta radiestésica - ${focus} (Intensidad: ${intensity}%, Ángulo: ${angle}°)`:"",cards:radiestesiaCards,question});
  const radiestesiaSections=useMemo(()=>parseAIInterpretation(aiInterpretation||""),[aiInterpretation]);
 
  const boardX=200+Math.cos(((angle-90)*Math.PI)/180)*120;
