@@ -611,9 +611,9 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
           <div className="casting-heading"><span>{focus.toUpperCase()}</span><h1>{castPhase==="swinging"?"Observa el movimiento":castPhase==="board"?"El péndulo busca una dirección":"La señal está marcada"}</h1><p>{castPhase==="swinging"?"Mantén la pregunta presente. Cuando estés listo, toca de nuevo la imagen.":castPhase==="board"?"La oscilación pierde amplitud mientras se orienta sobre el tablero.":"El péndulo se ha detenido en un área del tablero."}</p></div>
           <button className={`pendulum-casting-stage ${castPhase}`} style={{"--target-angle":`${angle}deg`} as CSSProperties} onClick={castPhase==="swinging"?readBoard:revealResult} disabled={isAnimating} aria-label={castPhase==="swinging"?"Cambiar al tablero y realizar la lectura":castPhase==="stopped"?"Ver la interpretación":"El péndulo está buscando una dirección"}>
             {castPhase==="swinging"?<>
-              <img src="/oracles/pendulum/silver-witness-pendulum-held.jpg" alt="Péndulo de plata oscilando durante la consulta"/>
+              <img className="real-pendulum-background" src="/oracles/pendulum/silver-witness-hand-background.png" alt="Mano sosteniendo el péndulo durante la consulta"/>
+              <img className="real-pendulum-layer" src="/oracles/pendulum/silver-witness-pendulum-cutout.png" alt="Péndulo de plata oscilando"/>
               <span className="casting-vignette"/>
-              <span className="pendulum-rig" aria-hidden="true"><i className="pendulum-chain"/><i className="pendulum-bob"/><i className="pendulum-shadow"/></span>
               <span className="casting-status"><i/> TOCA DE NUEVO PARA CONSULTAR EL TABLERO</span>
             </>:<>
               <img className="radiestesia-board-image" src="/oracles/pendulum/radiesthesia-board.svg" alt="Tablero de radiestesia con respuestas e intensidad"/>
