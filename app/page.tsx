@@ -611,7 +611,7 @@ function RadiestesiaSystemSite({onBack}:{onBack:()=>void}){
               <span className="board-center-mark" aria-hidden="true"/>
             </>}
           </div>
-          {castPhase==="stopped"&&reading&&<section className="radiestesia-inline-interpretation radiestesia-interpretation-panel">
+          {(castPhase==="board"||castPhase==="stopped")&&reading&&<section className="radiestesia-inline-interpretation radiestesia-interpretation-panel">
             <div className="radiestesia-inline-answer"><div><span className="mini-label">RESPUESTA</span><div className={`answer-word ${answerTone}`}>{resultAnswer}</div></div><div><span className="mini-label">INTENSIDAD</span><b>{intensity}%</b></div></div>
             <div className="intensity-bar"><div className="intensity-fill" style={{width:`${intensity}%`}}/></div>
             <div className="reading-divider"/>
