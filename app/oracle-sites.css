@@ -74,3 +74,17 @@
 @media(max-width:900px){.radiestesia-result-grid{grid-template-columns:1fr}.radiestesia-board-panel{max-width:620px;width:100%;margin:auto}.radiestesia-focus-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.radiestesia-site .radiestesia-back{top:84px}.radiestesia-intro{padding-left:18px!important;padding-right:18px!important}.radiestesia-intro h1{font-size:55px!important}.radiestesia-intro>span{font-size:10px!important;letter-spacing:.2em!important}.radiestesia-intro .system-introduction{margin-top:30px;padding-top:24px;font-size:14px!important}.radiestesia-site .radiestesia-menu{padding:26px 17px;margin-bottom:58px}.radiestesia-focus-grid{grid-template-columns:1fr}.casting-heading{padding-top:14px}.pendulum-casting-stage{aspect-ratio:4/5;max-height:650px}.pendulum-casting-stage.photo-pendulum{aspect-ratio:2/3}.pendulum-casting-stage>img{object-position:center}.pendulum-rig{height:57%}.radiestesia-result{padding-top:16px}.radiestesia-board-panel{padding:14px}.radiestesia-interpretation-panel{padding:28px 22px}.radiestesia-result-actions{flex-wrap:wrap}.radiestesia-result-actions button{flex:1;white-space:nowrap}.radiestesia-result-actions .new-consultation{margin-left:0;flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){.radiestesia-site *{scroll-behavior:auto!important}.real-pendulum-layer,.pendulum-rig,.board-swing-traveler,.casting-status>i,.board-needle,.intensity-fill,.radiestesia-board-panel,.radiestesia-interpretation-panel{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* Compatibilidad móvil: los bloques del oráculo no heredan alineación lateral. */
+@media(max-width:600px){
+  .oracle-shuffle-stage .shuffle-guidance,
+  .oracle-shuffle-stage .oracle-method-note,
+  .oracle-shuffle-stage .deck-touch-area{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    margin-inline:auto;
+    justify-self:center!important;
+  }
+  .oracle-shuffle-stage .oracle-method-note{text-align:center}
+}

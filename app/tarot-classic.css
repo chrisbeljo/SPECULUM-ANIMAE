@@ -148,10 +148,16 @@
     transform:none;
   }
   .tarot-step-shuffle .shuffle-card{
-    left:50%;
+    left:calc(50% - min(90px,29vw));
     top:52px;
     width:min(180px,58vw);
     height:min(280px,90vw);
-    margin-left:calc(min(180px,58vw) / -2);
+    margin-left:0;
+  }
+  .tarot-step-shuffle .shuffle-guidance{
+    width:100%;
+    max-width:100%;
+    padding-inline:0;
+    overflow-wrap:anywhere;
   }
 }
