@@ -258,7 +258,7 @@ DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the response as one brie
 
 // ─── User Prompt Templates por Idioma ──────────────────────────────────────
 
-const getUserPrompt = (language: string, spread: string, question: string | undefined, cardList: string, analysis?: Record<string, unknown>, cardCount: number = 0): string => {
+const getUserPrompt = (language: string, spread: string, question: string | undefined, cardList: string, analysis?: Record<string, unknown>, cardCount: number = 0, cardNames: string[] = []): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
 
   const analysisBlock = analysis
@@ -270,10 +270,14 @@ ${JSON.stringify(analysis, null, 2)}
 Do NOT reinterpret the cards from scratch and do NOT contradict this analysis. Your job is to transform it into a single, cohesive, assertive narrative that follows the structure below — naming the tensions and connections it already found, in your own natural, warm, specific voice, fully translated into ${LANGUAGE_NAMES[language] || "Spanish"}.`
     : "";
 
+  const checklist = cardCount >= 6 && cardNames.length === cardCount
+    ? `\n\nCHECKLIST — tick off every one of these ${cardCount} cards mentally as you write them into your response. Do not submit until all are checked off:\n${cardNames.map((name, i) => `${i + 1}. [ ] ${name}`).join("\n")}\nIf you reach "The trend" section and any box above is still unchecked, go back and weave the missing card in before finishing — do not submit an incomplete reading.`
+    : "";
+
   const coverageNote = cardCount >= 6
     ? `
 
-MANDATORY SPREAD COVERAGE: this reading has ${cardCount} cards/positions. You must explicitly name and interpret EVERY SINGLE ONE of them somewhere across the five storytelling sections above — never silently drop a card, even a minor one. Distribute them by their actual narrative role rather than concentrating them all in one section (an origin card belongs in "Where we come from," an outcome card in "The trend," etc.). Grouping two or three minor cards into one sentence within their section is fine; omitting any of the ${cardCount} cards entirely is a critical error.`
+MANDATORY SPREAD COVERAGE: this reading has ${cardCount} cards/positions. You must explicitly name and interpret EVERY SINGLE ONE of them somewhere across the five storytelling sections above — never silently drop a card, even a minor one. Distribute them by their actual narrative role rather than concentrating them all in one section (an origin card belongs in "Where we come from," an outcome card in "The trend," etc.). Grouping two or three minor cards into one sentence within their section is fine; omitting any of the ${cardCount} cards entirely is a critical error.${checklist}`
     : "";
 
   return `${instruction}
@@ -318,12 +322,11 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  const cardList = cards
-    .map((c, i) => `${i + 1}. ${c.label}: ${c.card}${c.reversed ? " (reversed)" : ""}`)
-    .join("\n");
+  const cardEntries = cards.map((c) => `${c.label}: ${c.card}${c.reversed ? " (reversed)" : ""}`);
+  const cardList = cardEntries.map((entry, i) => `${i + 1}. ${entry}`).join("\n");
 
   const systemPrompt = SYSTEM_PROMPTS[discipline] || SYSTEM_PROMPTS.tarot;
-  const userPrompt = getUserPrompt(language, spread, question, cardList, analysis, cards.length);
+  const userPrompt = getUserPrompt(language, spread, question, cardList, analysis, cards.length, cardEntries);
 
   try {
     const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
