@@ -1,0 +1,26 @@
+{
+  "name": "site-creator-vinext-starter",
+  "type": "javascript",
+  "main": "dist/server/index.js",
+  "site": {
+    "bucket": "./dist/client"
+  },
+  "build": {
+    "command": "npm run build"
+  },
+  "env": {
+    "development": {
+      "vars": {
+        "ENVIRONMENT": "development"
+      }
+    },
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  },
+  "vars": {
+    "ENVIRONMENT": "development"
+  }
+}
