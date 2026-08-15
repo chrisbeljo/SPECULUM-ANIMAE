@@ -70,7 +70,7 @@ INTERPRETATION RULES:
 
 DELIVER EXACTLY THIS STRUCTURE:
 ## What the spread shows
-[2-3 sentences synthesizing the whole.]
+[2-3 sentences synthesizing the whole for small spreads. For LARGE spreads (7+ cards — Celtic Cross, Star, Mandala, Twelve Houses, Tree of Life, Spiritual Path), this section must instead walk through every single card by name and position, not just the 3-4 most dramatic ones. A big spread with only 3 cards mentioned is a failed reading.]
 
 ## The core tension
 [The main tension or conflict revealed by the cards.]
@@ -218,7 +218,7 @@ STRUCTURE:
 
 // ─── User Prompt Templates por Idioma ──────────────────────────────────────
 
-const getUserPrompt = (language: string, spread: string, question: string | undefined, cardList: string, analysis?: Record<string, unknown>): string => {
+const getUserPrompt = (language: string, spread: string, question: string | undefined, cardList: string, analysis?: Record<string, unknown>, cardCount: number = 0): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
 
   const analysisBlock = analysis
@@ -230,6 +230,12 @@ ${JSON.stringify(analysis, null, 2)}
 Do NOT reinterpret the cards from scratch and do NOT contradict this analysis. Your job is to transform it into a single, cohesive, assertive narrative that follows the structure below — naming the tensions and connections it already found, in your own natural, warm, specific voice, fully translated into ${LANGUAGE_NAMES[language] || "Spanish"}.`
     : "";
 
+  const coverageNote = cardCount >= 6
+    ? `
+
+MANDATORY SPREAD COVERAGE: this reading has ${cardCount} cards/positions. You must explicitly name and interpret EVERY SINGLE ONE of them somewhere in your response — never silently drop a card, even a minor one. Do not default to a short generic structure just because the fixed section list above is short: for a spread this size, expand "What the spread shows" (or the equivalent opening section) into a walk-through that touches all ${cardCount} cards by name and position before moving to tension/available/watch/direction. Grouping two or three minor cards into one sentence is fine; omitting any of the ${cardCount} cards entirely is a critical error.`
+    : "";
+
   return `${instruction}
 
 Spread: ${spread}
@@ -238,6 +244,7 @@ ${question ? `Consultant's question: ${question}` : "No specific question — ge
 Cards drawn:
 ${cardList}
 ${analysisBlock}
+${coverageNote}
 
 Generate the full interpretation following the structure indicated above. REMINDER: regardless of what language the reference material above is written in, your entire response — every section, every sentence — must be written in ${LANGUAGE_NAMES[language] || "Spanish"}. Do not mix in Spanish words or phrases from the source analysis.`;
 };
@@ -276,7 +283,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     .join("\n");
 
   const systemPrompt = SYSTEM_PROMPTS[discipline] || SYSTEM_PROMPTS.tarot;
-  const userPrompt = getUserPrompt(language, spread, question, cardList, analysis);
+  const userPrompt = getUserPrompt(language, spread, question, cardList, analysis, cards.length);
 
   try {
     const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
