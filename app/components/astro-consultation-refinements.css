@@ -16,6 +16,30 @@
   font: 36px/1.12 "Gilda Display", serif;
 }
 
+.astro-consultation-western {
+  border-color: #684b76;
+  background:
+    radial-gradient(circle at 12% 0, #5a347044, transparent 34%),
+    linear-gradient(145deg, #2d1c3ae8, #140d1cf5 62%, #09070dee);
+  box-shadow: inset 0 1px #c492dd1f, 0 24px 65px #0006;
+}
+
+.astro-consultation-eastern {
+  border-color: #536b47;
+  background:
+    radial-gradient(circle at 88% 0, #617b3f38, transparent 35%),
+    linear-gradient(145deg, #24351de8, #10180df5 62%, #080b07ee);
+  box-shadow: inset 0 1px #a8ca821c, 0 24px 65px #0006;
+}
+
+.astro-consultation-numerology {
+  border-color: #4d6179;
+  background:
+    radial-gradient(circle at 50% 0, #43678342, transparent 35%),
+    linear-gradient(145deg, #1d2d3ee8, #111421f5 62%, #09080eee);
+  box-shadow: inset 0 1px #8fb8dc1c, 0 24px 65px #0006;
+}
+
 .astro-form-grid input,
 .astro-form-grid select,
 .astro-form-grid textarea {
