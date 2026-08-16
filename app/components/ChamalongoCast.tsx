@@ -53,6 +53,11 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
         aria-label={phase === "released" ? "Volver a lanzar los chamalongos" : instructions}
       >
         <img
+          className="chamalongo-board"
+          src="/oracles/chamalongos/chamalongo-casting-board.png"
+          alt="Tablero ceremonial para la tirada de chamalongos"
+        />
+        <img
           className="chamalongo-hands chamalongo-hands-closed"
           src="/oracles/chamalongos/chamalongo-hands-closed.png"
           alt="Dos manos cerradas sosteniendo los chamalongos"
@@ -60,7 +65,7 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
         <img
           className="chamalongo-hands chamalongo-hands-open"
           src="/oracles/chamalongos/chamalongo-hands-open.png"
-          alt="Las mismas manos abiertas después del lanzamiento"
+          alt="Las mismas manos abiertas con las palmas hacia el tablero"
         />
         <span className="chamalongo-fall" aria-hidden="true">
           {faces.map((face, index) => (
