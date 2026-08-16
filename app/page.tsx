@@ -25,6 +25,7 @@ import { castIChing, getIChingCounsel, ichingConsultations, interpretIChing, int
 import { riderDeck as tarot } from "./rider-deck";
 import { localizeRiderCard } from "./rider-deck-translations";
 import { useAIInterpretation, toAICards, submitFollowup, type AICard, type Discipline } from "./use-ai-interpretation";
+import "./discipline-menu-refinements.css";
 
 // Force inclusion of all new translation keys in the bundle
 const _ensureTranslationKeys = () => {
