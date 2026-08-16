@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Language } from "../translations";
-import { DisciplineLibrary, type DisciplineLibraryItem } from "./DisciplineLibrary";
+import type { DisciplineLibraryItem } from "./DisciplineLibrary";
+import { CollapsibleDisciplineLibrary } from "./CollapsibleDisciplineLibrary";
 import { AstroConsultationFlow } from "./AstroConsultationFlow";
 import "./astrology-sites.css";
 import "./astrology-card-colors.css";
 import "./astrology-introduction.css";
 import "./astro-artwork-v2.css";
 
-type AstrologyBranch = "western" | "eastern";
-type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void };
+export type AstrologyBranch = "western" | "eastern";
+type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void };
 type Focus = { symbol: string; title: string; level: string; description: string };
 type SiteCopy = { back: string; eyebrow: string; title: string; subtitle: string; introduction: string; choose: string; pending: string; pendingDescription: string; focuses: Focus[] };
 type IntroSection = { title: string; paragraphs: string[] };
@@ -147,8 +148,7 @@ const libraryCopy: Record<Language, { reference: string; westernWheel: string; w
   PT: { reference: "Imagem de referência", westernWheel: "Roda celeste ocidental", westernDesc: "Síntese visual do zodíaco, das órbitas e da geometria astrológica.", easternWheel: "Roda cosmológica oriental", easternDesc: "Síntese visual de Yin/Yang, cinco elementos e doze animais.", planets: "Planetas", planetsDesc: "Funções simbólicas que atuam em signos, casas e aspectos.", elements: "Cinco elementos", elementsDesc: "Madeira, Fogo, Terra, Metal e Água em seus ciclos.", polarity: "Yin e Yang", polarityDesc: "Polaridade complementar presente em cada elemento e pilar." },
 };
 
-export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
-  const [selected, setSelected] = useState<number | null>(null);
+export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect }: AstrologySiteProps) {
   const text = content[lang][branch];
   const introductionSections = branch === "western" ? westernIntroductions[lang] : easternIntroductions[lang];
   const lib = libraryCopy[lang];
@@ -176,10 +176,10 @@ export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
     <section className="astrology-focus-panel" aria-labelledby={`${branch}-focus-title`}>
       <span className="astrology-mini-label" id={`${branch}-focus-title`}>{text.choose}</span>
       <div className="astrology-focus-grid">
-        {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => setSelected(index)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "−" : "+"}</strong></button>)}
+        {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}
       </div>
     </section>
-    {focus && <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} />}
-    <DisciplineLibrary lang={lang} items={astrologyLibrary} />
+    {consultationOpen && focus && <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} />}
+    <CollapsibleDisciplineLibrary lang={lang} items={astrologyLibrary} />
   </section>;
 }

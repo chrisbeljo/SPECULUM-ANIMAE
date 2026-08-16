@@ -4,7 +4,8 @@ import { useState } from "react";
 import type { Language } from "../translations";
 import { chamalongoOutcomes } from "../extended-library-data";
 import { ChamalongoCast } from "./ChamalongoCast";
-import { DisciplineLibrary, type DisciplineLibraryItem } from "./DisciplineLibrary";
+import type { DisciplineLibraryItem } from "./DisciplineLibrary";
+import { CollapsibleDisciplineLibrary } from "./CollapsibleDisciplineLibrary";
 
 type ChamalongosSiteProps = { lang: Language; onBack: () => void };
 type Step = "menu" | "cast";
@@ -179,7 +180,7 @@ export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
               ))}
             </div>
           </section>
-          <DisciplineLibrary lang={lang} items={libraryItems} />
+          <CollapsibleDisciplineLibrary lang={lang} items={libraryItems} />
         </>
       ) : (
         <>
