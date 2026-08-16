@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Language } from "../translations";
 import { chamalongoOutcomes } from "../extended-library-data";
 import { ChamalongoCast } from "./ChamalongoCast";
+import { DisciplineLibrary, type DisciplineLibraryItem } from "./DisciplineLibrary";
 
 type ChamalongosSiteProps = { lang: Language; onBack: () => void };
 type Step = "menu" | "cast";
@@ -71,6 +72,12 @@ export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
   const text = copy[lang];
   const oracleText = readingCopy[lang];
   const focus = text.focuses[focusIndex];
+  const outcomeDescriptions = [oracleText.alafia, oracleText.etawa, oracleText.eyeife, oracleText.okana, oracleText.oyekunAsk];
+  const libraryItems: DisciplineLibraryItem[] = [
+    { id: "open-face", name: `${text.title} · ${lang === "EN" ? "Open face" : lang === "FR" ? "Face ouverte" : lang === "DE" ? "Offene Seite" : lang === "PT" ? "Face aberta" : "Boca"}`, category: text.result, description: text.intro[1], image: "/oracles/chamalongos/tiger-cowrie-up.webp" },
+    { id: "closed-face", name: `${text.title} · ${lang === "EN" ? "Closed face" : lang === "FR" ? "Face fermée" : lang === "DE" ? "Geschlossene Seite" : lang === "PT" ? "Face fechada" : "Espalda"}`, category: text.result, description: text.intro[1], image: "/oracles/chamalongos/tiger-cowrie-down.webp" },
+    ...chamalongoOutcomes.map((outcome, index) => ({ id: `outcome-${outcome.name.toLowerCase()}`, name: outcome.name, category: `${outcome.up} / 4`, description: outcomeDescriptions[index], symbol: `${outcome.up}` })),
+  ];
 
   function chooseFocus(index: number) {
     setFocusIndex(index);
@@ -169,6 +176,7 @@ export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
               ))}
             </div>
           </section>
+          <DisciplineLibrary lang={lang} items={libraryItems} />
         </>
       ) : (
         <>

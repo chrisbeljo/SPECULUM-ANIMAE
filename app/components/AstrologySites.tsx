@@ -79,28 +79,30 @@ const content: Record<Language, Record<AstrologyBranch, SiteCopy>> = {
   },
 };
 
-const astrologyLibraries: Record<AstrologyBranch, DisciplineLibraryItem[]> = {
-  western: [
-    { id: "western-wheel", name: "Rueda celeste occidental", category: "Imagen de referencia", image: "/oracles/astrology/western-celestial-wheel.png", description: "Síntesis visual de zodiaco, órbitas planetarias y geometría astrológica." },
-    { id: "natal-chart", name: "Carta Natal", category: "Mapa raíz", symbol: "◎", description: "Representación del cielo para fecha, hora y lugar de nacimiento." },
-    { id: "transits", name: "Tránsitos", category: "Movimiento actual", symbol: "☍", description: "Relaciones angulares entre los planetas actuales y la carta natal." },
-    { id: "solar-return", name: "Revolución Solar", category: "Ciclo anual", symbol: "☀", description: "Retorno del Sol a su posición natal exacta." },
-    { id: "horoscope", name: "Horóscopo", category: "Orientación general", symbol: "✦", description: "Lectura general por signo solar o ascendente." },
-    { id: "planets", name: "Planetas", category: "Alfabeto occidental", symbol: "☿", description: "Funciones simbólicas que actúan dentro de signos, casas y aspectos." },
-  ],
-  eastern: [
-    { id: "eastern-wheel", name: "Rueda cosmológica oriental", category: "Imagen de referencia", image: "/oracles/astrology/eastern-cosmology-wheel.png", description: "Síntesis visual de Yin/Yang, cinco elementos y doce animales." },
-    { id: "bazi", name: "BaZi · Cuatro Pilares", category: "Mapa raíz", symbol: "八", description: "Estructura natal formada por año, mes, día y hora." },
-    { id: "animals", name: "Doce animales", category: "Ramas Terrestres", symbol: "子", description: "Ciclo animal que aporta cualidades, relaciones y ritmos al sistema." },
-    { id: "elements", name: "Cinco elementos", category: "Wu Xing", symbol: "木", description: "Madera, Fuego, Tierra, Metal y Agua en ciclos de generación y control." },
-    { id: "polarity", name: "Yin y Yang", category: "Polaridad", symbol: "☯", description: "Alternancia complementaria presente en cada tronco, rama y elemento." },
-    { id: "ziwei", name: "Zi Wei Dou Shu", category: "Mapa estelar", symbol: "紫", description: "Sistema de estrellas y doce palacios para el estudio del destino." },
-  ],
+const libraryCopy: Record<Language, { reference: string; westernWheel: string; westernDesc: string; easternWheel: string; easternDesc: string; planets: string; planetsDesc: string; elements: string; elementsDesc: string; polarity: string; polarityDesc: string }> = {
+  ES: { reference: "Imagen de referencia", westernWheel: "Rueda celeste occidental", westernDesc: "Síntesis visual del zodiaco, las órbitas y la geometría astrológica.", easternWheel: "Rueda cosmológica oriental", easternDesc: "Síntesis visual de Yin/Yang, cinco elementos y doce animales.", planets: "Planetas", planetsDesc: "Funciones simbólicas que actúan dentro de signos, casas y aspectos.", elements: "Cinco elementos", elementsDesc: "Madera, Fuego, Tierra, Metal y Agua en sus ciclos.", polarity: "Yin y Yang", polarityDesc: "Polaridad complementaria presente en cada elemento y pilar." },
+  EN: { reference: "Reference image", westernWheel: "Western celestial wheel", westernDesc: "A visual synthesis of the zodiac, planetary orbits, and astrological geometry.", easternWheel: "Eastern cosmological wheel", easternDesc: "A visual synthesis of Yin/Yang, five elements, and twelve animals.", planets: "Planets", planetsDesc: "Symbolic functions acting through signs, houses, and aspects.", elements: "Five elements", elementsDesc: "Wood, Fire, Earth, Metal, and Water in their cycles.", polarity: "Yin and Yang", polarityDesc: "Complementary polarity present in every element and pillar." },
+  FR: { reference: "Image de référence", westernWheel: "Roue céleste occidentale", westernDesc: "Synthèse visuelle du zodiaque, des orbites et de la géométrie astrologique.", easternWheel: "Roue cosmologique orientale", easternDesc: "Synthèse visuelle du Yin/Yang, des cinq éléments et des douze animaux.", planets: "Planètes", planetsDesc: "Fonctions symboliques actives dans les signes, maisons et aspects.", elements: "Cinq éléments", elementsDesc: "Bois, Feu, Terre, Métal et Eau dans leurs cycles.", polarity: "Yin et Yang", polarityDesc: "Polarité complémentaire présente dans chaque élément et pilier." },
+  DE: { reference: "Referenzbild", westernWheel: "Westliches Himmelsrad", westernDesc: "Visuelle Synthese von Tierkreis, Umlaufbahnen und astrologischer Geometrie.", easternWheel: "Östliches kosmologisches Rad", easternDesc: "Visuelle Synthese von Yin/Yang, fünf Elementen und zwölf Tieren.", planets: "Planeten", planetsDesc: "Symbolische Funktionen in Zeichen, Häusern und Aspekten.", elements: "Fünf Elemente", elementsDesc: "Holz, Feuer, Erde, Metall und Wasser in ihren Zyklen.", polarity: "Yin und Yang", polarityDesc: "Komplementäre Polarität in jedem Element und jeder Säule." },
+  PT: { reference: "Imagem de referência", westernWheel: "Roda celeste ocidental", westernDesc: "Síntese visual do zodíaco, das órbitas e da geometria astrológica.", easternWheel: "Roda cosmológica oriental", easternDesc: "Síntese visual de Yin/Yang, cinco elementos e doze animais.", planets: "Planetas", planetsDesc: "Funções simbólicas que atuam em signos, casas e aspectos.", elements: "Cinco elementos", elementsDesc: "Madeira, Fogo, Terra, Metal e Água em seus ciclos.", polarity: "Yin e Yang", polarityDesc: "Polaridade complementar presente em cada elemento e pilar." },
 };
 
 export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const text = content[lang][branch];
+  const lib = libraryCopy[lang];
+  const astrologyLibrary = branch === "western" ? [
+    { id: "western-wheel", name: lib.westernWheel, category: lib.reference, image: "/oracles/astrology/western-celestial-wheel.png", description: lib.westernDesc },
+    ...text.focuses.map((item, index) => ({ id: `western-${index}`, name: item.title, category: item.level, symbol: ["◎", "☍", "☀", "✦"][index], description: item.description })),
+    { id: "planets", name: lib.planets, category: text.eyebrow, symbol: "☿", description: lib.planetsDesc },
+  ] : [
+    { id: "eastern-wheel", name: lib.easternWheel, category: lib.reference, image: "/oracles/astrology/eastern-cosmology-wheel.png", description: lib.easternDesc },
+    { id: "bazi", name: text.focuses[0].title, category: text.focuses[0].level, symbol: "八", description: text.focuses[0].description },
+    { id: "animals", name: text.focuses[1].title, category: text.focuses[1].level, symbol: "子", description: text.focuses[1].description },
+    { id: "elements", name: lib.elements, category: "Wu Xing", symbol: "木", description: lib.elementsDesc },
+    { id: "polarity", name: lib.polarity, category: "Yin/Yang", symbol: "☯", description: lib.polarityDesc },
+    { id: "ziwei", name: text.focuses[2].title, category: text.focuses[2].level, symbol: "紫", description: text.focuses[2].description },
+  ] satisfies DisciplineLibraryItem[];
   const focus = selected === null ? null : text.focuses[selected];
 
   useEffect(() => {
@@ -117,6 +119,6 @@ export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
       </div>
       {focus && <article className="astrology-pending" aria-live="polite"><small>{text.pending}</small><h2>{focus.title}</h2><p>{text.pendingDescription}</p></article>}
     </section>
-    <DisciplineLibrary lang={lang} items={astrologyLibraries[branch]} />
+    <DisciplineLibrary lang={lang} items={astrologyLibrary} />
   </section>;
 }
