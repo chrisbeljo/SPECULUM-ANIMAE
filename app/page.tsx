@@ -150,7 +150,7 @@ const homeMenuImages:Record<string,string[]>={
  "Chamalongos":["/oracles/chamalongos/tiger-cowrie-up.webp","/oracles/chamalongos/tiger-cowrie-down.webp"],
  "Kabbalah":["/textures/brushed-chrome-soft.webp","/textures/brushed-chrome.png"],
  "Astrología Occidental":["/oracles/astrology/western-symbol-medallion.png"],
- "Numerología":["/oracles/iching-balance.png","/cards/rws/pentacles-08.jpg","/textures/brushed-chrome-soft.webp"],
+ "Numerología":["/oracles/numerology/numerology-cosmology.png"],
  "Quiromancia":["/oracles/pendulum/silver-witness-pendulum-held.jpg","/cards/rider-classic/dealing-hand-v3.png"],
  "Fisonomía":["/oracles/angels/angel-01.webp","/oracles/zen-oraculo/cards/zen-20.jpg"],
  "Energía / Aura":["/oracles/zen-oraculo/style-study-v2.png","/oracles/zen-oraculo/cards/zen-01.jpg","/oracles/angels/angel-20.webp"],
