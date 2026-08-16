@@ -101,9 +101,10 @@
 }
 
 .chamalongo-shell {
-  --landing-x: 0px;
-  --landing-y: 0px;
+  --landing-left: 50%;
+  --landing-top: 50%;
   --turn: 280deg;
+  --drop-delay: 0s;
   width: clamp(58px, 14%, 82px);
   aspect-ratio: 1;
   position: absolute;
@@ -117,19 +118,15 @@
 
 .is-released .chamalongo-shell {
   animation: chamalongo-shell-drop 1.28s cubic-bezier(.25, .72, .34, 1) both;
+  animation-delay: var(--drop-delay);
 }
 
-.is-released .shell-1 { --landing-x: clamp(-132px, -22vw, -92px); --landing-y: clamp(150px, 32vw, 190px); --turn: -310deg; animation-delay: .04s; }
-.is-released .shell-2 { --landing-x: clamp(-54px, -9vw, -34px); --landing-y: clamp(180px, 38vw, 220px); --turn: 390deg; animation-delay: .11s; }
-.is-released .shell-3 { --landing-x: clamp(34px, 9vw, 54px); --landing-y: clamp(148px, 31vw, 186px); --turn: -430deg; animation-delay: .18s; }
-.is-released .shell-4 { --landing-x: clamp(92px, 22vw, 132px); --landing-y: clamp(182px, 39vw, 224px); --turn: 340deg; animation-delay: .25s; }
-
 @keyframes chamalongo-shell-drop {
-  0% { opacity: 0; transform: translate(-50%, -80%) scale(.5) rotate(0); }
+  0% { left: 50%; top: 34%; opacity: 0; transform: translate(-50%, -80%) scale(.5) rotate(0); }
   12% { opacity: 1; }
-  72% { transform: translate(calc(-50% + var(--landing-x)), var(--landing-y)) scale(1) rotate(var(--turn)); }
-  84% { transform: translate(calc(-50% + var(--landing-x)), calc(var(--landing-y) - 12px)) scale(1) rotate(var(--turn)); }
-  100% { opacity: 1; transform: translate(calc(-50% + var(--landing-x)), var(--landing-y)) scale(1) rotate(var(--turn)); }
+  72% { left: var(--landing-left); top: var(--landing-top); transform: translate(-50%, -50%) scale(1) rotate(var(--turn)); }
+  84% { left: var(--landing-left); top: var(--landing-top); transform: translate(-50%, calc(-50% - 12px)) scale(1) rotate(var(--turn)); }
+  100% { left: var(--landing-left); top: var(--landing-top); opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(var(--turn)); }
 }
 
 .chamalongo-cast-instructions {

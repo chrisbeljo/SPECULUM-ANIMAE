@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import "./chamalongo-cast.css";
 
 type CastPhase = "ready" | "shaking" | "released";
@@ -12,9 +12,40 @@ type ChamalongoCastProps = {
 const makeCast = (): Array<"up" | "down"> =>
   Array.from({ length: 4 }, () => (Math.random() >= 0.5 ? "up" : "down"));
 
+type Landing = {
+  left: number;
+  top: number;
+  turn: number;
+  delay: number;
+};
+
+const defaultLandings: Landing[] = [
+  { left: 42, top: 44, turn: -310, delay: 0.04 },
+  { left: 57, top: 45, turn: 390, delay: 0.11 },
+  { left: 44, top: 58, turn: -430, delay: 0.18 },
+  { left: 58, top: 59, turn: 340, delay: 0.25 },
+];
+
+const makeLandings = (): Landing[] => {
+  const rotation = Math.random() * Math.PI * 2;
+
+  return Array.from({ length: 4 }, (_, index) => {
+    const angle = rotation + index * (Math.PI / 2) + (Math.random() - 0.5) * 0.5;
+    const radius = 11 + Math.random() * 8;
+
+    return {
+      left: 50 + Math.cos(angle) * radius,
+      top: 50 + Math.sin(angle) * radius,
+      turn: (Math.random() >= 0.5 ? 1 : -1) * (260 + Math.random() * 220),
+      delay: 0.04 + index * 0.07,
+    };
+  });
+};
+
 export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
   const [phase, setPhase] = useState<CastPhase>("ready");
   const [faces, setFaces] = useState<Array<"up" | "down">>(() => makeCast());
+  const [landings, setLandings] = useState<Landing[]>(defaultLandings);
 
   useEffect(() => {
     if (phase !== "shaking") return;
@@ -33,6 +64,7 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
   function cast() {
     if (phase === "shaking") return;
     setFaces(makeCast());
+    setLandings(makeLandings());
     setPhase("shaking");
   }
 
@@ -68,14 +100,25 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
           alt="Las mismas manos abiertas con las palmas hacia el tablero"
         />
         <span className="chamalongo-fall" aria-hidden="true">
-          {faces.map((face, index) => (
-            <img
-              key={`${face}-${index}`}
-              className={`chamalongo-shell shell-${index + 1}`}
-              src={`/oracles/chamalongos/tiger-cowrie-${face}.webp`}
-              alt=""
-            />
-          ))}
+          {faces.map((face, index) => {
+            const landing = landings[index];
+            const style = {
+              "--landing-left": `${landing.left}%`,
+              "--landing-top": `${landing.top}%`,
+              "--turn": `${landing.turn}deg`,
+              "--drop-delay": `${landing.delay}s`,
+            } as CSSProperties;
+
+            return (
+              <img
+                key={`${face}-${index}`}
+                className="chamalongo-shell"
+                src={`/oracles/chamalongos/tiger-cowrie-${face}.webp`}
+                alt=""
+                style={style}
+              />
+            );
+          })}
         </span>
       </button>
       <p className="chamalongo-cast-instructions">{instructions}</p>
