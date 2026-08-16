@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Language } from "../translations";
+import { DisciplineLibrary, type DisciplineLibraryItem } from "./DisciplineLibrary";
 import "./astrology-sites.css";
 import "./astrology-card-colors.css";
 
@@ -78,6 +79,25 @@ const content: Record<Language, Record<AstrologyBranch, SiteCopy>> = {
   },
 };
 
+const astrologyLibraries: Record<AstrologyBranch, DisciplineLibraryItem[]> = {
+  western: [
+    { id: "western-wheel", name: "Rueda celeste occidental", category: "Imagen de referencia", image: "/oracles/astrology/western-celestial-wheel.png", description: "Síntesis visual de zodiaco, órbitas planetarias y geometría astrológica." },
+    { id: "natal-chart", name: "Carta Natal", category: "Mapa raíz", symbol: "◎", description: "Representación del cielo para fecha, hora y lugar de nacimiento." },
+    { id: "transits", name: "Tránsitos", category: "Movimiento actual", symbol: "☍", description: "Relaciones angulares entre los planetas actuales y la carta natal." },
+    { id: "solar-return", name: "Revolución Solar", category: "Ciclo anual", symbol: "☀", description: "Retorno del Sol a su posición natal exacta." },
+    { id: "horoscope", name: "Horóscopo", category: "Orientación general", symbol: "✦", description: "Lectura general por signo solar o ascendente." },
+    { id: "planets", name: "Planetas", category: "Alfabeto occidental", symbol: "☿", description: "Funciones simbólicas que actúan dentro de signos, casas y aspectos." },
+  ],
+  eastern: [
+    { id: "eastern-wheel", name: "Rueda cosmológica oriental", category: "Imagen de referencia", image: "/oracles/astrology/eastern-cosmology-wheel.png", description: "Síntesis visual de Yin/Yang, cinco elementos y doce animales." },
+    { id: "bazi", name: "BaZi · Cuatro Pilares", category: "Mapa raíz", symbol: "八", description: "Estructura natal formada por año, mes, día y hora." },
+    { id: "animals", name: "Doce animales", category: "Ramas Terrestres", symbol: "子", description: "Ciclo animal que aporta cualidades, relaciones y ritmos al sistema." },
+    { id: "elements", name: "Cinco elementos", category: "Wu Xing", symbol: "木", description: "Madera, Fuego, Tierra, Metal y Agua en ciclos de generación y control." },
+    { id: "polarity", name: "Yin y Yang", category: "Polaridad", symbol: "☯", description: "Alternancia complementaria presente en cada tronco, rama y elemento." },
+    { id: "ziwei", name: "Zi Wei Dou Shu", category: "Mapa estelar", symbol: "紫", description: "Sistema de estrellas y doce palacios para el estudio del destino." },
+  ],
+};
+
 export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const text = content[lang][branch];
@@ -97,5 +117,6 @@ export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
       </div>
       {focus && <article className="astrology-pending" aria-live="polite"><small>{text.pending}</small><h2>{focus.title}</h2><p>{text.pendingDescription}</p></article>}
     </section>
+    <DisciplineLibrary lang={lang} items={astrologyLibraries[branch]} />
   </section>;
 }
