@@ -5,6 +5,7 @@ import type { Language } from "../translations";
 import "./discipline-library.css";
 import "./discipline-library-performance.css";
 import "./discipline-library-ritual-visuals.css";
+import "./astro-library-visuals.css";
 
 export type DisciplineLibraryItem = {
   id: string;
@@ -13,7 +14,8 @@ export type DisciplineLibraryItem = {
   description: string;
   symbol?: string;
   image?: string;
-  visual?: "rune" | "hexagram" | "chamalongos" | "chamalongos-coconut";
+  visual?: "rune" | "hexagram" | "chamalongos" | "chamalongos-coconut" | "astro-medallion";
+  tone?: "western" | "eastern" | "numerology";
   pattern?: string;
   up?: number;
 };
@@ -23,6 +25,7 @@ function LibraryVisual({ item }: { item: DisciplineLibraryItem }) {
   if (item.visual === "hexagram") return <div className="discipline-library-hexagram" role="img" aria-label={item.name}><span>{[...(item.pattern || "")].map((line, index) => <i className={line === "1" ? "yang" : "yin"} key={index}>{line === "1" ? <b /> : <><b /><b /></>}</i>)}</span><em>易</em></div>;
   if (item.visual === "chamalongos") return <div className="discipline-library-chamalongos" role="img" aria-label={item.name}>{Array.from({ length: 4 }, (_, index) => <img src={`/oracles/chamalongos/tiger-cowrie-${index < (item.up || 0) ? "up" : "down"}.webp`} alt="" loading="lazy" decoding="async" key={index} />)}</div>;
   if (item.visual === "chamalongos-coconut") return <div className="discipline-library-coconut" role="img" aria-label={item.name}>{Array.from({ length: 4 }, (_, index) => <i className={index < (item.up || 0) ? "up" : "down"} key={index} />)}</div>;
+  if (item.visual === "astro-medallion") return <div className={`discipline-library-astro ${item.tone || "western"}`} role="img" aria-label={item.name}><img src={item.image} alt="" loading="lazy" decoding="async"/><b>{item.symbol}</b></div>;
   if (item.image) return <img src={item.image} alt={item.name} loading="lazy" decoding="async" sizes="(max-width: 520px) 100vw, (max-width: 820px) 50vw, 33vw" />;
   return <i aria-hidden="true">{item.symbol}</i>;
 }

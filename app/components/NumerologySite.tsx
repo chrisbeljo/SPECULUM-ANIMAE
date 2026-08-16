@@ -80,7 +80,7 @@ const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back t
 
 export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void }) {
   const text = content[lang];
-  const library: DisciplineLibraryItem[] = libraryNumbers.map((number, index) => ({ id: `number-${number}`, name: `${text.numberLabel} ${number}`, category: number > 9 ? text.masterLabel : text.numberLabel, description: meanings[lang][index], symbol: String(number) }));
+  const library: DisciplineLibraryItem[] = libraryNumbers.map((number, index) => ({ id: `number-${number}`, name: `${text.numberLabel} ${number}`, category: number > 9 ? text.masterLabel : text.numberLabel, description: meanings[lang][index], symbol: String(number), image:"/oracles/numerology/number-medallion-base-v1.webp", visual:"astro-medallion", tone:"numerology" }));
   const focus = selected === null ? null : text.focuses[selected];
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, []);

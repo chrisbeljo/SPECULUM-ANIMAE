@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import type { Language } from "../translations";
 import type { DisciplineLibraryItem } from "./DisciplineLibrary";
 import { CollapsibleDisciplineLibrary } from "./CollapsibleDisciplineLibrary";
+import { easternAstroLibrary, westernAstroLibrary } from "../astro-library-data";
 import { AstroConsultationFlow } from "./AstroConsultationFlow";
 import "./astrology-sites.css";
 import "./astrology-card-colors.css";
@@ -157,13 +158,12 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
   const astrologyLibrary = branch === "western" ? [
     { id: "western-wheel", name: lib.westernWheel, category: lib.reference, image: "/oracles/astrology/western-astrolabe-v2.jpg", description: lib.westernDesc },
     ...text.focuses.map((item, index) => ({ id: `western-${index}`, name: item.title, category: item.level, symbol: ["◎", "☍", "☀", "✦"][index], description: item.description })),
-    { id: "planets", name: lib.planets, category: text.eyebrow, symbol: "☿", description: lib.planetsDesc },
+    ...westernAstroLibrary(lang),
   ] : [
     { id: "eastern-wheel", name: lib.easternWheel, category: lib.reference, image: "/oracles/astrology/eastern-luopan-v2.jpg", description: lib.easternDesc },
     { id: "bazi", name: text.focuses[0].title, category: text.focuses[0].level, symbol: "八", description: text.focuses[0].description },
     { id: "animals", name: text.focuses[1].title, category: text.focuses[1].level, symbol: "子", description: text.focuses[1].description },
-    { id: "elements", name: lib.elements, category: "Wu Xing", symbol: "木", description: lib.elementsDesc },
-    { id: "polarity", name: lib.polarity, category: "Yin/Yang", symbol: "☯", description: lib.polarityDesc },
+    ...easternAstroLibrary(lang),
     { id: "ziwei", name: text.focuses[2].title, category: text.focuses[2].level, symbol: "紫", description: text.focuses[2].description },
   ] satisfies DisciplineLibraryItem[];
   const focus = selected === null ? null : text.focuses[selected];

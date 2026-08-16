@@ -1,0 +1,47 @@
+.discipline-library-astro {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1.3;
+  background: #09070c;
+}
+
+.discipline-library-astro img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+  transform: scale(1.02);
+}
+
+.discipline-library-astro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, #07060a18 0 16%, transparent 38%), linear-gradient(180deg, transparent 60%, #09070c66);
+}
+
+.discipline-library-astro b {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #f0d184;
+  font: clamp(50px, 6vw, 82px)/1 "Gilda Display", serif;
+  text-shadow: 0 2px 3px #000, 0 0 17px #d8a94699;
+}
+
+.discipline-library-astro.eastern b {
+  color: #e8bd6e;
+  text-shadow: 0 2px 3px #000, 0 0 16px #a7643299;
+}
+
+.discipline-library-astro.numerology b {
+  color: #f2d88e;
+  font-size: clamp(46px, 5.5vw, 76px);
+  text-shadow: 0 2px 3px #000, 0 0 18px #d3a542aa;
+}
+
+.discipline-library-grid.single .discipline-library-astro b {
+  font-size: clamp(72px, 10vw, 120px);
+}
