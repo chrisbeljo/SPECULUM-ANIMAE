@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 import type { Language } from "../translations";
+import { chamalongoOutcomes } from "../extended-library-data";
 import { ChamalongoCast } from "./ChamalongoCast";
 
 type ChamalongosSiteProps = { lang: Language; onBack: () => void };
 type Step = "menu" | "cast";
 type Focus = { title: string; description: string };
 type ChamalongosCopy = { back: string; backToFocuses: string; eyebrow: string; title: string; intro: string[]; culturalNote: string; choose: string; count: string; instruction: string; result: string; focuses: Focus[] };
+type ReadingStage = "initial" | "confirm-etawa" | "identify-speaker" | "confirm-speaker" | "guided-answer" | "confirm-guided-etawa" | "complete";
+type ReadingResult = { name: string; verdict: string; message: string };
+type ReadingCopy = {
+  ready: string; shaking: string; newConsultation: string; confirmAnswer: string; askWho: string; confirmSpeaker: string; askGuide: string;
+  alafia: string; eyeife: string; okana: string; etawa: string; oyekunAsk: string; oyekunFinal: string; speakerConfirmed: string; speakerEtawa: string; undefinedResult: string;
+};
 
 const copy: Record<Language, ChamalongosCopy> = {
   ES: {
@@ -47,16 +54,29 @@ const copy: Record<Language, ChamalongosCopy> = {
   },
 };
 
+const readingCopy: Record<Language, ReadingCopy> = {
+  ES: { ready: "Toca las manos para agitar los chamalongos", shaking: "Mantén tu pregunta presente", newConsultation: "Nueva consulta", confirmAnswer: "Confirmar respuesta", askWho: "Preguntar quién habla", confirmSpeaker: "Confirmar quién responde", askGuide: "Preguntar al guía", alafia: "Sí, con la bendición de Dios.", eyeife: "Sí.", okana: "No.", etawa: "La respuesta necesita confirmación. Realiza una segunda tirada.", oyekunAsk: "Pregunta obligatoriamente quién desea hablar. Abre la intuición, reconoce al guía y vuelve a tirar.", oyekunFinal: "No definitivo. Ahora sabes qué guía comunicó esta respuesta.", speakerConfirmed: "Un guía ha confirmado que desea hablar. Repite ahora tu pregunta original, dirigida a ese guía.", speakerEtawa: "La identidad de quien desea responder necesita confirmación. Vuelve a tirar.", undefinedResult: "Aún no está definido el resultado. Nadie confirmó que desea responder; vuelve a preguntar más adelante." },
+  EN: { ready: "Touch the hands to shake the chamalongos", shaking: "Keep your question present", newConsultation: "New consultation", confirmAnswer: "Confirm answer", askWho: "Ask who is speaking", confirmSpeaker: "Confirm who responds", askGuide: "Ask the guide", alafia: "Yes, with God's blessing.", eyeife: "Yes.", okana: "No.", etawa: "The answer requires confirmation. Make a second cast.", oyekunAsk: "You must ask who wishes to speak. Open your intuition, recognize the guide, and cast again.", oyekunFinal: "Definitive no. You now know which guide communicated this answer.", speakerConfirmed: "A guide has confirmed the wish to speak. Repeat your original question, now addressing that guide.", speakerEtawa: "The identity of whoever wishes to respond requires confirmation. Cast again.", undefinedResult: "The result is not yet defined. No one confirmed the wish to respond; ask again later." },
+  FR: { ready: "Touchez les mains pour agiter les chamalongos", shaking: "Gardez votre question présente", newConsultation: "Nouvelle consultation", confirmAnswer: "Confirmer la réponse", askWho: "Demander qui parle", confirmSpeaker: "Confirmer qui répond", askGuide: "Interroger le guide", alafia: "Oui, avec la bénédiction de Dieu.", eyeife: "Oui.", okana: "Non.", etawa: "La réponse demande confirmation. Effectuez un second lancer.", oyekunAsk: "Vous devez demander qui souhaite parler. Ouvrez votre intuition, reconnaissez le guide et relancez.", oyekunFinal: "Non définitif. Vous savez maintenant quel guide a communiqué cette réponse.", speakerConfirmed: "Un guide a confirmé qu’il souhaite parler. Répétez votre question initiale en vous adressant à lui.", speakerEtawa: "L’identité de celui qui souhaite répondre demande confirmation. Relancez.", undefinedResult: "Le résultat n’est pas encore défini. Personne n’a confirmé vouloir répondre ; reposez la question plus tard." },
+  DE: { ready: "Berühren Sie die Hände, um die Chamalongos zu schütteln", shaking: "Behalten Sie Ihre Frage im Sinn", newConsultation: "Neue Befragung", confirmAnswer: "Antwort bestätigen", askWho: "Fragen, wer spricht", confirmSpeaker: "Bestätigen, wer antwortet", askGuide: "Den geistigen Führer fragen", alafia: "Ja, mit Gottes Segen.", eyeife: "Ja.", okana: "Nein.", etawa: "Die Antwort muss bestätigt werden. Werfen Sie ein zweites Mal.", oyekunAsk: "Sie müssen fragen, wer sprechen möchte. Öffnen Sie Ihre Intuition, erkennen Sie den geistigen Führer und werfen Sie erneut.", oyekunFinal: "Endgültiges Nein. Sie wissen nun, welcher geistige Führer diese Antwort übermittelt hat.", speakerConfirmed: "Ein geistiger Führer hat bestätigt, dass er sprechen möchte. Wiederholen Sie Ihre ursprüngliche Frage nun an ihn.", speakerEtawa: "Die Identität dessen, der antworten möchte, muss bestätigt werden. Werfen Sie erneut.", undefinedResult: "Das Ergebnis ist noch nicht bestimmt. Niemand hat bestätigt, antworten zu wollen; fragen Sie später erneut." },
+  PT: { ready: "Toque as mãos para agitar os chamalongos", shaking: "Mantenha sua pergunta presente", newConsultation: "Nova consulta", confirmAnswer: "Confirmar resposta", askWho: "Perguntar quem fala", confirmSpeaker: "Confirmar quem responde", askGuide: "Perguntar ao guia", alafia: "Sim, com a bênção de Deus.", eyeife: "Sim.", okana: "Não.", etawa: "A resposta precisa de confirmação. Faça uma segunda queda.", oyekunAsk: "É obrigatório perguntar quem deseja falar. Abra a intuição, reconheça o guia e lance novamente.", oyekunFinal: "Não definitivo. Agora você sabe qual guia comunicou esta resposta.", speakerConfirmed: "Um guia confirmou que deseja falar. Repita agora a pergunta original, dirigindo-a a esse guia.", speakerEtawa: "A identidade de quem deseja responder precisa de confirmação. Lance novamente.", undefinedResult: "O resultado ainda não está definido. Ninguém confirmou que deseja responder; pergunte novamente mais tarde." },
+};
+
 export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
   const [step, setStep] = useState<Step>("menu");
   const [focusIndex, setFocusIndex] = useState(0);
   const [result, setResult] = useState<Array<"up" | "down"> | null>(null);
+  const [readingStage, setReadingStage] = useState<ReadingStage>("initial");
+  const [reading, setReading] = useState<ReadingResult | null>(null);
   const text = copy[lang];
+  const oracleText = readingCopy[lang];
   const focus = text.focuses[focusIndex];
 
   function chooseFocus(index: number) {
     setFocusIndex(index);
     setResult(null);
+    setReading(null);
+    setReadingStage("initial");
     setStep("cast");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -64,12 +84,65 @@ export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
   function goBack() {
     if (step === "cast") {
       setResult(null);
+      setReading(null);
+      setReadingStage("initial");
       setStep("menu");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     onBack();
   }
+
+  function finish(name: string, verdict: string, message = "") {
+    setReading({ name, verdict, message });
+    setReadingStage("complete");
+  }
+
+  function confirmGuide(name: string) {
+    setReading({ name, verdict: oracleText.speakerConfirmed, message: "" });
+    setReadingStage("guided-answer");
+  }
+
+  function interpretCast(faces: Array<"up" | "down">) {
+    const up = faces.filter((face) => face === "up").length;
+    const outcome = chamalongoOutcomes.find((item) => item.up === up)!;
+    setResult(faces);
+
+    if (readingStage === "identify-speaker") {
+      if (up === 0) return finish(outcome.name, oracleText.oyekunFinal);
+      if (up === 1) return finish(outcome.name, oracleText.okana);
+      if (up === 3) { setReading({ name: outcome.name, verdict: oracleText.speakerEtawa, message: "" }); setReadingStage("confirm-speaker"); return; }
+      return confirmGuide(outcome.name);
+    }
+
+    if (readingStage === "confirm-speaker") {
+      if (up >= 2) return confirmGuide(outcome.name);
+      return finish(outcome.name, oracleText.undefinedResult);
+    }
+
+    const guideIsKnown = readingStage === "guided-answer" || readingStage === "confirm-guided-etawa";
+    const etawaIsConfirmed = readingStage === "confirm-etawa" || readingStage === "confirm-guided-etawa";
+    if (up === 4) return finish(outcome.name, oracleText.alafia);
+    if (up === 2) return finish(outcome.name, oracleText.eyeife);
+    if (up === 1) return finish(outcome.name, oracleText.okana);
+    if (up === 0) {
+      if (guideIsKnown) return finish(outcome.name, oracleText.oyekunFinal);
+      setReading({ name: outcome.name, verdict: oracleText.oyekunAsk, message: "" });
+      setReadingStage("identify-speaker");
+      return;
+    }
+    if (etawaIsConfirmed) return finish(outcome.name, oracleText.eyeife);
+    setReading({ name: outcome.name, verdict: oracleText.etawa, message: "" });
+    setReadingStage(guideIsKnown ? "confirm-guided-etawa" : "confirm-etawa");
+  }
+
+  function prepareNextCast() {
+    setResult(null);
+    setReading(null);
+    if (readingStage === "complete") setReadingStage("initial");
+  }
+
+  const recastLabel = readingStage === "identify-speaker" ? oracleText.askWho : readingStage === "confirm-speaker" ? oracleText.confirmSpeaker : readingStage === "guided-answer" ? oracleText.askGuide : readingStage === "confirm-etawa" || readingStage === "confirm-guided-etawa" ? oracleText.confirmAnswer : oracleText.newConsultation;
 
   return (
     <section className={`chamalongos-site chamalongos-${step}`}>
@@ -102,8 +175,7 @@ export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
           <header className="chamalongos-heading chamalongos-cast-heading"><span>{text.title}</span><h1>{focus.title}</h1><p>{focus.description}</p></header>
           <div className="chamalongos-ritual-shell">
             <p className="chamalongos-guidance">{text.instruction}</p>
-            <ChamalongoCast onCastComplete={setResult} />
-            {result && <div className="chamalongos-result" aria-live="polite"><small>{text.result}</small><strong>{result.filter((face) => face === "up").length} / 4</strong></div>}
+            <ChamalongoCast onCastComplete={interpretCast} onCastStart={prepareNextCast} readyLabel={oracleText.ready} shakingLabel={oracleText.shaking} recastLabel={recastLabel} resultContent={result && reading ? <div className="chamalongos-result" aria-live="polite"><small>{reading.name}</small><strong>{reading.verdict}</strong>{reading.message && <p>{reading.message}</p>}</div> : null} />
           </div>
         </>
       )}

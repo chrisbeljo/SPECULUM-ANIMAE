@@ -60,11 +60,11 @@ export const powerAnimals = animalData.map(([name, meaning, message], index) => 
 }));
 
 export const chamalongoOutcomes = [
-  { name: "Alafia", up: 4, tone: "Afirmación", note: "Cuatro caras interiores hacia arriba. En registros comparativos se interpreta como sí o apertura favorable." },
-  { name: "Etawa", up: 3, tone: "Sí condicionado", note: "Tres caras interiores. Suele pedir confirmación, cuidado o una segunda pregunta." },
-  { name: "Eyeife", up: 2, tone: "Equilibrio", note: "Dos caras interiores y dos exteriores. Se asocia con estabilidad o afirmación firme en sistemas emparentados." },
-  { name: "Okana", up: 1, tone: "Advertencia", note: "Una cara interior. Señala obstáculo, negativa o necesidad de precaución según la casa ritual." },
-  { name: "Oyekun", up: 0, tone: "Cierre", note: "Todas las caras exteriores. Se trata con especial cautela; su lectura depende de la rama y del contexto ritual." },
+  { name: "Alafia", up: 4, tone: "Sí con bendición", note: "Cuatro caras interiores hacia arriba. La respuesta es sí, con la bendición de Dios." },
+  { name: "Etawa", up: 3, tone: "Requiere confirmación", note: "Tres caras interiores. La respuesta exige una segunda tirada: otro Etawa confirma el sí; cualquier otra letra aporta su propio resultado." },
+  { name: "Eyeife", up: 2, tone: "Sí", note: "Dos caras interiores y dos exteriores. La respuesta es afirmativa." },
+  { name: "Okana", up: 1, tone: "No", note: "Una cara interior. La respuesta es negativa." },
+  { name: "Oyekun", up: 0, tone: "Identificar al guía", note: "Todas las caras exteriores. Es obligatorio preguntar quién desea hablar y volver a tirar, manteniendo la intuición abierta. Un segundo Oyekun es un no definitivo." },
 ];
 
 const divineTriplets = `והו ילי סיט עלם מהש ללה אכא כהת

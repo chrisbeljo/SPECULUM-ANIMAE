@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
+import type { ReactNode } from "react";
 import "./chamalongo-cast.css";
 
 type CastPhase = "ready" | "shaking" | "released";
 
 type ChamalongoCastProps = {
   onCastComplete?: (faces: Array<"up" | "down">) => void;
+  onCastStart?: () => void;
+  readyLabel: string;
+  shakingLabel: string;
+  recastLabel: string;
+  resultContent?: ReactNode;
 };
 
 const makeCast = (): Array<"up" | "down"> =>
@@ -42,7 +48,7 @@ const makeLandings = (): Landing[] => {
   });
 };
 
-export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
+export function ChamalongoCast({ onCastComplete, onCastStart, readyLabel, shakingLabel, recastLabel, resultContent }: ChamalongoCastProps) {
   const [phase, setPhase] = useState<CastPhase>("ready");
   const [faces, setFaces] = useState<Array<"up" | "down">>(() => makeCast());
   const [landings, setLandings] = useState<Landing[]>(defaultLandings);
@@ -63,6 +69,7 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
 
   function cast() {
     if (phase === "shaking") return;
+    onCastStart?.();
     setFaces(makeCast());
     setLandings(makeLandings());
     setPhase("shaking");
@@ -70,10 +77,10 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
 
   const instructions =
     phase === "ready"
-      ? "Toca las manos para agitar los chamalongos"
+      ? readyLabel
       : phase === "shaking"
-        ? "Mantén tu pregunta presente"
-        : "La caída ha terminado";
+        ? shakingLabel
+        : "";
 
   return (
     <section className={`chamalongo-cast-experience is-${phase}`} aria-live="polite">
@@ -82,7 +89,7 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
         className="chamalongo-hands-stage"
         onClick={cast}
         disabled={phase === "shaking"}
-        aria-label={phase === "released" ? "Volver a lanzar los chamalongos" : instructions}
+        aria-label={phase === "released" ? recastLabel : instructions}
       >
         <img
           className="chamalongo-board"
@@ -121,10 +128,11 @@ export function ChamalongoCast({ onCastComplete }: ChamalongoCastProps) {
           })}
         </span>
       </button>
-      <p className="chamalongo-cast-instructions">{instructions}</p>
+      {instructions && <p className="chamalongo-cast-instructions">{instructions}</p>}
+      {phase === "released" && resultContent}
       {phase === "released" && (
         <button type="button" className="chamalongo-recast" onClick={cast}>
-          Lanzar de nuevo <span aria-hidden="true">↻</span>
+          {recastLabel} <span aria-hidden="true">↻</span>
         </button>
       )}
     </section>
