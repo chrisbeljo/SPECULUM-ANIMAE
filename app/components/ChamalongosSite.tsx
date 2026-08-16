@@ -79,11 +79,11 @@ export function ChamalongosSite({ lang, onBack }: ChamalongosSiteProps) {
           <header className="chamalongos-heading chamalongos-intro">
             <h1>{text.title}</h1>
             <span>{text.eyebrow}</span>
-            <div className="chamalongos-introduction-copy">
-              {text.intro.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-              <small>{text.culturalNote}</small>
-            </div>
           </header>
+          <div className="chamalongos-introduction-copy">
+            {text.intro.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            <small>{text.culturalNote}</small>
+          </div>
           <section className="chamalongos-focus-panel" aria-labelledby="chamalongos-focus-title">
             <span className="chamalongos-mini-label" id="chamalongos-focus-title">{text.choose}</span>
             <div className="chamalongos-focus-grid">

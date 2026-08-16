@@ -174,10 +174,11 @@
 
 .chamalongos-site{min-height:100vh;padding:28px clamp(18px,4vw,38px) 110px;background:radial-gradient(circle at 48% 12%,#4a2b1638,transparent 31%),linear-gradient(180deg,#0b0908,#070708 70%);color:#f1e9df}
 .chamalongos-back{padding:0;border:0;background:transparent;color:#d2ad6b;font-size:14px;cursor:pointer}
-.chamalongos-heading{width:min(880px,100%);margin:42px auto 34px;text-align:center}
+.chamalongos-heading{width:min(880px,100%);height:auto;margin:42px auto 34px;padding:0;display:block;position:static;border:0;background:transparent;backdrop-filter:none;text-align:center}
 .chamalongos-heading>span,.chamalongos-mini-label{color:#d5ad65;font-size:10px;font-weight:800;letter-spacing:.28em;text-transform:uppercase}
 .chamalongos-heading h1{margin:0 0 16px;font:clamp(62px,8vw,96px)/.96 "Gilda Display",serif;letter-spacing:-.045em}
-.chamalongos-introduction-copy{margin-top:30px;padding-top:25px;border-top:1px solid #7c623a55;color:#cfc4c9;text-align:left;font-size:15px;line-height:1.72}
+.chamalongos-intro{margin-bottom:30px}
+.chamalongos-introduction-copy{width:min(1120px,100%);margin:0 auto 34px;padding-top:25px;border-top:1px solid #7c623a55;color:#cfc4c9;text-align:left;font-size:15px;line-height:1.72}
 .chamalongos-introduction-copy p{margin:0 0 14px}.chamalongos-introduction-copy p:last-of-type{margin-bottom:0}
 .chamalongos-introduction-copy small{display:block;margin-top:19px;color:#d5ad65;text-align:center;font-size:9px;font-weight:700;letter-spacing:.1em}
 .chamalongos-focus-panel{width:min(1120px,100%);margin:0 auto 50px;padding:40px 42px 42px;border:1px solid #493852;border-radius:22px;background:linear-gradient(145deg,#18111d,#0e0a13)}
