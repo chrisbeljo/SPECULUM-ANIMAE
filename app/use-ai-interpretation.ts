@@ -36,6 +36,7 @@ export interface AIInterpretationRequest {
 
 export interface AIInterpretationResult {
   interpretation: string | null;
+  followupQuestion: string | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -50,6 +51,7 @@ const ENDPOINT = '/api/interpretar';
 
 export function useAIInterpretation(request: AIInterpretationRequest): AIInterpretationResult {
   const [interpretation, setInterpretation] = useState<string | null>(null);
+  const [followupQuestion, setFollowupQuestion] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,6 +71,7 @@ export function useAIInterpretation(request: AIInterpretationRequest): AIInterpr
       setIsLoading(true);
       setError(null);
       setInterpretation(null);
+      setFollowupQuestion(null);
 
       try {
         console.log("📡 Fetching from:", ENDPOINT);
@@ -90,11 +93,12 @@ export function useAIInterpretation(request: AIInterpretationRequest): AIInterpr
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json() as { interpretation: string };
+        const data = await response.json() as { interpretation: string; followup_question?: string | null };
         console.log("📡 Interpretation received:", data.interpretation?.slice(0, 100));
 
         if (!cancelled) {
           setInterpretation(data.interpretation);
+          setFollowupQuestion(data.followup_question || null);
         }
       } catch (err) {
         console.error("❌ Error:", err);
@@ -117,7 +121,40 @@ export function useAIInterpretation(request: AIInterpretationRequest): AIInterpr
     };
   }, [discipline, spread, cardKey, question, language, analysis]);
 
-  return { interpretation, isLoading, error };
+  return { interpretation, followupQuestion, isLoading, error };
+}
+
+// ─── Envío de respuesta de seguimiento ("¿Quieres saber más?") ────────────────
+
+export interface FollowupRequest {
+  discipline: Discipline;
+  spread: string;
+  cards: AICard[];
+  language?: string;
+  question: string;
+  answer: string;
+}
+
+export async function submitFollowup(request: FollowupRequest): Promise<string> {
+  const { discipline, spread, cards, language = "ES", question, answer } = request;
+  const response = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      discipline,
+      spread,
+      cards,
+      language,
+      followup: { question, answer },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  const data = await response.json() as { interpretation: string };
+  return data.interpretation;
 }
 
 // ─── Función helper: convierte cartas al formato del API ─────────────────────
