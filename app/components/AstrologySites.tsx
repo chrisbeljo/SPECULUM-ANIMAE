@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Language } from "../translations";
 import { DisciplineLibrary, type DisciplineLibraryItem } from "./DisciplineLibrary";
+import { AstroConsultationFlow } from "./AstroConsultationFlow";
 import "./astrology-sites.css";
 import "./astrology-card-colors.css";
 import "./astrology-introduction.css";
@@ -177,8 +178,8 @@ export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
       <div className="astrology-focus-grid">
         {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => setSelected(index)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "−" : "+"}</strong></button>)}
       </div>
-      {focus && <article className="astrology-pending" aria-live="polite"><small>{text.pending}</small><h2>{focus.title}</h2><p>{text.pendingDescription}</p></article>}
     </section>
+    {focus && <AstroConsultationFlow discipline={branch} focus={focus.title} lang={lang} />}
     <DisciplineLibrary lang={lang} items={astrologyLibrary} />
   </section>;
 }
