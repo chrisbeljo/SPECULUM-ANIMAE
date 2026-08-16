@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Language } from "../translations";
 import "./astrology-sites.css";
+import "./astrology-card-colors.css";
 
 type AstrologyBranch = "western" | "eastern";
 type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void };

@@ -1,0 +1,40 @@
+.astrology-western .astrology-focus-grid button:nth-child(1) {
+  border-color: #684b76;
+  background: linear-gradient(145deg, #2d1c3a, #140d1c);
+}
+
+.astrology-western .astrology-focus-grid button:nth-child(2) {
+  border-color: #405f78;
+  background: linear-gradient(145deg, #172f44, #0c1724);
+}
+
+.astrology-western .astrology-focus-grid button:nth-child(3) {
+  border-color: #765a3d;
+  background: linear-gradient(145deg, #392719, #1a110c);
+}
+
+.astrology-western .astrology-focus-grid button:nth-child(4) {
+  border-color: #6d405c;
+  background: linear-gradient(145deg, #392033, #1a0f18);
+}
+
+.astrology-eastern .astrology-focus-grid button:nth-child(1) {
+  border-color: #754b3b;
+  background: linear-gradient(145deg, #382018, #190e0a);
+}
+
+.astrology-eastern .astrology-focus-grid button:nth-child(2) {
+  border-color: #536b47;
+  background: linear-gradient(145deg, #24351d, #10180d);
+}
+
+.astrology-eastern .astrology-focus-grid button:nth-child(3) {
+  border-color: #70563c;
+  background: linear-gradient(145deg, #382719, #19110b);
+}
+
+.astrology-focus-grid button:hover,
+.astrology-focus-grid button.selected {
+  border-color: var(--astro-accent);
+  filter: brightness(1.09);
+}
