@@ -402,18 +402,17 @@ function parseAIInterpretation(text:string):{id:string;title:string;body:string}
 }
 
 function FollowupPanel({discipline,spread,cards,language,followupQuestion,onMoreQuestions,t}:{discipline:Discipline;spread:string;cards:AICard[];language:Language;followupQuestion:string|null;onMoreQuestions:()=>void;t:(key:string)=>string}){
- const [answer,setAnswer]=useState("");
+ const [question,setQuestion]=useState("");
  const [submitting,setSubmitting]=useState(false);
  const [response,setResponse]=useState<string|null>(null);
  const [error,setError]=useState<string|null>(null);
- if(!followupQuestion)return null;
  const submit=async()=>{
-  const trimmed=answer.trim();
+  const trimmed=question.trim();
   if(!trimmed||submitting)return;
   setSubmitting(true);
   setError(null);
   try{
-   const text=await submitFollowup({discipline,spread,cards,language,question:followupQuestion,answer:trimmed});
+   const text=await submitFollowup({discipline,spread,cards,language,question:trimmed});
    setResponse(text);
   }catch{
    setError(t("followupError"));
@@ -422,15 +421,15 @@ function FollowupPanel({discipline,spread,cards,language,followupQuestion,onMore
   }
  };
  return <div className="followup-panel">
-  <span className="mini-label">{t("wantToKnowMore")}</span>
-  <p className="followup-question">{followupQuestion}</p>
+  <span className="mini-label">{t("askYourQuestion")}</span>
+  {followupQuestion&&<p className="followup-suggestion">{t("followupSuggestionPrefix")} {followupQuestion}</p>}
   {!response&&<div className="followup-input-row">
-   <textarea value={answer} onChange={e=>setAnswer(e.target.value)} placeholder={t("followupPlaceholder")} disabled={submitting} rows={2}/>
-   <button type="button" onClick={submit} disabled={submitting||!answer.trim()}>{submitting?t("generatingInterpretation"):t("followupSubmit")}</button>
+   <textarea value={question} onChange={e=>setQuestion(e.target.value)} placeholder={t("followupPlaceholder")} disabled={submitting} rows={2}/>
+   <button type="button" onClick={submit} disabled={submitting||!question.trim()}>{submitting?t("generatingInterpretation"):t("followupSubmit")}</button>
   </div>}
   {error&&<p className="followup-error">{error}</p>}
   {response&&<div className="followup-response"><p>{response}</p></div>}
-  <button type="button" className="more-questions-button" onClick={onMoreQuestions}>{t("moreQuestions")}<span>→</span></button>
+  <button type="button" className="more-questions-button" onClick={onMoreQuestions}>{t("otherDisciplines")}<span>→</span></button>
  </div>;
 }
 

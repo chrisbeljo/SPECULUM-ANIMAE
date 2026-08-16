@@ -34,7 +34,7 @@ interface InterpretRequest {
   cards: Card[];
   language?: "ES" | "EN" | "FR" | "DE" | "PT";
   analysis?: Record<string, unknown>;
-  followup?: { question: string; answer: string };
+  followup?: { question: string };
 }
 
 // ─── Language Configuration ────────────────────────────────────────────────
@@ -256,11 +256,13 @@ DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the response as one brie
 
 // ─── Model + Caching Configuration ─────────────────────────────────────────
 // Text disciplines run on Haiku (fast, cheap). Vision-based modules (not yet
-// built — Quiromancia, Fisonomía, Feng Shui, Aura) and the open-ended followup
-// conversation run on Sonnet, which handles free-form/visual reasoning better.
+// built — Quiromancia, Fisonomía, Feng Shui, Aura), large spreads (8+ cards —
+// more prone to dropping cards on the faster model), and the open-ended
+// followup conversation all run on Sonnet.
 const VISION_DISCIPLINES = new Set<string>(["quiromancia", "fisonomia", "fengshui", "aura"]);
-const modelFor = (discipline: string): string =>
-  VISION_DISCIPLINES.has(discipline) ? "claude-sonnet-5" : "claude-haiku-4-5-20251001";
+const LARGE_SPREAD_THRESHOLD = 7;
+const modelFor = (discipline: string, cardCount: number): string =>
+  (VISION_DISCIPLINES.has(discipline) || cardCount > LARGE_SPREAD_THRESHOLD) ? "claude-sonnet-5" : "claude-haiku-4-5-20251001";
 
 const FOLLOWUP_QUESTION_INSTRUCTION = `
 
@@ -268,9 +270,9 @@ MANDATORY FINAL LINE: after delivering the full interpretation above, your respo
 FOLLOWUP_QUESTION: <one single-sentence question specific to THIS exact reading, inviting the consultant to reflect on or share more about something concrete you just interpreted — never generic like "would you like to explore a card?">
 Nothing may come after this line. Omitting it is a critical error.`;
 
-const FOLLOWUP_SYSTEM_PROMPT = `You are continuing a divination reading conversation. The consultant already received a full interpretation of their spread and was then asked one specific, reading-related reflective question. They just answered it in their own words.
+const FOLLOWUP_SYSTEM_PROMPT = `You are answering a question the consultant has about a divination reading they just received. You have the original spread and cards as context.
 
-Your task: respond warmly and specifically to what they shared, deepening the original reading in light of their answer. Reference the actual cards/symbols from the original spread where relevant. Do not repeat the original interpretation from scratch. Do not start a new full reading. 2-4 sentences, direct and specific — never generic reassurance. Only ask a further question if it genuinely serves them; do not force one.`;
+Your task: answer their specific question directly and warmly, referencing the actual cards/symbols from the original spread where relevant. Do not repeat the entire original interpretation from scratch — go straight to answering what they asked. Do not start a new full reading. 2-4 sentences, direct and specific — never generic reassurance.`;
 
 // ─── User Prompt Templates por Idioma ──────────────────────────────────────
 
@@ -312,7 +314,7 @@ Then, after the interpretation, add exactly one final line in this literal forma
 FOLLOWUP_QUESTION: <one single-sentence question specific to THIS reading, inviting the consultant to reflect on or share more about something concrete you just interpreted — never generic like "would you like to explore a card?">`;
 };
 
-const getFollowupUserPrompt = (language: string, spread: string, cardList: string, question: string, answer: string): string => {
+const getFollowupUserPrompt = (language: string, spread: string, cardList: string, consultantQuestion: string): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
   return `${instruction}
 
@@ -320,10 +322,9 @@ Original spread: ${spread}
 Cards drawn:
 ${cardList}
 
-You previously closed the reading by asking the consultant: "${question}"
-The consultant answered: "${answer}"
+The consultant asks: "${consultantQuestion}"
 
-Respond to what they shared, following the instructions in the system prompt. Entire response must be in ${LANGUAGE_NAMES[language] || "Spanish"}.`;
+Answer their question directly, following the instructions in the system prompt. Entire response must be in ${LANGUAGE_NAMES[language] || "Spanish"}.`;
 };
 
 function extractFollowupQuestion(text: string): { interpretation: string; followupQuestion: string | null } {
@@ -372,7 +373,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
       model: "claude-sonnet-5",
       maxTokens: 1200,
       systemPrompt: FOLLOWUP_SYSTEM_PROMPT,
-      userPrompt: getFollowupUserPrompt(language, spread, cardList, followup.question, followup.answer),
+      userPrompt: getFollowupUserPrompt(language, spread, cardList, followup.question),
       extractFollowup: false,
     });
   }
@@ -381,7 +382,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
   const userPrompt = getUserPrompt(language, spread, question, cardList, analysis, cards.length, cardEntries);
 
   return callClaude(env, {
-    model: modelFor(discipline),
+    model: modelFor(discipline, cards.length),
     maxTokens: Math.min(2048 + cards.length * 400, 8192),
     systemPrompt,
     userPrompt,

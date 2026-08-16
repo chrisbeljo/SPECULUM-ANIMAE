@@ -124,19 +124,18 @@ export function useAIInterpretation(request: AIInterpretationRequest): AIInterpr
   return { interpretation, followupQuestion, isLoading, error };
 }
 
-// ─── Envío de respuesta de seguimiento ("¿Quieres saber más?") ────────────────
+// ─── Envío de la pregunta del consultante sobre su tirada ─────────────────────
 
 export interface FollowupRequest {
   discipline: Discipline;
   spread: string;
   cards: AICard[];
   language?: string;
-  question: string;
-  answer: string;
+  question: string; // la pregunta del consultante, no la que genera la IA
 }
 
 export async function submitFollowup(request: FollowupRequest): Promise<string> {
-  const { discipline, spread, cards, language = "ES", question, answer } = request;
+  const { discipline, spread, cards, language = "ES", question } = request;
   const response = await fetch(ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -145,7 +144,7 @@ export async function submitFollowup(request: FollowupRequest): Promise<string> 
       spread,
       cards,
       language,
-      followup: { question, answer },
+      followup: { question },
     }),
   });
 
