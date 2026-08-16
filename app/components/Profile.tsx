@@ -1,9 +1,13 @@
 'use client'
 
 import { useAuth } from '../hooks/useAuth'
+import type { Language } from '../translations'
 
-export function Profile({ onLogout }: { onLogout?: () => void }) {
+const copy:Record<Language,{active:string;profile:string;history:string;subscription:string;settings:string;logout:string}>={ES:{active:"Cuenta activa",profile:"Mi perfil",history:"Historial",subscription:"Suscripción",settings:"Configuración",logout:"Cerrar sesión"},EN:{active:"Active account",profile:"My profile",history:"History",subscription:"Subscription",settings:"Settings",logout:"Sign out"},FR:{active:"Compte actif",profile:"Mon profil",history:"Historique",subscription:"Abonnement",settings:"Paramètres",logout:"Se déconnecter"},DE:{active:"Aktives Konto",profile:"Mein Profil",history:"Verlauf",subscription:"Abonnement",settings:"Einstellungen",logout:"Abmelden"},PT:{active:"Conta ativa",profile:"Meu perfil",history:"Histórico",subscription:"Assinatura",settings:"Configurações",logout:"Sair"}};
+
+export function Profile({ onLogout,onOpenProfile,onOpenHistory,lang="ES" }: { onLogout?: () => void;onOpenProfile?:()=>void;onOpenHistory?:()=>void;lang?:Language }) {
   const { user, logout } = useAuth()
+  const t=copy[lang]
 
   const handleLogout = async () => {
     await logout()
@@ -18,19 +22,19 @@ export function Profile({ onLogout }: { onLogout?: () => void }) {
         <span className="profile-icon">👤</span>
         <div>
           <p className="profile-email">{user.email}</p>
-          <small>Premium • Activo</small>
+          <small>{t.active}</small>
         </div>
       </div>
 
       <nav className="profile-nav">
-        <button>Mi Perfil</button>
-        <button>Historial</button>
-        <button>Suscripción</button>
-        <button>Configuración</button>
+        <button onClick={onOpenProfile}>{t.profile}</button>
+        <button onClick={onOpenHistory}>{t.history}</button>
+        <button>{t.subscription}</button>
+        <button>{t.settings}</button>
       </nav>
 
       <button className="logout-btn" onClick={handleLogout}>
-        ← Cerrar sesión
+        ← {t.logout}
       </button>
 
       <style>{`
