@@ -6,6 +6,7 @@ import { DisciplineLibrary, type DisciplineLibraryItem } from "./DisciplineLibra
 import "./astrology-sites.css";
 import "./astrology-introduction.css";
 import "./numerology-site.css";
+import "./astro-artwork-v2.css";
 
 type Focus = { symbol: string; title: string; level: string; description: string };
 type IntroSection = { title: string; paragraphs: string[] };
