@@ -72,7 +72,7 @@ export const systemCategories = [
     systems: [
       ["Astrología Occidental", "Disponible"],
       ["Astrología Oriental", "Disponible"],
-      ["Numerología", "Próximamente"],
+      ["Numerología", "Disponible"],
       ["Eneagramas", "Próximamente"],
     ],
   },
