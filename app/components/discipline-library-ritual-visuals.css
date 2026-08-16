@@ -1,0 +1,83 @@
+.discipline-library-grid article>.discipline-library-rune,
+.discipline-library-grid article>.discipline-library-hexagram,
+.discipline-library-grid article>.discipline-library-chamalongos {
+  min-height: 220px;
+  padding: 22px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 45%, #302139, #0c0910 72%);
+}
+
+.discipline-library-rune { position: relative; }
+
+.discipline-library-grid .discipline-library-rune img {
+  width: 150px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 16px 17px #000b) saturate(.94) contrast(1.08);
+}
+
+.discipline-library-rune b {
+  position: absolute;
+  color: #2a170d;
+  font: 82px/1 "Gilda Display", serif;
+  text-shadow: 1px 1px 0 #d79a4c, -1px -1px 1px #090401, 0 2px 2px #0008;
+  transform: translateY(-3px);
+}
+
+.discipline-library-hexagram { gap: 8px; align-content: center; }
+
+.discipline-library-hexagram>span {
+  width: 122px;
+  min-height: 158px;
+  padding: 25px 24px 17px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #b99a62;
+  border-radius: 48% 52% 46% 54%/52% 45% 55% 48%;
+  background: radial-gradient(circle at 35% 30%, #ead8ae, #c6a36d 58%, #82603b);
+  box-shadow: inset 0 0 0 5px #4b2d1824, inset 8px 5px 18px #fff5, 0 16px 24px #0009;
+}
+
+.discipline-library-hexagram i {
+  min-height: 0;
+  height: 7px;
+  display: flex;
+  gap: 11px;
+  background: none;
+}
+
+.discipline-library-hexagram i b {
+  height: 7px;
+  display: block;
+  border-radius: 1px;
+  background: #2d1a10;
+  box-shadow: 0 1px #f2d29a44;
+}
+
+.discipline-library-hexagram i.yang b { width: 100%; }
+.discipline-library-hexagram i.yin b { width: calc(50% - 5px); }
+.discipline-library-hexagram>em { margin-top: -42px; color: #5d3921; font: normal 13px serif; }
+
+.discipline-library-chamalongos {
+  grid-template-columns: repeat(2, 82px);
+  grid-template-rows: repeat(2, 82px);
+  gap: 8px;
+}
+
+.discipline-library-grid .discipline-library-chamalongos img {
+  width: 82px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 9px 8px #000b);
+}
+
+@media(max-width:520px){
+  .discipline-library-grid article>.discipline-library-rune,
+  .discipline-library-grid article>.discipline-library-hexagram,
+  .discipline-library-grid article>.discipline-library-chamalongos { min-height: 190px; }
+}

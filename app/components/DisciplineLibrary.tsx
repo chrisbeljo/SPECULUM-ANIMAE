@@ -4,8 +4,27 @@ import { useId, useMemo, useState } from "react";
 import type { Language } from "../translations";
 import "./discipline-library.css";
 import "./discipline-library-performance.css";
+import "./discipline-library-ritual-visuals.css";
 
-export type DisciplineLibraryItem = { id: string; name: string; category: string; description: string; symbol?: string; image?: string };
+export type DisciplineLibraryItem = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  symbol?: string;
+  image?: string;
+  visual?: "rune" | "hexagram" | "chamalongos";
+  pattern?: string;
+  up?: number;
+};
+
+function LibraryVisual({ item }: { item: DisciplineLibraryItem }) {
+  if (item.visual === "rune") return <div className="discipline-library-rune" role="img" aria-label={item.name}><img src="/oracles/rune-token-wood-v3.png" alt="" loading="lazy" decoding="async" /><b>{item.symbol}</b></div>;
+  if (item.visual === "hexagram") return <div className="discipline-library-hexagram" role="img" aria-label={item.name}><span>{[...(item.pattern || "")].map((line, index) => <i className={line === "1" ? "yang" : "yin"} key={index}>{line === "1" ? <b /> : <><b /><b /></>}</i>)}</span><em>易</em></div>;
+  if (item.visual === "chamalongos") return <div className="discipline-library-chamalongos" role="img" aria-label={item.name}>{Array.from({ length: 4 }, (_, index) => <img src={`/oracles/chamalongos/tiger-cowrie-${index < (item.up || 0) ? "up" : "down"}.webp`} alt="" loading="lazy" decoding="async" key={index} />)}</div>;
+  if (item.image) return <img src={item.image} alt={item.name} loading="lazy" decoding="async" sizes="(max-width: 520px) 100vw, (max-width: 820px) 50vw, 33vw" />;
+  return <i aria-hidden="true">{item.symbol}</i>;
+}
 
 const labels: Record<Language, { library: string; explore: string; all: string; choose: string; search: string; category: string; allCategories: string; empty: string }> = {
   ES: { library: "Biblioteca de la disciplina", explore: "Símbolos, imágenes y elementos de referencia", all: "Biblioteca completa", choose: "Mostrar un elemento", search: "Buscar por nombre o significado", category: "Filtrar por categoría", allCategories: "Todas las categorías", empty: "No encontramos elementos con esos filtros." },
@@ -38,7 +57,7 @@ export function DisciplineLibrary({ lang, items, title }: { lang: Language; item
       <label className="discipline-library-menu"><span>{text.choose}</span><select value={selected} onChange={(event) => setSelected(event.target.value)}><option value="">{text.all}</option>{items.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
     </div>
     <div className={`discipline-library-grid ${selected ? "single" : ""}`}>
-      {visible.map((item) => <article key={item.id}>{item.image ? <img src={item.image} alt={item.name} loading="lazy" decoding="async" sizes="(max-width: 520px) 100vw, (max-width: 820px) 50vw, 33vw" /> : <i aria-hidden="true">{item.symbol}</i>}<div><small>{item.category}</small><h3>{item.name}</h3><p>{item.description}</p></div></article>)}
+      {visible.map((item) => <article key={item.id}><LibraryVisual item={item} /><div><small>{item.category}</small><h3>{item.name}</h3><p>{item.description}</p></div></article>)}
     </div>
     {!visible.length && <p className="discipline-library-empty" role="status">{text.empty}</p>}
   </section>;
