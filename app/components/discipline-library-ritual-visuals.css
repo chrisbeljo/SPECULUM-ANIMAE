@@ -8,6 +8,17 @@
   background: radial-gradient(circle at 50% 45%, #302139, #0c0910 72%);
 }
 
+.discipline-library-grid article>.discipline-library-coconut {
+  min-height: 220px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: repeat(2, 82px);
+  grid-template-rows: repeat(2, 82px);
+  place-content: center;
+  gap: 8px;
+  background: radial-gradient(circle at 50% 45%, #382718, #0c0908 72%);
+}
+
 .discipline-library-rune { position: relative; }
 
 .discipline-library-grid .discipline-library-rune img {
@@ -76,8 +87,27 @@
   filter: drop-shadow(0 9px 8px #000b);
 }
 
+.discipline-library-coconut i {
+  min-height: 0;
+  width: 82px;
+  aspect-ratio: 1;
+  display: block;
+  border: 2px solid #a96d3c;
+  border-radius: 50%;
+  box-shadow: inset 5px 6px 12px #fff4, inset -7px -8px 13px #2a1008aa, 0 9px 9px #000a;
+}
+
+.discipline-library-coconut i.up {
+  background: radial-gradient(circle at 38% 32%, #fff1b7, #d9a65e 56%, #70401f 100%);
+}
+
+.discipline-library-coconut i.down {
+  background: radial-gradient(circle at 38% 32%, #8d5732, #4a2415 60%, #1c0d08 100%);
+}
+
 @media(max-width:520px){
   .discipline-library-grid article>.discipline-library-rune,
   .discipline-library-grid article>.discipline-library-hexagram,
   .discipline-library-grid article>.discipline-library-chamalongos { min-height: 190px; }
+  .discipline-library-grid article>.discipline-library-coconut { min-height: 190px; }
 }
