@@ -149,13 +149,13 @@ const homeMenuImages:Record<string,string[]>={
  "Radiestesia":["/oracles/pendulum/silver-witness-pendulum-held.jpg","/oracles/pendulum/silver-witness-pendulum.jpg","/oracles/pendulum/radiesthesia-board.svg"],
  "Chamalongos":["/oracles/chamalongos/tiger-cowrie-up.webp","/oracles/chamalongos/tiger-cowrie-down.webp"],
  "Kabbalah":["/textures/brushed-chrome-soft.webp","/textures/brushed-chrome.png"],
- "Astrología Occidental":["/oracles/astrology/western-symbol-medallion.png"],
- "Numerología":["/oracles/numerology/numerology-cosmology.png"],
+ "Astrología Occidental":["/oracles/astrology/western-symbol-medallion.jpg"],
+ "Numerología":["/oracles/numerology/numerology-cosmology.jpg"],
  "Quiromancia":["/oracles/pendulum/silver-witness-pendulum-held.jpg","/cards/rider-classic/dealing-hand-v3.png"],
  "Fisonomía":["/oracles/angels/angel-01.webp","/oracles/zen-oraculo/cards/zen-20.jpg"],
  "Energía / Aura":["/oracles/zen-oraculo/style-study-v2.png","/oracles/zen-oraculo/cards/zen-01.jpg","/oracles/angels/angel-20.webp"],
  "Feng Shui":["/oracles/iching-balance.png","/oracles/rune-token-wood-v3.png"],
- "Astrología Oriental":["/oracles/astrology/eastern-symbol-medallion.png"],
+ "Astrología Oriental":["/oracles/astrology/eastern-symbol-medallion.jpg"],
  "Cita con Madame Meraki":["/speculum-animae-logo.png"]
 };
 function menuImage(system:string,seed:number){const images=homeMenuImages[system]||homeMenuImages["I Ching"];const hash=[...system].reduce((sum,char)=>sum+char.charCodeAt(0),0);return images[(seed+hash)%images.length]}

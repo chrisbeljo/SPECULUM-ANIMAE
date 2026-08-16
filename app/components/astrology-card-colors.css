@@ -58,11 +58,11 @@
 }
 
 .astrology-western .astrology-focus-grid i {
-  background-image: radial-gradient(circle, #0b0909a8 0 32%, transparent 34%), url("/oracles/astrology/western-symbol-medallion.png");
+  background-image: radial-gradient(circle, #0b0909a8 0 32%, transparent 34%), url("/oracles/astrology/western-symbol-medallion.jpg");
 }
 
 .astrology-eastern .astrology-focus-grid i {
-  background-image: radial-gradient(circle, #0c0806b0 0 32%, transparent 34%), url("/oracles/astrology/eastern-symbol-medallion.png");
+  background-image: radial-gradient(circle, #0c0806b0 0 32%, transparent 34%), url("/oracles/astrology/eastern-symbol-medallion.jpg");
 }
 
 .astrology-western .astrology-focus-grid i::after,
@@ -112,11 +112,11 @@
 }
 
 .astrology-western .discipline-library-grid i {
-  background-image: linear-gradient(#07060a20, #07060a48), url("/oracles/astrology/western-symbol-medallion.png");
+  background-image: linear-gradient(#07060a20, #07060a48), url("/oracles/astrology/western-symbol-medallion.jpg");
 }
 
 .astrology-eastern .discipline-library-grid i {
-  background-image: linear-gradient(#0805041a, #08050445), url("/oracles/astrology/eastern-symbol-medallion.png");
+  background-image: linear-gradient(#0805041a, #08050445), url("/oracles/astrology/eastern-symbol-medallion.jpg");
   color: #edc56f;
   text-shadow: 0 2px 2px #000, 0 0 14px #d69a4288, 0 0 34px #b9683055;
 }

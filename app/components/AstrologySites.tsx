@@ -151,11 +151,11 @@ export function AstrologySite({ branch, lang, onBack }: AstrologySiteProps) {
   const introductionSections = branch === "western" ? westernIntroductions[lang] : easternIntroductions[lang];
   const lib = libraryCopy[lang];
   const astrologyLibrary = branch === "western" ? [
-    { id: "western-wheel", name: lib.westernWheel, category: lib.reference, image: "/oracles/astrology/western-celestial-wheel.png", description: lib.westernDesc },
+    { id: "western-wheel", name: lib.westernWheel, category: lib.reference, image: "/oracles/astrology/western-celestial-wheel.jpg", description: lib.westernDesc },
     ...text.focuses.map((item, index) => ({ id: `western-${index}`, name: item.title, category: item.level, symbol: ["◎", "☍", "☀", "✦"][index], description: item.description })),
     { id: "planets", name: lib.planets, category: text.eyebrow, symbol: "☿", description: lib.planetsDesc },
   ] : [
-    { id: "eastern-wheel", name: lib.easternWheel, category: lib.reference, image: "/oracles/astrology/eastern-cosmology-wheel.png", description: lib.easternDesc },
+    { id: "eastern-wheel", name: lib.easternWheel, category: lib.reference, image: "/oracles/astrology/eastern-cosmology-wheel.jpg", description: lib.easternDesc },
     { id: "bazi", name: text.focuses[0].title, category: text.focuses[0].level, symbol: "八", description: text.focuses[0].description },
     { id: "animals", name: text.focuses[1].title, category: text.focuses[1].level, symbol: "子", description: text.focuses[1].description },
     { id: "elements", name: lib.elements, category: "Wu Xing", symbol: "木", description: lib.elementsDesc },

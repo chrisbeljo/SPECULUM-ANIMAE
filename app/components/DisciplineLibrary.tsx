@@ -3,6 +3,7 @@
 import { useId, useMemo, useState } from "react";
 import type { Language } from "../translations";
 import "./discipline-library.css";
+import "./discipline-library-performance.css";
 
 export type DisciplineLibraryItem = { id: string; name: string; category: string; description: string; symbol?: string; image?: string };
 
@@ -37,7 +38,7 @@ export function DisciplineLibrary({ lang, items, title }: { lang: Language; item
       <label className="discipline-library-menu"><span>{text.choose}</span><select value={selected} onChange={(event) => setSelected(event.target.value)}><option value="">{text.all}</option>{items.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
     </div>
     <div className={`discipline-library-grid ${selected ? "single" : ""}`}>
-      {visible.map((item) => <article key={item.id}>{item.image ? <img src={item.image} alt={item.name} loading="lazy" /> : <i aria-hidden="true">{item.symbol}</i>}<div><small>{item.category}</small><h3>{item.name}</h3><p>{item.description}</p></div></article>)}
+      {visible.map((item) => <article key={item.id}>{item.image ? <img src={item.image} alt={item.name} loading="lazy" decoding="async" sizes="(max-width: 520px) 100vw, (max-width: 820px) 50vw, 33vw" /> : <i aria-hidden="true">{item.symbol}</i>}<div><small>{item.category}</small><h3>{item.name}</h3><p>{item.description}</p></div></article>)}
     </div>
     {!visible.length && <p className="discipline-library-empty" role="status">{text.empty}</p>}
   </section>;
