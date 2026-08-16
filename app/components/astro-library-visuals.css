@@ -26,20 +26,27 @@
   inset: 0;
   display: grid;
   place-items: center;
-  color: #f0d184;
-  font: clamp(50px, 6vw, 82px)/1 "Gilda Display", serif;
-  text-shadow: 0 2px 3px #000, 0 0 17px #d8a94699;
+  color: #edc977;
+  font-family: "Times New Roman", "DejaVu Serif", serif;
+  font-size: clamp(50px, 6vw, 82px);
+  font-style: normal;
+  font-weight: 400;
+  font-variant-emoji: text;
+  line-height: 1;
+  text-shadow: 0 2px 3px #000, 0 0 14px #d8a94688;
 }
 
 .discipline-library-astro.eastern b {
-  color: #e8bd6e;
-  text-shadow: 0 2px 3px #000, 0 0 16px #a7643299;
+  color: #edc977;
+  font-family: "Songti SC", "Noto Serif CJK SC", "Times New Roman", serif;
+  text-shadow: 0 2px 3px #000, 0 0 14px #d8a94688;
 }
 
 .discipline-library-astro.numerology b {
-  color: #f2d88e;
+  color: #edc977;
+  font-family: "Gilda Display", "Times New Roman", serif;
   font-size: clamp(46px, 5.5vw, 76px);
-  text-shadow: 0 2px 3px #000, 0 0 18px #d3a542aa;
+  text-shadow: 0 2px 3px #000, 0 0 14px #d8a94688;
 }
 
 .discipline-library-grid.single .discipline-library-astro b {
