@@ -179,7 +179,7 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
         {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}
       </div>
     </section>
-    {consultationOpen && focus && <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} />}
+    {consultationOpen && focus && <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} fromProfile />}
     <CollapsibleDisciplineLibrary lang={lang} items={astrologyLibrary} />
   </section>;
 }

@@ -88,7 +88,7 @@ export function NumerologySite({ lang, onBack, selected, consultationOpen, onSel
     <button type="button" className="astrology-back" onClick={onBack}>← {text.back}</button>
     <header className="astrology-heading"><span>{text.eyebrow}</span><h1>{text.title}</h1><strong>{text.subtitle}</strong><div className="astrology-introduction-sections">{text.intro.map(section => <section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</section>)}</div></header>
     <section className="astrology-focus-panel" aria-labelledby="numerology-focus-title"><span className="astrology-mini-label" id="numerology-focus-title">{text.choose}</span><div className="astrology-focus-grid">{text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}</div></section>
-    {consultationOpen && focus && <AstroConsultationFlow discipline="numerology" focus={focus.title} focusIndex={selected!} lang={lang} />}
+    {consultationOpen && focus && <AstroConsultationFlow discipline="numerology" focus={focus.title} focusIndex={selected!} lang={lang} fromProfile />}
     <CollapsibleDisciplineLibrary lang={lang} items={library}/>
   </section>;
 }
