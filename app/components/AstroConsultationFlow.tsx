@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Language } from "../translations";
 import { createAstroInterpretation } from "./astro-interpretation";
 import { AstroInterpretationChart } from "./AstroInterpretationChart";
+import { AstroCalculationDetails } from "./AstroCalculationDetails";
+import { calculateAllAstros, type FullAstroCalculation } from "./astro-full-calculations";
 import "./astro-consultation-flow.css";
 import "./astro-consultation-refinements.css";
+import "./astro-complete-result.css";
 
 export type AstroDiscipline = "western" | "eastern" | "numerology";
 
@@ -71,28 +74,25 @@ const selectorCopy: Record<Language, Record<string,string>> = {
 const initial: FormState = { name:"Alain Christian Beltrán José", birthName:"Alain Christian Beltrán José", currentName:"", birthDate:"1974-02-21", birthTime:"12:32", birthPlace:"Ciudad de México, México", currentPlace:"Ciudad de México, México", birthHour:"12", birthMinute:"32", birthCountry:"México", birthCity:"Ciudad de México", currentCountry:"México", currentCity:"Ciudad de México", timezone:"America/Mexico_City", targetDate:"2026-08-16", calendar:"solar", gender:"male", question:"" };
 
 const resultCopy:Record<Language,Record<string,string>>={
-  ES:{demo:"DATOS TEMPORALES DE PRUEBA",synthesis:"Síntesis",guidance:"Orientación",method:"Método y alcance",questionOptional:"Pregunta o intención (opcional por ahora)"},
-  EN:{demo:"TEMPORARY TEST DATA",synthesis:"Synthesis",guidance:"Guidance",method:"Method and scope",questionOptional:"Question or intention (optional for now)"},
-  FR:{demo:"DONNÉES DE TEST TEMPORAIRES",synthesis:"Synthèse",guidance:"Orientation",method:"Méthode et portée",questionOptional:"Question ou intention (facultative pour l’instant)"},
-  DE:{demo:"TEMPORÄRE TESTDATEN",synthesis:"Synthese",guidance:"Orientierung",method:"Methode und Umfang",questionOptional:"Frage oder Absicht (vorerst optional)"},
-  PT:{demo:"DADOS TEMPORÁRIOS DE TESTE",synthesis:"Síntese",guidance:"Orientação",method:"Método e escopo",questionOptional:"Pergunta ou intenção (opcional por enquanto)"},
+  ES:{demo:"DATOS TEMPORALES DE PRUEBA",synthesis:"Síntesis",guidance:"Orientación",method:"Método y alcance",questionOptional:"Pregunta o intención (opcional por ahora)",calculating:"Calculando mapa completo…",calculationError:"No fue posible completar el cálculo. Revisa los datos e inténtalo nuevamente."},
+  EN:{demo:"TEMPORARY TEST DATA",synthesis:"Synthesis",guidance:"Guidance",method:"Method and scope",questionOptional:"Question or intention (optional for now)",calculating:"Calculating full chart…",calculationError:"The calculation could not be completed. Check the data and try again."},
+  FR:{demo:"DONNÉES DE TEST TEMPORAIRES",synthesis:"Synthèse",guidance:"Orientation",method:"Méthode et portée",questionOptional:"Question ou intention (facultative pour l’instant)",calculating:"Calcul complet de la carte…",calculationError:"Le calcul n’a pas pu être terminé. Vérifiez les données et réessayez."},
+  DE:{demo:"TEMPORÄRE TESTDATEN",synthesis:"Synthese",guidance:"Orientierung",method:"Methode und Umfang",questionOptional:"Frage oder Absicht (vorerst optional)",calculating:"Vollständige Karte wird berechnet…",calculationError:"Die Berechnung konnte nicht abgeschlossen werden. Prüfen Sie die Daten und versuchen Sie es erneut."},
+  PT:{demo:"DADOS TEMPORÁRIOS DE TESTE",synthesis:"Síntese",guidance:"Orientação",method:"Método e escopo",questionOptional:"Pergunta ou intenção (opcional por enquanto)",calculating:"Calculando o mapa completo…",calculationError:"Não foi possível concluir o cálculo. Confira os dados e tente novamente."},
 };
-
-const reduce = (value:number) => { let result=value; while(result>9 && ![11,22,33].includes(result)) result=String(result).split("").reduce((sum,digit)=>sum+Number(digit),0); return result; };
-const letterValue = (letter:string) => ((letter.charCodeAt(0)-65)%9)+1;
-function numerologyValues(name:string,date:string,targetDate?:string){ const clean=name.normalize("NFD").replace(/[^a-z]/gi,"").toUpperCase(); const vowels=new Set(["A","E","I","O","U"]); const digits=date.replace(/\D/g,"").split("").map(Number); const targetYear=Number(targetDate?.slice(0,4))||new Date().getFullYear(); const [year,month,day]=date.split("-").map(Number); return { life:reduce(digits.reduce((a,b)=>a+b,0)), expression:reduce([...clean].reduce((a,b)=>a+letterValue(b),0)), soul:reduce([...clean].filter(c=>vowels.has(c)).reduce((a,b)=>a+letterValue(b),0)), year:reduce(reduce(day)+reduce(month)+reduce(targetYear)), birthday:reduce(day), birthYear:year }; }
 
 export function AstroConsultationFlow({ discipline, focus, focusIndex, lang }: { discipline: AstroDiscipline; focus: string; focusIndex: number; lang: Language }) {
   const [form,setForm]=useState<FormState>(initial);
   const [submitted,setSubmitted]=useState<AstroConsultationPayload|null>(null);
+  const [calculation,setCalculation]=useState<FullAstroCalculation|null>(null);
+  const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
   const t={...copy[lang],...selectorCopy[lang],...resultCopy[lang]};
-  const numbers=useMemo(()=>discipline==="numerology"&&submitted?numerologyValues(submitted.birthName||submitted.name,submitted.birthDate,submitted.targetDate):null,[discipline,submitted]);
-  useEffect(()=>{ setSubmitted(null); setError(""); window.setTimeout(()=>document.querySelector(".astro-consultation-flow")?.scrollIntoView({behavior:"smooth",block:"start"}),50); },[focus]);
+  useEffect(()=>{ setSubmitted(null); setCalculation(null); setLoading(false); setError(""); window.setTimeout(()=>document.querySelector(".astro-consultation-flow")?.scrollIntoView({behavior:"smooth",block:"start"}),50); },[focus]);
   const update=(key:keyof FormState,value:string)=>setForm(current=>({...current,[key]:value}));
-  function submit(event:React.FormEvent){ event.preventDefault(); const required=discipline==="numerology"?[form.birthName,form.birthDate]:[form.name,form.birthDate,form.birthHour,form.birthCountry,form.birthCity,form.timezone]; if(required.some(value=>!value?.trim())){setError(t.required);return;} setError(""); setSubmitted({discipline,focus,language:lang,...form,birthTime:`${form.birthHour}:${form.birthMinute}`,birthPlace:`${form.birthCity}, ${form.birthCountry}`,currentPlace:form.currentCity&&form.currentCountry?`${form.currentCity}, ${form.currentCountry}`:""}); window.setTimeout(()=>document.querySelector(".astro-result")?.scrollIntoView({behavior:"smooth",block:"start"}),50); }
+  async function submit(event:React.FormEvent){ event.preventDefault(); const required=discipline==="numerology"?[form.birthName,form.birthDate]:[form.name,form.birthDate,form.birthHour,form.birthCountry,form.birthCity,form.timezone]; if(required.some(value=>!value?.trim())){setError(t.required);return;} const payload:AstroConsultationPayload={discipline,focus,language:lang,...form,birthTime:`${form.birthHour}:${form.birthMinute}`,birthPlace:`${form.birthCity}, ${form.birthCountry}`,currentPlace:form.currentCity&&form.currentCountry?`${form.currentCity}, ${form.currentCountry}`:""}; setError("");setLoading(true);try{const calculated=await calculateAllAstros(payload);setCalculation(calculated);setSubmitted(payload);window.setTimeout(()=>document.querySelector(".astro-result")?.scrollIntoView({behavior:"smooth",block:"start"}),50)}catch(cause){console.error("Astros calculation failed",cause);setError(t.calculationError)}finally{setLoading(false)} }
   const disciplineClass=`astro-consultation-${discipline}`;
-  if(submitted){const interpretation=createAstroInterpretation(submitted,focusIndex,numbers);return <section className={`astro-consultation-flow astro-result ${disciplineClass}`}><button className="astro-edit" onClick={()=>setSubmitted(null)}>← {t.new}</button><div className="astro-result-hero"><img src={interpretation.image} alt=""/><div><small>{t.result}</small><h2>{interpretation.title}</h2><p><b>{t.focus}:</b> {focus}</p></div></div><AstroInterpretationChart discipline={discipline} focusIndex={focusIndex} lang={lang} numbers={numbers}/><div className="astro-result-grid"><article><small>{t.data}</small><h3>{submitted.birthName||submitted.name}</h3><p>{submitted.birthDate}{submitted.birthTime?` · ${submitted.birthTime}`:""}</p><p>{submitted.birthPlace}</p>{submitted.question&&<p>{submitted.question}</p>}</article><article><small>{t.calculation}</small>{numbers?<div className="astro-number-grid"><b>{numbers.life}<span>{t.life}</span></b><b>{numbers.expression}<span>{t.expression}</span></b><b>{numbers.soul}<span>{t.soul}</span></b><b>{numbers.year}<span>{t.year}</span></b></div>:<div className="astro-key-grid">{interpretation.keys.map(item=><p key={item.label}><span>{item.label}</span><b>{item.value}</b></p>)}</div>}</article><article className="astro-reading"><small>{t.synthesis}</small><p>{interpretation.summary}</p></article><article className="astro-reading"><small>{t.guidance}</small><p>{interpretation.guidance}</p></article><article className="astro-interpretation-contract"><small>{t.method}</small><p>{interpretation.method}</p></article></div></section>}
+  if(submitted&&calculation){const interpretation=createAstroInterpretation(submitted,focusIndex,calculation);return <section className={`astro-consultation-flow astro-result ${disciplineClass}`}><button className="astro-edit" onClick={()=>{setSubmitted(null);setCalculation(null)}}>← {t.new}</button><div className="astro-result-hero"><img src={interpretation.image} alt=""/><div><small>{t.result}</small><h2>{interpretation.title}</h2><p><b>{t.focus}:</b> {focus}</p></div></div><AstroInterpretationChart discipline={discipline} focusIndex={focusIndex} lang={lang} data={calculation}/><div className="astro-result-grid"><article><small>{t.data}</small><h3>{submitted.birthName||submitted.name}</h3><p>{submitted.birthDate}{submitted.birthTime?` · ${submitted.birthTime}`:""}</p><p>{submitted.birthPlace}</p>{submitted.question&&<p>{submitted.question}</p>}</article><article><small>{t.calculation}</small><div className="astro-key-grid">{interpretation.keys.map(item=><p key={item.label}><span>{item.label}</span><b>{item.value}</b></p>)}</div></article><article className="astro-reading"><small>{t.synthesis}</small><p>{interpretation.summary}</p>{interpretation.sections?.map(section=><div className="astro-reading-section" key={section.title}><h4>{section.title}</h4><p>{section.text}</p></div>)}</article><article className="astro-reading"><small>{t.guidance}</small><p>{interpretation.guidance}</p></article><article className="astro-interpretation-contract"><small>{t.method}</small><p>{interpretation.method}</p></article></div><AstroCalculationDetails discipline={discipline} focusIndex={focusIndex} lang={lang} data={calculation}/></section>}
   return <section className={`astro-consultation-flow ${disciplineClass}`}>
     <header><small>{t.eyebrow}</small><h2>{t.title}</h2><p>{t.subtitle}</p><b className="astro-demo-badge">{t.demo}</b></header>
     <form onSubmit={submit} noValidate><div className="astro-form-grid">
@@ -109,6 +109,6 @@ export function AstroConsultationFlow({ discipline, focus, focusIndex, lang }: {
       </>}
       {discipline==="eastern"&&<><label>{t.calendar}<select value={form.calendar} onChange={e=>update("calendar",e.target.value)}><option value="solar">{t.solar}</option><option value="lunar">{t.lunar}</option></select></label><label>{t.gender}<select value={form.gender} onChange={e=>update("gender",e.target.value)}><option value="">—</option><option value="female">{t.female}</option><option value="male">{t.male}</option><option value="other">{t.other}</option></select></label></>}
       <label className="astro-question">{t.questionOptional}<textarea rows={4} value={form.question} onChange={e=>update("question",e.target.value)}/></label>
-    </div>{error&&<p className="astro-form-error" role="alert">{error}</p>}<button className="astro-submit" type="submit">{t.submit} →</button></form>
+    </div>{error&&<p className="astro-form-error" role="alert">{error}</p>}<button className="astro-submit" type="submit" disabled={loading}>{loading?t.calculating:t.submit} {!loading&&"→"}</button></form>
   </section>;
 }
