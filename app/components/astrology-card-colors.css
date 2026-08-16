@@ -38,3 +38,65 @@
   border-color: var(--astro-accent);
   filter: brightness(1.09);
 }
+
+.astrology-site .discipline-library-grid article {
+  border-color: color-mix(in srgb, var(--astro-accent) 28%, #211927);
+  background: linear-gradient(155deg, #120e16, #08070a 72%);
+  box-shadow: 0 18px 40px #0005;
+}
+
+.astrology-site .discipline-library-grid i {
+  position: relative;
+  min-height: 245px;
+  overflow: hidden;
+  isolation: isolate;
+  background-position: center;
+  background-size: cover;
+  color: #efd38e;
+  font-size: clamp(56px, 6vw, 78px);
+  font-style: normal;
+  text-shadow: 0 2px 2px #000, 0 0 16px #e5b75c99, 0 0 38px #d6a54b55;
+}
+
+.astrology-site .discipline-library-grid i::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 47%;
+  aspect-ratio: 1;
+  border: 1px solid #d4ae62aa;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 34%, #5f48294d, #0a080bd9 67%);
+  box-shadow: inset 0 0 28px #edc56d22, 0 0 0 7px #0b080bbb, 0 0 0 8px #cba15266, 0 16px 30px #000b;
+}
+
+.astrology-western .discipline-library-grid i {
+  background-image: linear-gradient(#07060a20, #07060a48), url("/oracles/astrology/western-symbol-medallion.png");
+}
+
+.astrology-eastern .discipline-library-grid i {
+  background-image: linear-gradient(#0805041a, #08050445), url("/oracles/astrology/eastern-symbol-medallion.png");
+  color: #edc56f;
+  text-shadow: 0 2px 2px #000, 0 0 14px #d69a4288, 0 0 34px #b9683055;
+}
+
+.astrology-eastern .discipline-library-grid i::before {
+  border-color: #d2a354a8;
+  background: radial-gradient(circle at 42% 34%, #74513245, #090706e6 68%);
+}
+
+.astrology-site .discipline-library-grid article:hover {
+  border-color: color-mix(in srgb, var(--astro-accent) 72%, #fff 8%);
+  box-shadow: 0 22px 52px #0009, 0 0 24px color-mix(in srgb, var(--astro-accent) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+.astrology-site .discipline-library-grid article {
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+@media (max-width: 520px) {
+  .astrology-site .discipline-library-grid i {
+    min-height: 210px;
+  }
+}
