@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { ReactNode } from "react";
 import "./chamalongo-cast.css";
 
@@ -52,6 +52,12 @@ export function ChamalongoCast({ onCastComplete, onCastStart, readyLabel, shakin
   const [phase, setPhase] = useState<CastPhase>("ready");
   const [faces, setFaces] = useState<Array<"up" | "down">>(() => makeCast());
   const [landings, setLandings] = useState<Landing[]>(defaultLandings);
+  const onCastCompleteRef = useRef(onCastComplete);
+  const completionDeliveredRef = useRef(false);
+
+  useEffect(() => {
+    onCastCompleteRef.current = onCastComplete;
+  }, [onCastComplete]);
 
   useEffect(() => {
     if (phase !== "shaking") return;
@@ -61,15 +67,20 @@ export function ChamalongoCast({ onCastComplete, onCastStart, readyLabel, shakin
   }, [phase]);
 
   useEffect(() => {
-    if (phase !== "released") return;
+    if (phase !== "released" || completionDeliveredRef.current) return;
 
-    const completeTimer = window.setTimeout(() => onCastComplete?.(faces), 1550);
+    const completeTimer = window.setTimeout(() => {
+      if (completionDeliveredRef.current) return;
+      completionDeliveredRef.current = true;
+      onCastCompleteRef.current?.(faces);
+    }, 1550);
     return () => window.clearTimeout(completeTimer);
-  }, [faces, onCastComplete, phase]);
+  }, [faces, phase]);
 
   function cast() {
     if (phase === "shaking") return;
     onCastStart?.();
+    completionDeliveredRef.current = false;
     setFaces(makeCast());
     setLandings(makeLandings());
     setPhase("shaking");
