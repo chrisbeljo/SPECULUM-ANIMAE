@@ -1,0 +1,153 @@
+.chamalongo-cast-experience {
+  --chamalongo-gold: #caa66b;
+  width: min(620px, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.chamalongo-hands-stage {
+  width: min(520px, 100%);
+  aspect-ratio: 1 / 1.08;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--chamalongo-gold) 55%, transparent);
+  border-radius: 24px;
+  background: #050505;
+  box-shadow: inset 0 0 70px #000, 0 24px 60px #0008;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.chamalongo-hands-stage:focus-visible {
+  outline: 2px solid #e4c486;
+  outline-offset: 5px;
+}
+
+.chamalongo-hands-stage:disabled {
+  cursor: progress;
+}
+
+.chamalongo-hands {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.chamalongo-hands-open {
+  opacity: 0;
+}
+
+.is-shaking .chamalongo-hands-closed {
+  animation: chamalongo-three-shakes 2.4s cubic-bezier(.45, 0, .55, 1) both;
+  transform-origin: 50% 35%;
+}
+
+.is-released .chamalongo-hands-closed {
+  opacity: 0;
+}
+
+.is-released .chamalongo-hands-open {
+  opacity: 1;
+  animation: chamalongo-open-hands .38s ease-out both;
+}
+
+@keyframes chamalongo-three-shakes {
+  0%, 100% { transform: translateY(0) scale(1); }
+  8%, 41%, 74% { transform: translateY(-8.5%) scale(1.015); }
+  24%, 57%, 90% { transform: translateY(7%) scale(.99); }
+}
+
+@keyframes chamalongo-open-hands {
+  from { opacity: 0; transform: scale(.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.chamalongo-fall {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.chamalongo-shell {
+  --landing-x: 0%;
+  --landing-y: 0%;
+  --turn: 280deg;
+  width: clamp(58px, 14%, 82px);
+  aspect-ratio: 1;
+  position: absolute;
+  left: 50%;
+  top: 43%;
+  object-fit: cover;
+  border-radius: 50%;
+  opacity: 0;
+  filter: drop-shadow(0 12px 10px #000c);
+}
+
+.is-released .chamalongo-shell {
+  animation: chamalongo-shell-drop 1.28s cubic-bezier(.25, .72, .34, 1) both;
+}
+
+.is-released .shell-1 { --landing-x: -150%; --landing-y: 255%; --turn: -310deg; animation-delay: .02s; }
+.is-released .shell-2 { --landing-x: -54%; --landing-y: 302%; --turn: 390deg; animation-delay: .1s; }
+.is-released .shell-3 { --landing-x: 46%; --landing-y: 275%; --turn: -430deg; animation-delay: .16s; }
+.is-released .shell-4 { --landing-x: 140%; --landing-y: 318%; --turn: 340deg; animation-delay: .23s; }
+
+@keyframes chamalongo-shell-drop {
+  0% { opacity: 0; transform: translate(-50%, -55%) scale(.55) rotate(0); }
+  12% { opacity: 1; }
+  72% { transform: translate(calc(-50% + var(--landing-x)), var(--landing-y)) scale(1) rotate(var(--turn)); }
+  84% { transform: translate(calc(-50% + var(--landing-x)), calc(var(--landing-y) - 18%)) scale(1) rotate(var(--turn)); }
+  100% { opacity: 1; transform: translate(calc(-50% + var(--landing-x)), var(--landing-y)) scale(1) rotate(var(--turn)); }
+}
+
+.chamalongo-cast-instructions {
+  min-height: 1.5em;
+  margin: 18px auto 0;
+  color: #c8bdaf;
+  font-size: 13px;
+  letter-spacing: .03em;
+}
+
+.chamalongo-recast {
+  margin-top: 13px;
+  padding: 10px 17px;
+  border: 1px solid #80663e;
+  border-radius: 999px;
+  background: #15100b;
+  color: #e1c184;
+  font: 700 10px/1 system-ui, sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .chamalongo-hands-stage {
+    width: 100%;
+    border-radius: 18px;
+  }
+
+  .chamalongo-shell {
+    width: 15%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-shaking .chamalongo-hands-closed {
+    animation-duration: .35s;
+  }
+
+  .is-released .chamalongo-shell,
+  .is-released .chamalongo-hands-open {
+    animation-duration: .01ms;
+  }
+}
