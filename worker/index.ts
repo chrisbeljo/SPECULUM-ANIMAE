@@ -28,12 +28,13 @@ interface Card {
 }
 
 interface InterpretRequest {
-  discipline?: "tarot" | "oracle-zen" | "oracle-angels" | "oracle-animals" | "runes" | "iching" | "radiestesia";
+  discipline?: "tarot" | "oracle-zen" | "oracle-angels" | "oracle-animals" | "runes" | "iching" | "radiestesia" | string;
   spread: string;
   question?: string;
   cards: Card[];
   language?: "ES" | "EN" | "FR" | "DE" | "PT";
   analysis?: Record<string, unknown>;
+  followup?: { question: string; answer: string };
 }
 
 // ─── Language Configuration ────────────────────────────────────────────────
@@ -250,11 +251,26 @@ DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the response as one brie
 [What this response does NOT resolve — a nuance or blind spot to hold.]
 
 ## The trend
-[How to use this response in the decision ahead. Close with a single direct sentence.]
-
-## Direction
-[How to use this response in your decision.]`,
+[How to use this response in the decision ahead. Close with a single direct sentence.]`,
 };
+
+// ─── Model + Caching Configuration ─────────────────────────────────────────
+// Text disciplines run on Haiku (fast, cheap). Vision-based modules (not yet
+// built — Quiromancia, Fisonomía, Feng Shui, Aura) and the open-ended followup
+// conversation run on Sonnet, which handles free-form/visual reasoning better.
+const VISION_DISCIPLINES = new Set<string>(["quiromancia", "fisonomia", "fengshui", "aura"]);
+const modelFor = (discipline: string): string =>
+  VISION_DISCIPLINES.has(discipline) ? "claude-sonnet-5" : "claude-haiku-4-5-20251001";
+
+const FOLLOWUP_QUESTION_INSTRUCTION = `
+
+MANDATORY FINAL LINE: after delivering the full interpretation above, your response MUST end with exactly one more line containing ONLY this literal marker (never translate the marker text "FOLLOWUP_QUESTION:" itself — keep it in English as a technical delimiter; only the question after it goes in the target language):
+FOLLOWUP_QUESTION: <one single-sentence question specific to THIS exact reading, inviting the consultant to reflect on or share more about something concrete you just interpreted — never generic like "would you like to explore a card?">
+Nothing may come after this line. Omitting it is a critical error.`;
+
+const FOLLOWUP_SYSTEM_PROMPT = `You are continuing a divination reading conversation. The consultant already received a full interpretation of their spread and was then asked one specific, reading-related reflective question. They just answered it in their own words.
+
+Your task: respond warmly and specifically to what they shared, deepening the original reading in light of their answer. Reference the actual cards/symbols from the original spread where relevant. Do not repeat the original interpretation from scratch. Do not start a new full reading. 2-4 sentences, direct and specific — never generic reassurance. Only ask a further question if it genuinely serves them; do not force one.`;
 
 // ─── User Prompt Templates por Idioma ──────────────────────────────────────
 
@@ -290,8 +306,34 @@ ${cardList}
 ${analysisBlock}
 ${coverageNote}
 
-Generate the full interpretation following the structure indicated above. REMINDER: regardless of what language the reference material above is written in, your entire response — every section, every sentence — must be written in ${LANGUAGE_NAMES[language] || "Spanish"}. Do not mix in Spanish words or phrases from the source analysis.`;
+Generate the full interpretation following the structure indicated above. REMINDER: regardless of what language the reference material above is written in, your entire response — every section, every sentence — must be written in ${LANGUAGE_NAMES[language] || "Spanish"}. Do not mix in Spanish words or phrases from the source analysis.
+
+Then, after the interpretation, add exactly one final line in this literal format — the marker "FOLLOWUP_QUESTION:" itself must stay in English as a technical delimiter, never translated; only the question text after it must be in ${LANGUAGE_NAMES[language] || "Spanish"}:
+FOLLOWUP_QUESTION: <one single-sentence question specific to THIS reading, inviting the consultant to reflect on or share more about something concrete you just interpreted — never generic like "would you like to explore a card?">`;
 };
+
+const getFollowupUserPrompt = (language: string, spread: string, cardList: string, question: string, answer: string): string => {
+  const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
+  return `${instruction}
+
+Original spread: ${spread}
+Cards drawn:
+${cardList}
+
+You previously closed the reading by asking the consultant: "${question}"
+The consultant answered: "${answer}"
+
+Respond to what they shared, following the instructions in the system prompt. Entire response must be in ${LANGUAGE_NAMES[language] || "Spanish"}.`;
+};
+
+function extractFollowupQuestion(text: string): { interpretation: string; followupQuestion: string | null } {
+  const match = text.match(/FOLLOWUP_QUESTION:\s*(.+?)\s*$/i);
+  if (!match || match.index === undefined) return { interpretation: text.trim(), followupQuestion: null };
+  return {
+    interpretation: text.slice(0, match.index).trim(),
+    followupQuestion: match[1].trim(),
+  };
+}
 
 // ─── Main Interpretation Handler ───────────────────────────────────────────
 
@@ -313,7 +355,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  const { discipline = "tarot", spread, question, cards, language = "ES", analysis } = body;
+  const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup } = body;
 
   if (!cards || cards.length === 0) {
     return new Response(JSON.stringify({ error: "No cards provided" }), {
@@ -325,9 +367,29 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
   const cardEntries = cards.map((c) => `${c.label}: ${c.card}${c.reversed ? " (reversed)" : ""}`);
   const cardList = cardEntries.map((entry, i) => `${i + 1}. ${entry}`).join("\n");
 
-  const systemPrompt = SYSTEM_PROMPTS[discipline] || SYSTEM_PROMPTS.tarot;
+  if (followup) {
+    return callClaude(env, {
+      model: "claude-sonnet-5",
+      maxTokens: 1200,
+      systemPrompt: FOLLOWUP_SYSTEM_PROMPT,
+      userPrompt: getFollowupUserPrompt(language, spread, cardList, followup.question, followup.answer),
+      extractFollowup: false,
+    });
+  }
+
+  const systemPrompt = (SYSTEM_PROMPTS[discipline] || SYSTEM_PROMPTS.tarot) + FOLLOWUP_QUESTION_INSTRUCTION;
   const userPrompt = getUserPrompt(language, spread, question, cardList, analysis, cards.length, cardEntries);
 
+  return callClaude(env, {
+    model: modelFor(discipline),
+    maxTokens: Math.min(2048 + cards.length * 400, 8192),
+    systemPrompt,
+    userPrompt,
+    extractFollowup: true,
+  });
+}
+
+async function callClaude(env: Env, opts: { model: string; maxTokens: number; systemPrompt: string; userPrompt: string; extractFollowup: boolean }): Promise<Response> {
   try {
     const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -337,10 +399,10 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: Math.min(2048 + cards.length * 400, 8192),
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
+        model: opts.model,
+        max_tokens: opts.maxTokens,
+        system: [{ type: "text", text: opts.systemPrompt, cache_control: { type: "ephemeral" } }],
+        messages: [{ role: "user", content: opts.userPrompt }],
       }),
     });
 
@@ -353,9 +415,12 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     }
 
     const data = await anthropicResponse.json() as { content: Array<{ type: string; text: string }> };
-    const interpretation = data.content?.[0]?.text ?? "";
+    const rawText = data.content?.[0]?.text ?? "";
+    const { interpretation, followupQuestion } = opts.extractFollowup
+      ? extractFollowupQuestion(rawText)
+      : { interpretation: rawText.trim(), followupQuestion: null };
 
-    return new Response(JSON.stringify({ interpretation }), {
+    return new Response(JSON.stringify({ interpretation, followup_question: followupQuestion }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
