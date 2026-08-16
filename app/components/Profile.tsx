@@ -33,7 +33,7 @@ export function Profile({ onLogout }: { onLogout?: () => void }) {
         ← Cerrar sesión
       </button>
 
-      <style jsx>{`
+      <style>{`
         .profile-menu {
           padding: 16px;
           border: 1px solid #3a2c4a;

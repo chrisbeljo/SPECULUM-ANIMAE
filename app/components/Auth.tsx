@@ -93,7 +93,7 @@ export function Auth({ onSuccess }: { onSuccess?: () => void }) {
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .auth-container {
           min-height: 100vh;
           display: grid;
