@@ -74,3 +74,47 @@
   font-size: 9px;
   line-height: 1.4;
 }
+
+.astro-demo-badge {
+  display: inline-block;
+  margin-top: 13px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--astro-accent) 55%, transparent);
+  border-radius: 999px;
+  color: #e6cb8d;
+  background: #09070ca8;
+  font-size: 8px;
+  letter-spacing: .14em;
+}
+
+.astro-result-hero img {
+  aspect-ratio: 1;
+}
+
+.astro-key-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.astro-key-grid p {
+  margin: 0;
+  padding: 13px 15px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid #54435d;
+  border-radius: 11px;
+}
+
+.astro-key-grid span {
+  color: #a99da7;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.astro-key-grid b { color: #efd38e; }
+.astro-reading { border-top: 2px solid color-mix(in srgb, var(--astro-accent) 58%, transparent) !important; }
+.astro-reading p { font-size: 15px; }
