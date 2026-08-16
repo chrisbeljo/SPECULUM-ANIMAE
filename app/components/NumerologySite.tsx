@@ -76,19 +76,24 @@ const meanings: Record<Language, string[]> = {
 };
 
 const libraryNumbers = [1,2,3,4,5,6,7,8,9,11,22,33];
+const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back to focuses",FR:"Retour aux approches",DE:"Zurück zu den Schwerpunkten",PT:"Voltar aos enfoques"};
 
-export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void }) {
+export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void }) {
   const text = content[lang];
   const library: DisciplineLibraryItem[] = libraryNumbers.map((number, index) => ({ id: `number-${number}`, name: `${text.numberLabel} ${number}`, category: number > 9 ? text.masterLabel : text.numberLabel, description: meanings[lang][index], symbol: String(number) }));
   const focus = selected === null ? null : text.focuses[selected];
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
 
+  if (consultationOpen && focus) return <section className="astrology-site numerology-site astrology-results-page">
+    <button type="button" className="astrology-back" onClick={onCloseConsultation}>← {resultsBack[lang]}</button>
+    <AstroConsultationFlow discipline="numerology" focus={focus.title} focusIndex={selected!} lang={lang} fromProfile />
+  </section>;
+
   return <section className="astrology-site numerology-site">
     <button type="button" className="astrology-back" onClick={onBack}>← {text.back}</button>
     <header className="astrology-heading"><span>{text.eyebrow}</span><h1>{text.title}</h1><strong>{text.subtitle}</strong><div className="astrology-introduction-sections">{text.intro.map(section => <section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</section>)}</div></header>
     <section className="astrology-focus-panel" aria-labelledby="numerology-focus-title"><span className="astrology-mini-label" id="numerology-focus-title">{text.choose}</span><div className="astrology-focus-grid">{text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}</div></section>
-    {consultationOpen && focus && <AstroConsultationFlow discipline="numerology" focus={focus.title} focusIndex={selected!} lang={lang} fromProfile />}
     <CollapsibleDisciplineLibrary lang={lang} items={library}/>
   </section>;
 }

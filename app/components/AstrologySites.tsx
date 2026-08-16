@@ -11,7 +11,7 @@ import "./astrology-introduction.css";
 import "./astro-artwork-v2.css";
 
 export type AstrologyBranch = "western" | "eastern";
-type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void };
+type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void };
 type Focus = { symbol: string; title: string; level: string; description: string };
 type SiteCopy = { back: string; eyebrow: string; title: string; subtitle: string; introduction: string; choose: string; pending: string; pendingDescription: string; focuses: Focus[] };
 type IntroSection = { title: string; paragraphs: string[] };
@@ -148,7 +148,9 @@ const libraryCopy: Record<Language, { reference: string; westernWheel: string; w
   PT: { reference: "Imagem de referência", westernWheel: "Roda celeste ocidental", westernDesc: "Síntese visual do zodíaco, das órbitas e da geometria astrológica.", easternWheel: "Roda cosmológica oriental", easternDesc: "Síntese visual de Yin/Yang, cinco elementos e doze animais.", planets: "Planetas", planetsDesc: "Funções simbólicas que atuam em signos, casas e aspectos.", elements: "Cinco elementos", elementsDesc: "Madeira, Fogo, Terra, Metal e Água em seus ciclos.", polarity: "Yin e Yang", polarityDesc: "Polaridade complementar presente em cada elemento e pilar." },
 };
 
-export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect }: AstrologySiteProps) {
+const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back to focuses",FR:"Retour aux approches",DE:"Zurück zu den Schwerpunkten",PT:"Voltar aos enfoques"};
+
+export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation }: AstrologySiteProps) {
   const text = content[lang][branch];
   const introductionSections = branch === "western" ? westernIntroductions[lang] : easternIntroductions[lang];
   const lib = libraryCopy[lang];
@@ -170,6 +172,11 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  if (consultationOpen && focus) return <section className={`astrology-site astrology-${branch} astrology-results-page`}>
+    <button type="button" className="astrology-back" onClick={onCloseConsultation}>← {resultsBack[lang]}</button>
+    <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} fromProfile />
+  </section>;
+
   return <section className={`astrology-site astrology-${branch}`}>
     <button type="button" className="astrology-back" onClick={onBack}>← {text.back}</button>
     <header className="astrology-heading"><span>{text.eyebrow}</span><h1>{text.title}</h1><strong>{text.subtitle}</strong><div className="astrology-introduction-sections">{introductionSections.map(section => <section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</section>)}</div></header>
@@ -179,7 +186,6 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
         {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}
       </div>
     </section>
-    {consultationOpen && focus && <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} fromProfile />}
     <CollapsibleDisciplineLibrary lang={lang} items={astrologyLibrary} />
   </section>;
 }
