@@ -88,5 +88,26 @@ export function useAuth() {
     }
   }
 
-  return { user, loading, error, register, login, logout }
+  const deleteAccount = async () => {
+    try {
+      setError(null)
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('No hay una sesión activa')
+      const response = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}))
+        throw new Error(body.error || 'No se pudo eliminar la cuenta')
+      }
+      await supabase.auth.signOut()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al eliminar la cuenta'
+      setError(message)
+      throw err
+    }
+  }
+
+  return { user, loading, error, register, login, logout, deleteAccount }
 }

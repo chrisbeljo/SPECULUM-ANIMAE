@@ -13,7 +13,12 @@ interface Env {
     };
   };
   ANTHROPIC_API_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY: string;
 }
+
+const SUPABASE_URL = "https://xenftrcqqhhrajatzhbq.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlbmZ0cmNxcWhocmFqYXR6aGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NDkzMjksImV4cCI6MjEwMjEyNTMyOX0.ydGXZPq42fiKKWcnywoR8FJE4ytPdPLwH0zGYHt3PC0";
 
 interface ExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
@@ -559,6 +564,52 @@ async function callClaude(env: Env, opts: { model: string; maxTokens: number; sy
   }
 }
 
+// ─── Account Deletion ───────────────────────────────────────────────────────
+
+async function handleDeleteAccount(request: Request, env: Env): Promise<Response> {
+  const cors = { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" };
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: cors });
+  }
+
+  const authHeader = request.headers.get("Authorization") || "";
+  const accessToken = authHeader.replace(/^Bearer\s+/i, "");
+  if (!accessToken) {
+    return new Response(JSON.stringify({ error: "No autenticado" }), { status: 401, headers: cors });
+  }
+
+  const whoami = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: { Authorization: `Bearer ${accessToken}`, apikey: SUPABASE_ANON_KEY },
+  });
+  if (!whoami.ok) {
+    return new Response(JSON.stringify({ error: "Sesión inválida" }), { status: 401, headers: cors });
+  }
+  const account = (await whoami.json()) as { id?: string };
+  if (!account.id) {
+    return new Response(JSON.stringify({ error: "Sesión inválida" }), { status: 401, headers: cors });
+  }
+
+  const serviceHeaders = {
+    Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+    apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+  };
+
+  await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${account.id}`, {
+    method: "DELETE",
+    headers: serviceHeaders,
+  });
+
+  const deleted = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${account.id}`, {
+    method: "DELETE",
+    headers: serviceHeaders,
+  });
+  if (!deleted.ok) {
+    return new Response(JSON.stringify({ error: "No se pudo eliminar la cuenta" }), { status: 502, headers: cors });
+  }
+
+  return new Response(JSON.stringify({ ok: true }), { status: 200, headers: cors });
+}
+
 // ─── Worker Main ──────────────────────────────────────────────────────────
 
 const worker = {
@@ -578,6 +629,10 @@ const worker = {
 
     if (url.pathname === "/api/interpretar") {
       return handleInterpret(request, env);
+    }
+
+    if (url.pathname === "/api/delete-account") {
+      return handleDeleteAccount(request, env);
     }
 
     if (url.pathname === "/_vinext/image") {
