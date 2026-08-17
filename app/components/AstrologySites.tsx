@@ -184,7 +184,7 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
     <section className="astrology-focus-panel" aria-labelledby={`${branch}-focus-title`}>
       <span className="astrology-mini-label" id={`${branch}-focus-title`}>{text.choose}</span>
       <div className="astrology-focus-grid">
-        <ReflexusMenuCard lang={lang} onClick={onOpenReflexus}/>
+        <ReflexusMenuCard discipline={branch} lang={lang} onClick={onOpenReflexus}/>
         {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}
       </div>
     </section>
