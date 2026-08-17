@@ -6,13 +6,14 @@ import type { DisciplineLibraryItem } from "./DisciplineLibrary";
 import { CollapsibleDisciplineLibrary } from "./CollapsibleDisciplineLibrary";
 import { easternAstroLibrary, westernAstroLibrary } from "../astro-library-data";
 import { AstroConsultationFlow } from "./AstroConsultationFlow";
+import { ReflexusMenuCard } from "./ReflexusSites";
 import "./astrology-sites.css";
 import "./astrology-card-colors.css";
 import "./astrology-introduction.css";
 import "./astro-artwork-v2.css";
 
 export type AstrologyBranch = "western" | "eastern";
-type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void;onOpenAccount?:()=>void };
+type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onOpenReflexus:()=>void; onCloseConsultation: () => void;onOpenProfile?:()=>void;onOpenAccount?:()=>void };
 type Focus = { symbol: string; title: string; level: string; description: string };
 type SiteCopy = { back: string; eyebrow: string; title: string; subtitle: string; introduction: string; choose: string; pending: string; pendingDescription: string; focuses: Focus[] };
 type IntroSection = { title: string; paragraphs: string[] };
@@ -151,7 +152,7 @@ const libraryCopy: Record<Language, { reference: string; westernWheel: string; w
 
 const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back to focuses",FR:"Retour aux approches",DE:"Zurück zu den Schwerpunkten",PT:"Voltar aos enfoques"};
 
-export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile,onOpenAccount }: AstrologySiteProps) {
+export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect, onOpenReflexus, onCloseConsultation,onOpenProfile,onOpenAccount }: AstrologySiteProps) {
   const text = content[lang][branch];
   const introductionSections = branch === "western" ? westernIntroductions[lang] : easternIntroductions[lang];
   const lib = libraryCopy[lang];
@@ -183,6 +184,7 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
     <section className="astrology-focus-panel" aria-labelledby={`${branch}-focus-title`}>
       <span className="astrology-mini-label" id={`${branch}-focus-title`}>{text.choose}</span>
       <div className="astrology-focus-grid">
+        <ReflexusMenuCard lang={lang} onClick={onOpenReflexus}/>
         {text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}
       </div>
     </section>

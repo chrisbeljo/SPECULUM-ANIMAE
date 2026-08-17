@@ -5,6 +5,7 @@ import type { Language } from "../translations";
 import type { DisciplineLibraryItem } from "./DisciplineLibrary";
 import { CollapsibleDisciplineLibrary } from "./CollapsibleDisciplineLibrary";
 import { AstroConsultationFlow } from "./AstroConsultationFlow";
+import { ReflexusMenuCard } from "./ReflexusSites";
 import "./astrology-sites.css";
 import "./astrology-introduction.css";
 import "./numerology-site.css";
@@ -78,7 +79,7 @@ const meanings: Record<Language, string[]> = {
 const libraryNumbers = [1,2,3,4,5,6,7,8,9,11,22,33];
 const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back to focuses",FR:"Retour aux approches",DE:"Zurück zu den Schwerpunkten",PT:"Voltar aos enfoques"};
 
-export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile,onOpenAccount }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void;onOpenAccount?:()=>void }) {
+export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect, onOpenReflexus, onCloseConsultation,onOpenProfile,onOpenAccount }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onOpenReflexus:()=>void; onCloseConsultation: () => void;onOpenProfile?:()=>void;onOpenAccount?:()=>void }) {
   const text = content[lang];
   const library: DisciplineLibraryItem[] = libraryNumbers.map((number, index) => ({ id: `number-${number}`, name: `${text.numberLabel} ${number}`, category: number > 9 ? text.masterLabel : text.numberLabel, description: meanings[lang][index], symbol: String(number), image:"/oracles/numerology/number-medallion-base-v1.webp", visual:"astro-medallion", tone:"numerology" }));
   const focus = selected === null ? null : text.focuses[selected];
@@ -93,7 +94,7 @@ export function NumerologySite({ lang, onBack, selected, consultationOpen, onSel
   return <section className="astrology-site numerology-site">
     <button type="button" className="astrology-back" onClick={onBack}>← {text.back}</button>
     <header className="astrology-heading"><span>{text.eyebrow}</span><h1>{text.title}</h1><strong>{text.subtitle}</strong><div className="astrology-introduction-sections">{text.intro.map(section => <section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</section>)}</div></header>
-    <section className="astrology-focus-panel" aria-labelledby="numerology-focus-title"><span className="astrology-mini-label" id="numerology-focus-title">{text.choose}</span><div className="astrology-focus-grid">{text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}</div></section>
+    <section className="astrology-focus-panel" aria-labelledby="numerology-focus-title"><span className="astrology-mini-label" id="numerology-focus-title">{text.choose}</span><div className="astrology-focus-grid"><ReflexusMenuCard lang={lang} onClick={onOpenReflexus}/>{text.focuses.map((item, index) => <button type="button" className={selected === index ? "selected" : ""} onClick={() => onSelect(index, item.title)} key={item.title}><i aria-hidden="true">{item.symbol}</i><span><small>{item.level}</small><b>{item.title}</b><em>{item.description}</em></span><strong aria-hidden="true">{selected === index ? "✓" : "+"}</strong></button>)}</div></section>
     <CollapsibleDisciplineLibrary lang={lang} items={library}/>
   </section>;
 }
