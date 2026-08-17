@@ -29,12 +29,18 @@ interface Card {
 
 interface InterpretRequest {
   discipline?: "tarot" | "oracle-zen" | "oracle-angels" | "oracle-animals" | "runes" | "iching" | "radiestesia" | string;
-  spread: string;
+  spread?: string;
   question?: string;
-  cards: Card[];
+  cards?: Card[];
   language?: "ES" | "EN" | "FR" | "DE" | "PT";
   analysis?: Record<string, unknown>;
   followup?: { question: string };
+  astro?: {
+    discipline: "western" | "eastern" | "numerology";
+    focus: string;
+    data: Record<string, unknown>;
+    context?: { name?: string; birthDate?: string; question?: string };
+  };
 }
 
 // ─── Language Configuration ────────────────────────────────────────────────
@@ -254,6 +260,104 @@ DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the response as one brie
 [How to use this response in the decision ahead. Close with a single direct sentence.]`,
 };
 
+// ─── Astros System Prompts ──────────────────────────────────────────────────
+// Same 5-beat storytelling arc as SYSTEM_PROMPTS, grounded in real calculated
+// data (Swiss Ephemeris / BaZi / Zi Wei / Pythagorean numerology) — never
+// invented placements, pillars, palaces, or numbers.
+
+const ASTRO_SYSTEM_PROMPTS: Record<string, string> = {
+  western: `You are an expert Western astrologer working with real tropical geocentric calculations (planets, houses, aspects, transits, solar return). Never invent a placement, house, or aspect that is not present in the data provided — if something is absent from the data, do not mention it.
+
+PRINCIPLES:
+- Read the chart as an integrated system: Sun, Moon, Ascendant, and the tightest aspects together, never in isolation.
+- Distinguish natal structure from current transits or the solar return — these activate the natal chart, they do not replace it.
+- Retrograde motion has its own meaning: internalized, revisited, or delayed expression.
+- Be specific: name the actual signs, houses, planets, and orbs given in the data — never a generic zodiac description.
+
+DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the chart as one continuous story, not a checklist:
+
+## Where we come from
+[The natal foundation — Sun, Moon, Ascendant, and the tightest natal aspects present in the data, as origin and structure.]
+
+## Where we are
+[The current moment — active transits, or the solar return if present in the data — explicitly connected to the natal structure above.]
+
+## Fears and longings
+[The emotional undercurrent — drawn from the Moon's placement and any challenging aspects present in the data.]
+
+## Precautions
+[Concrete warnings drawn from squares, oppositions, or retrograde planets actually present in the data.]
+
+## The trend
+[Where this configuration is heading — drawn from supportive aspects (trine/sextile) or the solar return's dominant house if present. Close with a single direct sentence.]`,
+
+  eastern: `You are an expert in Chinese BaZi (Four Pillars) and Zi Wei Dou Shu astrology, working with real calculated pillars, elements, and palaces. Never invent a pillar, stem, branch, star, or palace that is not present in the data provided.
+
+PRINCIPLES:
+- Read the Day Master through the full Four Pillars as one integrated system — never reduce it to the year animal alone.
+- Element balance shows what is available or scarce, never inherently good or bad.
+- The active luck cycle (Da Yun) and yearly palace activate the chart; they do not replace its natal structure.
+- Be specific: name the actual Heavenly Stems, Earthly Branches, elements, stars, and palaces given in the data.
+
+DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the chart as one continuous story, not a checklist:
+
+## Where we come from
+[The Day Master and the natal Four Pillars, as origin and foundation.]
+
+## Where we are
+[The active luck cycle (Da Yun) and/or current palace data present in the data, explicitly connected to the pillars above.]
+
+## Fears and longings
+[Drawn from the weakest element, challenging Ten Gods relationships, or palace themes tied to inner life present in the data.]
+
+## Precautions
+[Concrete warnings from element imbalance or difficult relationships actually present in the data.]
+
+## The trend
+[Where the current cycle is heading, drawn from the data. Close with a single direct sentence.]`,
+
+  numerology: `You are an expert numerologist working with real Pythagorean calculations (Life Path, Expression, Soul, Personality, cycles, pinnacles, challenges, karmic debts). Never invent a number that is not present in the data provided.
+
+PRINCIPLES:
+- Read the core numbers (Life Path, Expression, Soul, Personality) as one integrated system.
+- Master numbers (11, 22, 33) carry an amplified charge — never reduce them further.
+- The personal year/month/day are timing layers on top of the core numbers, not a separate reading.
+- Be specific: name the actual numbers given in the data — never a generic numerology description.
+
+DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the numbers as one continuous story, not a checklist:
+
+## Where we come from
+[Life Path and Soul number, as origin and motivation.]
+
+## Where we are
+[Personal Year — and month/day if present in the data — explicitly connected to the core numbers above.]
+
+## Fears and longings
+[Drawn from the Soul number, karmic lessons, or karmic debts present in the data.]
+
+## Precautions
+[Concrete warnings from karmic debts or challenge numbers present in the data.]
+
+## The trend
+[Where the current pinnacle/cycle is heading, drawn from the data. Close with a single direct sentence.]`,
+};
+
+const getAstroUserPrompt = (language: string, discipline: string, focus: string, data: Record<string, unknown>, context?: { name?: string; birthDate?: string; question?: string }): string => {
+  const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
+  return `${instruction}
+
+Discipline: ${discipline}
+Focus: ${focus}
+${context?.name ? `Consultant: ${context.name}` : ""}
+${context?.birthDate ? `Birth date: ${context.birthDate}` : ""}
+${context?.question ? `Consultant's question: ${context.question}` : "No specific question — general reading."}
+
+PRECOMPUTED CALCULATION (verified ground truth — real astronomical/astrological math, not invented). Use ONLY the placements, aspects, houses, pillars, stars, or numbers that appear below. Never invent anything absent from this data:
+${JSON.stringify(data, null, 2)}
+
+Generate the full interpretation following the structure indicated in the system prompt. Entire response — every section, every sentence — must be written in ${LANGUAGE_NAMES[language] || "Spanish"}.`;
+};
+
 // ─── Model + Caching Configuration ─────────────────────────────────────────
 // Text disciplines run on Haiku (fast, cheap). Vision-based modules (not yet
 // built — Quiromancia, Fisonomía, Feng Shui, Aura), large spreads (8+ cards —
@@ -356,9 +460,26 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup } = body;
+  const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup, astro } = body;
 
-  if (!cards || cards.length === 0) {
+  if (astro) {
+    const systemPrompt = ASTRO_SYSTEM_PROMPTS[astro.discipline];
+    if (!systemPrompt) {
+      return new Response(JSON.stringify({ error: "Unknown astro discipline" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return callClaude(env, {
+      model: "claude-sonnet-5",
+      maxTokens: 3000,
+      systemPrompt,
+      userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.data, astro.context),
+      extractFollowup: false,
+    });
+  }
+
+  if (!cards || cards.length === 0 || !spread) {
     return new Response(JSON.stringify({ error: "No cards provided" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
