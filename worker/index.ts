@@ -523,7 +523,7 @@ RULES:
 - Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
 - Write as an editorial voice that makes the calculated pattern legible and narratively coherent — not a second calculation.
 
-DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language:
+DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 
 ## Síntesis editorial
 A short editorial overview naming the top-ranked areas (by relevance) and what ties them together.
@@ -553,7 +553,7 @@ RULES:
 - Never turn a 1of3 into a 2of3 or 3of3, and never turn a divergent or mixed reading into an artificially resolved "aligned" one — contrast and tension are part of what you must describe honestly.
 - Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
 
-DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language:
+DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 
 ## Imagen integrada
 An overview naming the highest-relevance areas and what the three systems together suggest.
