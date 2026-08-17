@@ -73,15 +73,17 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
 
       if (staticFocus && userId) {
         try {
-          const { data: cached } = await supabase
+          const { data: cached, error: readError } = await supabase
             .from("astro_cache")
             .select("interpretation_text, input_fingerprint")
             .eq("user_id", userId)
             .eq("discipline", payload!.discipline)
             .maybeSingle();
+          if (readError) console.error("astro_cache read failed", readError);
           if (cached?.input_fingerprint === fingerprint && cached.interpretation_text) {
             const cachedSections = parseAstroSections(cached.interpretation_text);
             if (cachedSections.length >= 5) {
+              console.info(`astro_cache: loaded ${payload!.discipline} reading from profile (no AI call)`);
               if (!cancelled) {
                 setAiSections(cachedSections);
                 setIsLoading(false);
@@ -89,8 +91,8 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
               return;
             }
           }
-        } catch {
-          // cache read failed — fall through to a fresh AI call below
+        } catch (cause) {
+          console.error("astro_cache read threw", cause);
         }
       }
 
@@ -141,9 +143,13 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
           if (sections.length >= 5) {
             setAiSections(sections);
             if (staticFocus && userId) {
-              void supabase
+              supabase
                 .from("astro_cache")
-                .upsert({ user_id: userId, discipline: payload!.discipline, input_fingerprint: fingerprint, interpretation_text: full }, { onConflict: "user_id,discipline" });
+                .upsert({ user_id: userId, discipline: payload!.discipline, input_fingerprint: fingerprint, interpretation_text: full }, { onConflict: "user_id,discipline" })
+                .then(({ error: saveError }) => {
+                  if (saveError) console.error("astro_cache save failed", saveError);
+                  else console.info(`astro_cache: saved ${payload!.discipline} reading to profile`);
+                });
             }
           } else {
             setUsedFallback(true);

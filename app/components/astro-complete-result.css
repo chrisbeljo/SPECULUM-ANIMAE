@@ -14,14 +14,16 @@
     linear-gradient(145deg, #1c1621, #100c14);
 }
 
-.astro-result .astro-result-grid article {
+.astro-result .astro-data-grid article,
+.astro-result .astro-reading-block article {
   border-color: color-mix(in srgb, var(--astro-accent) 40%, #5a495e);
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--astro-accent) 8%, #211925), #151019 72%);
   box-shadow: inset 0 1px #ffffff08, 0 12px 28px #0003;
 }
 
-.astro-result .astro-result-grid p,
+.astro-result .astro-data-grid p,
+.astro-result .astro-reading-block p,
 .astro-result .astro-result-hero p {
   color: #d4c9d1;
 }
