@@ -11,8 +11,21 @@ import { useEffect, useState } from "react";
 import type { AstroConsultationPayload } from "../components/AstroConsultationFlow";
 import type { FullAstroCalculation } from "../components/astro-full-calculations";
 import { createAstroInterpretation, type AstroInterpretation } from "../components/astro-interpretation";
+import { supabase } from "../supabase";
 
 const ENDPOINT = "/api/interpretar";
+
+// Carta Natal (western) and the Cuatro Pilares/BaZi reading (eastern) are
+// derived purely from birth data — they never change, unlike transits, the
+// solar return, or Zi Wei's current decadal/yearly palace. Only these two
+// are cached, keyed by a fingerprint of the birth fields that fed them.
+function isStaticFocus(discipline: string, focusIndex: number): boolean {
+  return (discipline === "western" || discipline === "eastern") && focusIndex === 0;
+}
+
+function fingerprintFor(payload: AstroConsultationPayload): string {
+  return [payload.discipline, payload.birthDate, payload.birthTime || "", payload.birthPlace || "", payload.timezone || "", payload.gender || "", payload.calendar || ""].join("|");
+}
 
 function parseAstroSections(text: string): { title: string; text: string }[] {
   if (!text) return [];
@@ -37,7 +50,7 @@ export interface AstroInterpretationResult {
   streamingText: string;
 }
 
-export function useAstroInterpretation(payload: AstroConsultationPayload | null, focusIndex: number, data: FullAstroCalculation | null): AstroInterpretationResult {
+export function useAstroInterpretation(payload: AstroConsultationPayload | null, focusIndex: number, data: FullAstroCalculation | null, userId?: string | null): AstroInterpretationResult {
   const [aiSections, setAiSections] = useState<{ title: string; text: string }[] | null>(null);
   const [streamingText, setStreamingText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -50,11 +63,37 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
       return;
     }
     let cancelled = false;
+    const staticFocus = isStaticFocus(payload.discipline, focusIndex);
+    const fingerprint = fingerprintFor(payload);
 
     async function fetchInterpretation() {
       setIsLoading(true);
       setUsedFallback(false);
       setStreamingText("");
+
+      if (staticFocus && userId) {
+        try {
+          const { data: cached } = await supabase
+            .from("astro_cache")
+            .select("interpretation_text, input_fingerprint")
+            .eq("user_id", userId)
+            .eq("discipline", payload!.discipline)
+            .maybeSingle();
+          if (cached?.input_fingerprint === fingerprint && cached.interpretation_text) {
+            const cachedSections = parseAstroSections(cached.interpretation_text);
+            if (cachedSections.length >= 5) {
+              if (!cancelled) {
+                setAiSections(cachedSections);
+                setIsLoading(false);
+              }
+              return;
+            }
+          }
+        } catch {
+          // cache read failed — fall through to a fresh AI call below
+        }
+      }
+
       try {
         const response = await fetch(ENDPOINT, {
           method: "POST",
@@ -99,8 +138,14 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
 
         const sections = parseAstroSections(full);
         if (!cancelled) {
-          if (sections.length >= 5) setAiSections(sections);
-          else {
+          if (sections.length >= 5) {
+            setAiSections(sections);
+            if (staticFocus && userId) {
+              void supabase
+                .from("astro_cache")
+                .upsert({ user_id: userId, discipline: payload!.discipline, input_fingerprint: fingerprint, interpretation_text: full }, { onConflict: "user_id,discipline" });
+            }
+          } else {
             setUsedFallback(true);
             setAiSections(null);
           }
@@ -119,7 +164,7 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
     return () => {
       cancelled = true;
     };
-  }, [payload?.discipline, payload?.focus, payload?.language, data]);
+  }, [payload?.discipline, payload?.focus, payload?.language, data, userId]);
 
   if (!payload || !data) return { interpretation: null, isLoading, usedFallback, streamingText };
 
