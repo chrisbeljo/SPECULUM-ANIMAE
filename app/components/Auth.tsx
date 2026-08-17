@@ -5,9 +5,9 @@ import { useAuth } from '../hooks/useAuth'
 
 type AuthMode = 'login' | 'register'
 
-export function Auth({ onSuccess }: { onSuccess?: () => void }) {
+export function Auth({ onSuccess, initialMode = 'login' }: { onSuccess?: () => void; initialMode?: AuthMode }) {
   const { login, register } = useAuth()
-  const [mode, setMode] = useState<AuthMode>('login')
+  const [mode, setMode] = useState<AuthMode>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [nombre, setNombre] = useState('')
