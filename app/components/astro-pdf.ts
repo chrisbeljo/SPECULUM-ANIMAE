@@ -3,12 +3,12 @@ import type { Language } from "../translations";
 import type { AstroInterpretation } from "./astro-interpretation";
 import type { AstroConsultationPayload } from "./AstroConsultationFlow";
 
-const copy: Record<Language, { data: string; calculation: string; synthesis: string; guidance: string; method: string; disclaimer: string; rights: string; filename: string }> = {
-  ES: { data: "Datos utilizados", calculation: "Cálculo base", synthesis: "Síntesis", guidance: "Orientación", method: "Método y alcance", disclaimer: "Las interpretaciones ofrecidas tienen fines de entretenimiento, reflexión personal y autoconocimiento. No predicen hechos ni sustituyen asesoramiento médico, psicológico, legal o financiero profesional.", rights: "Todos los derechos reservados", filename: "consulta" },
-  EN: { data: "Data used", calculation: "Base calculation", synthesis: "Synthesis", guidance: "Guidance", method: "Method and scope", disclaimer: "The interpretations offered are for entertainment, personal reflection, and self-knowledge purposes. They do not predict facts or substitute professional medical, psychological, legal, or financial advice.", rights: "All rights reserved", filename: "consultation" },
-  FR: { data: "Données utilisées", calculation: "Calcul de base", synthesis: "Synthèse", guidance: "Orientation", method: "Méthode et portée", disclaimer: "Les interprétations proposées ont un but de divertissement, de réflexion personnelle et de connaissance de soi. Elles ne prédisent pas de faits et ne remplacent pas un avis médical, psychologique, juridique ou financier professionnel.", rights: "Tous droits réservés", filename: "consultation" },
-  DE: { data: "Verwendete Daten", calculation: "Grundberechnung", synthesis: "Synthese", guidance: "Orientierung", method: "Methode und Umfang", disclaimer: "Die angebotenen Deutungen dienen der Unterhaltung, persönlichen Reflexion und Selbsterkenntnis. Sie sagen keine Fakten voraus und ersetzen keine professionelle medizinische, psychologische, rechtliche oder finanzielle Beratung.", rights: "Alle Rechte vorbehalten", filename: "beratung" },
-  PT: { data: "Dados utilizados", calculation: "Cálculo base", synthesis: "Síntese", guidance: "Orientação", method: "Método e escopo", disclaimer: "As interpretações oferecidas têm fins de entretenimento, reflexão pessoal e autoconhecimento. Não preveem fatos nem substituem aconselhamento médico, psicológico, legal ou financeiro profissional.", rights: "Todos os direitos reservados", filename: "consulta" },
+const copy: Record<Language, { essentials: string; data: string; calculation: string; synthesis: string; guidance: string; method: string; disclaimer: string; rights: string; filename: string }> = {
+  ES: { essentials: "Lo esencial", data: "Datos utilizados", calculation: "Cálculo base", synthesis: "Síntesis", guidance: "Orientación", method: "Método y alcance", disclaimer: "Las interpretaciones ofrecidas tienen fines de entretenimiento, reflexión personal y autoconocimiento. No predicen hechos ni sustituyen asesoramiento médico, psicológico, legal o financiero profesional.", rights: "Todos los derechos reservados", filename: "consulta" },
+  EN: { essentials: "The essentials", data: "Data used", calculation: "Base calculation", synthesis: "Synthesis", guidance: "Guidance", method: "Method and scope", disclaimer: "The interpretations offered are for entertainment, personal reflection, and self-knowledge purposes. They do not predict facts or substitute professional medical, psychological, legal, or financial advice.", rights: "All rights reserved", filename: "consultation" },
+  FR: { essentials: "L'essentiel", data: "Données utilisées", calculation: "Calcul de base", synthesis: "Synthèse", guidance: "Orientation", method: "Méthode et portée", disclaimer: "Les interprétations proposées ont un but de divertissement, de réflexion personnelle et de connaissance de soi. Elles ne prédisent pas de faits et ne remplacent pas un avis médical, psychologique, juridique ou financier professionnel.", rights: "Tous droits réservés", filename: "consultation" },
+  DE: { essentials: "Das Wesentliche", data: "Verwendete Daten", calculation: "Grundberechnung", synthesis: "Synthese", guidance: "Orientierung", method: "Methode und Umfang", disclaimer: "Die angebotenen Deutungen dienen der Unterhaltung, persönlichen Reflexion und Selbsterkenntnis. Sie sagen keine Fakten voraus und ersetzen keine professionelle medizinische, psychologische, rechtliche oder finanzielle Beratung.", rights: "Alle Rechte vorbehalten", filename: "beratung" },
+  PT: { essentials: "O essencial", data: "Dados utilizados", calculation: "Cálculo base", synthesis: "Síntese", guidance: "Orientação", method: "Método e escopo", disclaimer: "As interpretações oferecidas têm fins de entretenimento, reflexão pessoal e autoconhecimento. Não preveem fatos nem substituem aconselhamento médico, psicológico, legal ou financeiro profissional.", rights: "Todos os direitos reservados", filename: "consulta" },
 };
 
 let logoDataUrl: string | null = null;
@@ -35,8 +35,9 @@ export async function downloadAstroPdf(opts: {
   focus: string;
   interpretation: AstroInterpretation;
   submitted: AstroConsultationPayload;
+  essentials?: string[];
 }) {
-  const { lang, disciplineTitle, focus, interpretation, submitted } = opts;
+  const { lang, disciplineTitle, focus, interpretation, submitted, essentials } = opts;
   const t = copy[lang];
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -91,6 +92,12 @@ export async function downloadAstroPdf(opts: {
 
   heading(`${disciplineTitle} — ${focus}`, 16);
   y += 2;
+
+  if (essentials?.length) {
+    heading(t.essentials, 11);
+    essentials.forEach((item) => paragraph(`✦ ${item}`));
+    y += 1;
+  }
 
   heading(t.data, 11);
   paragraph(submitted.birthName || submitted.name);

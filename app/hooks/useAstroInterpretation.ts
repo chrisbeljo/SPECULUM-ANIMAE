@@ -27,6 +27,16 @@ function fingerprintFor(payload: AstroConsultationPayload): string {
   return [payload.discipline, payload.birthDate, payload.birthTime || "", payload.birthPlace || "", payload.timezone || "", payload.gender || "", payload.calendar || ""].join("|");
 }
 
+function extractEssentials(text: string): { body: string; essentials: string[] } {
+  const match = text.match(/\n+ESSENTIALS:\s*(.+?)\s*$/i);
+  if (!match || match.index === undefined) return { body: text, essentials: [] };
+  const essentials = match[1]
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return { body: text.slice(0, match.index).trim(), essentials };
+}
+
 function parseAstroSections(text: string): { title: string; text: string }[] {
   if (!text) return [];
   // The model sometimes prepends a "# <title>" line before the five "## "
@@ -48,10 +58,12 @@ export interface AstroInterpretationResult {
   isLoading: boolean;
   usedFallback: boolean;
   streamingText: string;
+  essentials: string[];
 }
 
 export function useAstroInterpretation(payload: AstroConsultationPayload | null, focusIndex: number, data: FullAstroCalculation | null, userId?: string | null): AstroInterpretationResult {
   const [aiSections, setAiSections] = useState<{ title: string; text: string }[] | null>(null);
+  const [essentials, setEssentials] = useState<string[]>([]);
   const [streamingText, setStreamingText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [usedFallback, setUsedFallback] = useState(false);
@@ -60,6 +72,7 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
     if (!payload || !data) {
       setAiSections(null);
       setStreamingText("");
+      setEssentials([]);
       return;
     }
     let cancelled = false;
@@ -70,6 +83,7 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
       setIsLoading(true);
       setUsedFallback(false);
       setStreamingText("");
+      setEssentials([]);
 
       if (staticFocus && userId) {
         try {
@@ -81,11 +95,13 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
             .maybeSingle();
           if (readError) console.error("astro_cache read failed", readError);
           if (cached?.input_fingerprint === fingerprint && cached.interpretation_text) {
-            const cachedSections = parseAstroSections(cached.interpretation_text);
+            const { body, essentials: cachedEssentials } = extractEssentials(cached.interpretation_text);
+            const cachedSections = parseAstroSections(body);
             if (cachedSections.length >= 5) {
               console.info(`astro_cache: loaded ${payload!.discipline} reading from profile (no AI call)`);
               if (!cancelled) {
                 setAiSections(cachedSections);
+                setEssentials(cachedEssentials);
                 setIsLoading(false);
               }
               return;
@@ -105,6 +121,7 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
             astro: {
               discipline: payload!.discipline,
               focus: payload!.focus,
+              focusIndex,
               data,
               context: { name: payload!.birthName || payload!.name, birthDate: payload!.birthDate, question: payload!.question },
             },
@@ -138,10 +155,12 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
           }
         }
 
-        const sections = parseAstroSections(full);
+        const { body, essentials: freshEssentials } = extractEssentials(full);
+        const sections = parseAstroSections(body);
         if (!cancelled) {
           if (sections.length >= 5) {
             setAiSections(sections);
+            setEssentials(freshEssentials);
             if (staticFocus && userId) {
               supabase
                 .from("astro_cache")
@@ -170,9 +189,9 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
     return () => {
       cancelled = true;
     };
-  }, [payload?.discipline, payload?.focus, payload?.language, data, userId]);
+  }, [payload?.discipline, payload?.focus, payload?.language, data, userId, focusIndex]);
 
-  if (!payload || !data) return { interpretation: null, isLoading, usedFallback, streamingText };
+  if (!payload || !data) return { interpretation: null, isLoading, usedFallback, streamingText, essentials };
 
   const deterministic = createAstroInterpretation(payload, focusIndex, data);
 
@@ -184,8 +203,9 @@ export function useAstroInterpretation(payload: AstroConsultationPayload | null,
       isLoading,
       usedFallback: false,
       streamingText,
+      essentials,
     };
   }
 
-  return { interpretation: deterministic, isLoading, usedFallback, streamingText };
+  return { interpretation: deterministic, isLoading, usedFallback, streamingText, essentials: [] };
 }

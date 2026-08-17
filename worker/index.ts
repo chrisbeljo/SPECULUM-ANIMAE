@@ -43,6 +43,7 @@ interface InterpretRequest {
   astro?: {
     discipline: "western" | "eastern" | "numerology";
     focus: string;
+    focusIndex?: number;
     data: Record<string, unknown>;
     context?: { name?: string; birthDate?: string; question?: string };
   };
@@ -347,12 +348,45 @@ DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the numbers as one conti
 [Where the current pinnacle/cycle is heading, drawn from the data. Close with a single direct sentence.]`,
 };
 
-const getAstroUserPrompt = (language: string, discipline: string, focus: string, data: Record<string, unknown>, context?: { name?: string; birthDate?: string; question?: string }): string => {
+// Each discipline's system prompt keeps ONE shared 5-beat structure (so
+// parsing stays reliable), but every focus within it must answer a
+// different central question — otherwise Carta Natal, Tránsitos, Revolución
+// Solar, and Horóscopos (or BaZi vs. Balance de elementos vs. Zi Wei) read
+// as the same report reshuffled. This lens is injected per focusIndex.
+const FOCUS_LENS: Record<"western" | "eastern" | "numerology", string[]> = {
+  western: [
+    `FOCUS LENS — Carta Natal: this reading must answer "how is this person built?" Give the full, deep natal architecture — Sun, Moon, Ascendant, personal planets, houses, and aspects as one integrated identity. Do not discuss current transits or the solar return even if present in the data — this report is about permanent structure, not the current moment.`,
+    `FOCUS LENS — Tránsitos: this reading must answer "what is activating right now?" The natal chart is context, not the subject — mention it briefly to anchor the reading, then spend most of the narrative on the actual transiting aspects present in the data: which natal points they touch, what kind of contact (tension vs. flow), and what that activation concretely awakens. Do not re-narrate the full birth chart from scratch.`,
+    `FOCUS LENS — Revolución Solar: this reading must answer "what is the central argument of this year?" Center on the solar return chart specifically — its Ascendant, the house the Sun falls into, the Moon's placement — read as an annual agenda running from this birthday to the next. Reference the natal Sun only briefly as anchor; do not re-derive the full natal architecture.`,
+    `FOCUS LENS — Horóscopos: this reading must answer "what is the immediate climate?" Write a shorter, more practical day/week/month outlook — current transits filtered through the natal Sun, Moon, and Ascendant, in an actionable everyday tone. This is lighter and more immediate than a deep structural reading; do not attempt the depth of a full natal or transit analysis.`,
+  ],
+  eastern: [
+    `FOCUS LENS — Cuatro Pilares completos: this reading must answer "what is my energetic architecture and how does it evolve through cycles?" Give the full, deep BaZi read — Day Master, all Four Pillars as one system, Ten Gods, hidden stems, Na Yin, and how the active Da Yun luck cycle moves through it.`,
+    `FOCUS LENS — Balance de elementos: this reading must answer "where are my excesses, deficiencies, and compensations?" This is a DIAGNOSTIC, not a biography — do NOT re-explain each pillar's meaning or the Day Master's full story (that belongs to the Cuatro Pilares reading; assume the reader already has it). Go straight to: which element dominates, which is scarce or absent, what feeds or drains what among the five elements, and how the current Da Yun cycle shifts that balance.`,
+    `FOCUS LENS — Zi Wei Dou Shu: this reading must answer "how are the fundamental areas of my destiny distributed?" This reading must be PALACE-LED: identify the 3-4 most significant palaces present in the data (the Origin palace, the Body palace, and any palace holding major stars or currently activated by the decadal/yearly cycle) and organize the entire narrative around those specific palaces — not a generic four-part life story that could apply to any chart.`,
+  ],
+  numerology: [
+    `FOCUS LENS — Camino de Vida: this reading must answer "what is my core life direction?" Center on the Life Path number as the foundational read, using Soul and Expression only as supporting context.`,
+    `FOCUS LENS — Expresión: this reading must answer "what are my talents and how do they manifest outwardly?" Center specifically on the Expression number — how it shows up in action and output — referencing Life Path only briefly as context.`,
+    `FOCUS LENS — Alma: this reading must answer "what motivates me from within?" Center specifically on the Soul number — the inner want beneath outward choices — referencing the other numbers only briefly as context.`,
+    `FOCUS LENS — Año Personal: this reading must answer "what is active this specific year?" Center on the Personal Year (and month/day if present in the data) as a timing layer — this is about the current cycle, not a repeat of the permanent core numbers; reference Life Path/Expression/Soul only briefly as anchor.`,
+  ],
+};
+
+const ASTRO_ESSENTIALS_INSTRUCTION = `
+
+MANDATORY FINAL LINE: after delivering the full five-section interpretation above, your response MUST end with exactly one more line containing ONLY this literal marker (never translate the marker text "ESSENTIALS:" itself — keep it in English as a technical delimiter; only the content after it goes in the target language):
+ESSENTIALS: <first key takeaway> | <second key takeaway> | <third key takeaway>
+Each takeaway must be a single short sentence (under 15 words), specific to this exact reading and this exact focus — never a generic statement that could apply to any chart. Provide exactly 3 takeaways, separated by " | ". Nothing may come after this line. Omitting it is a critical error.`;
+
+const getAstroUserPrompt = (language: string, discipline: string, focus: string, focusIndex: number | undefined, data: Record<string, unknown>, context?: { name?: string; birthDate?: string; question?: string }): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
+  const lens = focusIndex !== undefined ? FOCUS_LENS[discipline as "western" | "eastern" | "numerology"]?.[focusIndex] : undefined;
   return `${instruction}
 
 Discipline: ${discipline}
 Focus: ${focus}
+${lens ? `\n${lens}\n` : ""}
 ${context?.name ? `Consultant: ${context.name}` : ""}
 ${context?.birthDate ? `Birth date: ${context.birthDate}` : ""}
 ${context?.question ? `Consultant's question: ${context.question}` : "No specific question — general reading."}
@@ -468,7 +502,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
   const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup, astro } = body;
 
   if (astro) {
-    const systemPrompt = ASTRO_SYSTEM_PROMPTS[astro.discipline];
+    const systemPrompt = ASTRO_SYSTEM_PROMPTS[astro.discipline] ? ASTRO_SYSTEM_PROMPTS[astro.discipline] + ASTRO_ESSENTIALS_INSTRUCTION : undefined;
     if (!systemPrompt) {
       return new Response(JSON.stringify({ error: "Unknown astro discipline" }), {
         status: 400,
@@ -479,7 +513,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
       model: "claude-sonnet-5",
       maxTokens: 4096,
       systemPrompt,
-      userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.data, astro.context),
+      userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.focusIndex, astro.data, astro.context),
     });
   }
 
