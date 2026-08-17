@@ -33,7 +33,16 @@ export function useAuth() {
   const register = async (email: string, password: string, nombre: string) => {
     try {
       setError(null)
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          // No depender solo del "Site URL" del dashboard de Supabase (queda mal
+          // configurado con facilidad, p.ej. apuntando a localhost tras pruebas
+          // locales): siempre volver al origen real desde donde se registró.
+          emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+        },
+      })
 
       if (signUpError) throw signUpError
 
