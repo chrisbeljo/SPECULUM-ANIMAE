@@ -13,6 +13,7 @@ export type UserProfileData={
   timezone:string;
   calendar:"solar"|"lunar";
   gender:string;
+  whatsappCountryCode:string;
   whatsapp:string;
   telegram:string;
   preferredContact:ContactPreference;
@@ -20,7 +21,7 @@ export type UserProfileData={
   updatedAt:string;
 };
 
-export const emptyUserProfile:UserProfileData={fullName:"",currentName:"",birthDate:"",birthHour:"",birthMinute:"00",birthCountry:"",birthCity:"",currentCountry:"",currentCity:"",timezone:"America/Mexico_City",calendar:"solar",gender:"",whatsapp:"",telegram:"",preferredContact:"email",personalizationConsent:false,updatedAt:""};
+export const emptyUserProfile:UserProfileData={fullName:"",currentName:"",birthDate:"",birthHour:"",birthMinute:"00",birthCountry:"",birthCity:"",currentCountry:"",currentCity:"",timezone:"America/Mexico_City",calendar:"solar",gender:"",whatsappCountryCode:"+52",whatsapp:"",telegram:"",preferredContact:"email",personalizationConsent:false,updatedAt:""};
 
 export function normalizeUserProfile(value:unknown,name=""):UserProfileData{const source=value&&typeof value==="object"?value as Partial<UserProfileData>:{};return{...emptyUserProfile,...source,fullName:source.fullName||name,calendar:source.calendar==="lunar"?"lunar":"solar",preferredContact:["email","whatsapp","telegram"].includes(source.preferredContact||"")?source.preferredContact as ContactPreference:"email",personalizationConsent:source.personalizationConsent===true}}
 
