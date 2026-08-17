@@ -45,7 +45,7 @@ function fallback(contract:AstroThemeContract,evidence:AstroThemeEvidence[],lang
 }
 
 export function useAstroThemeInterpretation(payload:AstroConsultationPayload,focusIndex:number,data:FullAstroCalculation,contract:AstroThemeContract){
-  const evidence=useMemo(()=>buildAstroThemeEvidence(payload.discipline,focusIndex,contract,data),[payload.discipline,focusIndex,contract,data]);
+  const evidence=useMemo(()=>buildAstroThemeEvidence(payload.discipline,focusIndex,contract,data,payload.language),[payload.discipline,payload.language,focusIndex,contract,data]);
   const deterministic=useMemo(()=>fallback(contract,evidence,payload.language),[contract,evidence,payload.language]);
   const key=themeSessionKey(payload,focusIndex,contract.id);
   const [result,setResult]=useState<AstroThemeInterpretation>(()=>sessionCache.get(key)||deterministic);

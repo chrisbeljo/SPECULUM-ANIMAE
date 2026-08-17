@@ -19,7 +19,7 @@ export function AstroThemeLauncher({lang,onOpen}:{lang:Language;onOpen:()=>void}
 }
 
 export function AstroThemeMenu({discipline,focusIndex,lang,data,onSelect,onBack}:{discipline:AstroDiscipline;focusIndex:number;lang:Language;data:FullAstroCalculation;onSelect:(theme:AstroThemeContract)=>void;onBack?:()=>void}){
-  const t=copy[lang];const contracts=getAstroThemeContracts(discipline,focusIndex,lang);const highlighted=getHighlightedThemeIds(discipline,focusIndex,contracts,data);
+  const t=copy[lang];const contracts=getAstroThemeContracts(discipline,focusIndex,lang);const highlighted=getHighlightedThemeIds(discipline,focusIndex,contracts,data,lang);
   return <section className="astro-theme-menu" aria-labelledby="astro-theme-menu-title">{onBack&&<button type="button" className="astro-theme-back astro-theme-menu-back" onClick={onBack}>← {t.backReport}</button>}<header><h2 id="astro-theme-menu-title">{t.title}</h2><p>{t.subtitle}</p></header><div className="astro-theme-grid">{contracts.map(theme=><button type="button" key={theme.id} onClick={()=>onSelect(theme)} className={highlighted.has(theme.id)?"is-highlighted":""}><i aria-hidden="true">{theme.symbol}</i><span><small>{theme.category}</small>{highlighted.has(theme.id)&&<em>{t.featured}</em>}<b>{theme.title}</b><p>{theme.description}</p><span className="astro-theme-open">{t.open} →</span></span><strong aria-hidden="true">+</strong></button>)}</div></section>
 }
 

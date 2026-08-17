@@ -1,6 +1,7 @@
 import type { Language } from "../translations";
 import type { AstroDiscipline, AstroConsultationPayload } from "./AstroConsultationFlow";
 import type { FullAstroCalculation } from "./astro-full-calculations";
+import { astroDataTerms, localizeAspect, localizeEasternElement, localizeNumerologyKey, localizePillar, localizePlanet } from "./astro-display-localization";
 
 export type AstroThemeEvidence = {
   kind: "planet" | "aspect" | "house" | "pillar" | "element" | "cycle" | "palace" | "star" | "number";
@@ -233,36 +234,37 @@ const numberValue=(data:FullAstroCalculation,key:string):string=>{
   return Array.isArray(value)?value.join(" · "):String(value??"");
 };
 
-export function buildAstroThemeEvidence(discipline:AstroDiscipline,focusIndex:number,contract:AstroThemeContract,data:FullAstroCalculation):AstroThemeEvidence[]{
+export function buildAstroThemeEvidence(discipline:AstroDiscipline,focusIndex:number,contract:AstroThemeContract,data:FullAstroCalculation,lang:Language="ES"):AstroThemeEvidence[]{
   const evidence:AstroThemeEvidence[]=[];
+  const terms=astroDataTerms[lang];
   if(discipline==="western"&&data.western){
     const w=data.western;const moving=focusIndex===1||focusIndex===3;const planets=focusIndex===2?w.solarReturnPlanets:moving?w.transits:w.planets;const aspects=focusIndex===2?w.solarReturnAspects:moving?w.transitAspects:w.aspects;const houses=focusIndex===2?w.solarReturnHouses:w.houses;
-    planets.filter(p=>contract.planets.includes(p.name)||contract.houses.includes(p.house)).slice(0,6).forEach(p=>evidence.push({kind:"planet",label:p.name,value:`${p.degree.toFixed(2)}° · house ${p.house}${p.retrograde?" · retrograde":""}`,source:`${p.name}:longitude=${p.longitude.toFixed(4)};house=${p.house};retrograde=${p.retrograde}`}));
-    aspects.filter(a=>contract.planets.includes(a.from)||contract.planets.includes(a.to)).slice(0,6).forEach(a=>evidence.push({kind:"aspect",label:`${a.from} ${a.type} ${a.to}`,value:`orb ${a.orb.toFixed(2)}°`,source:`aspect:${a.from}:${a.type}:${a.to}:orb=${a.orb}`}));
-    contract.houses.slice(0,3).forEach(house=>evidence.push({kind:"house",label:`House ${house}`,value:`cusp ${(houses[house-1]??0).toFixed(2)}°`,source:`${focusIndex===2?"solarReturnHouse":"house"}:${house}:cusp=${houses[house-1]??0}`}));
+    planets.filter(p=>contract.planets.includes(p.name)||contract.houses.includes(p.house)).slice(0,6).forEach(p=>evidence.push({kind:"planet",label:localizePlanet(p.name,lang),value:`${p.degree.toFixed(2)}° · ${terms.house.toLowerCase()} ${p.house}${p.retrograde?` · ${terms.retrograde}`:""}`,source:`${p.name}:longitude=${p.longitude.toFixed(4)};house=${p.house};retrograde=${p.retrograde}`}));
+    aspects.filter(a=>contract.planets.includes(a.from)||contract.planets.includes(a.to)).slice(0,6).forEach(a=>evidence.push({kind:"aspect",label:`${localizePlanet(a.from,lang)} ${localizeAspect(a.type,lang).toLowerCase()} ${localizePlanet(a.to,lang)}`,value:`${terms.orb} ${a.orb.toFixed(2)}°`,source:`aspect:${a.from}:${a.type}:${a.to}:orb=${a.orb}`}));
+    contract.houses.slice(0,3).forEach(house=>evidence.push({kind:"house",label:`${terms.house} ${house}`,value:`${terms.cusp} ${(houses[house-1]??0).toFixed(2)}°`,source:`${focusIndex===2?"solarReturnHouse":"house"}:${house}:cusp=${houses[house-1]??0}`}));
     if(focusIndex===2){
-      w.planets.filter(p=>contract.planets.includes(p.name)||contract.houses.includes(p.house)).slice(0,3).forEach(p=>evidence.push({kind:"planet",label:`Natal ${p.name}`,value:`${p.degree.toFixed(2)}° · house ${p.house}`,source:`natal.${p.name}:longitude=${p.longitude.toFixed(4)};house=${p.house};retrograde=${p.retrograde}`}));
+      w.planets.filter(p=>contract.planets.includes(p.name)||contract.houses.includes(p.house)).slice(0,3).forEach(p=>evidence.push({kind:"planet",label:`${terms.natal} ${localizePlanet(p.name,lang)}`,value:`${p.degree.toFixed(2)}° · ${terms.house.toLowerCase()} ${p.house}`,source:`natal.${p.name}:longitude=${p.longitude.toFixed(4)};house=${p.house};retrograde=${p.retrograde}`}));
     }
   } else if(discipline==="eastern"&&focusIndex<2&&data.bazi){
-    const b=data.bazi;evidence.push({kind:"pillar",label:"Day Master",value:`${b.dayMaster} · ${b.dayElement} ${b.dayPolarity}`,source:`dayMaster=${b.dayMaster};element=${b.dayElement};polarity=${b.dayPolarity}`});
-    [...Object.entries(b.elements)].sort((a,bv)=>bv[1]-a[1]).forEach(([name,value])=>evidence.push({kind:"element",label:name,value:`${value}/8`,source:`elements.${name}=${value}`}));
-    b.pillars.slice(0,4).forEach(p=>evidence.push({kind:"pillar",label:p.key,value:`${p.ganZhi} · ${p.tenGod}`,source:`pillar.${p.key}=${p.ganZhi};tenGod=${p.tenGod};hidden=${p.hidden.join(",")};naYin=${p.naYin}`}));
+    const b=data.bazi;evidence.push({kind:"pillar",label:terms.dayMaster,value:`${b.dayMaster} · ${localizeEasternElement(b.dayElement,lang)} ${b.dayPolarity}`,source:`dayMaster=${b.dayMaster};element=${b.dayElement};polarity=${b.dayPolarity}`});
+    [...Object.entries(b.elements)].sort((a,bv)=>bv[1]-a[1]).forEach(([name,value])=>evidence.push({kind:"element",label:localizeEasternElement(name,lang),value:`${value}/8`,source:`elements.${name}=${value}`}));
+    b.pillars.slice(0,4).forEach(p=>evidence.push({kind:"pillar",label:localizePillar(p.key,lang),value:`${p.ganZhi} · ${p.tenGod}`,source:`pillar.${p.key}=${p.ganZhi};tenGod=${p.tenGod};hidden=${p.hidden.join(",")};naYin=${p.naYin}`}));
     if(contract.temporal&&b.currentLuck)evidence.push({kind:"cycle",label:"Da Yun",value:`${b.currentLuck.ganZhi} · ${b.currentLuck.startYear}–${b.currentLuck.endYear}`,source:`currentLuck=${JSON.stringify(b.currentLuck)}`});
   } else if(discipline==="eastern"&&data.ziwei){
     const z=data.ziwei;let palaces=contract.palaces.length?z.palaces.filter(p=>contract.palaces.includes(p.name)):z.palaces.filter(p=>p.isOrigin||p.isBody||p.name===z.current.decadalPalace||p.name===z.current.yearlyPalace);
     if(!palaces.length)palaces=[...z.palaces].sort((a,b)=>b.majorStars.length-a.majorStars.length).slice(0,3);
-    palaces.slice(0,4).forEach(p=>{evidence.push({kind:"palace",label:p.name,value:`${p.stem} ${p.branch}${p.isOrigin?" · origin":""}${p.isBody?" · body":""}`,source:`palace.${p.name}:origin=${p.isOrigin};body=${p.isBody};decadal=${p.decadal.join("-")}`});p.majorStars.slice(0,4).forEach(s=>evidence.push({kind:"star",label:s.name,value:`${p.name}${s.brightness?` · ${s.brightness}`:""}`,source:`palace.${p.name}.star=${s.name};brightness=${s.brightness};mutagen=${s.mutagen||""}`}))});
-    if(contract.temporal)evidence.push({kind:"cycle",label:"Current palaces",value:`${z.current.decadalPalace} · ${z.current.yearlyPalace}`,source:`ziwei.current=${JSON.stringify(z.current)}`});
+    palaces.slice(0,4).forEach(p=>{evidence.push({kind:"palace",label:p.name,value:`${p.stem} ${p.branch}${p.isOrigin?` · ${terms.origin}`:""}${p.isBody?` · ${terms.body}`:""}`,source:`palace.${p.name}:origin=${p.isOrigin};body=${p.isBody};decadal=${p.decadal.join("-")}`});p.majorStars.slice(0,4).forEach(s=>evidence.push({kind:"star",label:s.name,value:`${p.name}${s.brightness?` · ${s.brightness}`:""}`,source:`palace.${p.name}.star=${s.name};brightness=${s.brightness};mutagen=${s.mutagen||""}`}))});
+    if(contract.temporal)evidence.push({kind:"cycle",label:terms.currentPalaces,value:`${z.current.decadalPalace} · ${z.current.yearlyPalace}`,source:`ziwei.current=${JSON.stringify(z.current)}`});
   } else {
     const keys=contract.numberKeys.length?contract.numberKeys:["life","expression","soul","year"];
-    keys.forEach(key=>evidence.push({kind:key.includes("year")||key.includes("month")||key.includes("day")?"cycle":"number",label:key,value:numberValue(data,key),source:`numerology.${key}=${numberValue(data,key)}`}));
+    keys.forEach(key=>evidence.push({kind:key.includes("year")||key.includes("month")||key.includes("day")?"cycle":"number",label:localizeNumerologyKey(key,lang),value:numberValue(data,key),source:`numerology.${key}=${numberValue(data,key)}`}));
   }
   return evidence.slice(0,12);
 }
 
-export function getHighlightedThemeIds(discipline:AstroDiscipline,focusIndex:number,contracts:AstroThemeContract[],data:FullAstroCalculation):Set<string>{
+export function getHighlightedThemeIds(discipline:AstroDiscipline,focusIndex:number,contracts:AstroThemeContract[],data:FullAstroCalculation,lang:Language="ES"):Set<string>{
   const ranked=contracts.map((contract,index)=>{
-    const evidence=buildAstroThemeEvidence(discipline,focusIndex,contract,data);let score=evidence.length;
+    const evidence=buildAstroThemeEvidence(discipline,focusIndex,contract,data,lang);let score=evidence.length;
     score+=evidence.filter(item=>item.kind==="aspect"&&Number(item.value.match(/[\d.]+/)?.[0]||9)<=1.5).length*3;
     score+=evidence.filter(item=>item.kind==="palace"||item.kind==="cycle").length*2;
     if(contract.temporal)score+=1;
