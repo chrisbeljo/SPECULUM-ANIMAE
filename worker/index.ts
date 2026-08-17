@@ -327,25 +327,9 @@ DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the chart as one continu
 PRINCIPLES:
 - Read the core numbers (Life Path, Expression, Soul, Personality) as one integrated system.
 - Master numbers (11, 22, 33) carry an amplified charge — never reduce them further.
-- The personal year/month/day are timing layers on top of the core numbers, not a separate reading.
 - Be specific: name the actual numbers given in the data — never a generic numerology description.
 
-DELIVER EXACTLY THIS STORYTELLING STRUCTURE — narrate the numbers as one continuous story, not a checklist:
-
-## Where we come from
-[Life Path and Soul number, as origin and motivation.]
-
-## Where we are
-[Personal Year — and month/day if present in the data — explicitly connected to the core numbers above.]
-
-## Fears and longings
-[Drawn from the Soul number, karmic lessons, or karmic debts present in the data.]
-
-## Precautions
-[Concrete warnings from karmic debts or challenge numbers present in the data.]
-
-## The trend
-[Where the current pinnacle/cycle is heading, drawn from the data. Close with a single direct sentence.]`,
+DELIVER EXACTLY THE FIVE-SECTION STRUCTURE SPECIFIED IN THE "NUMEROLOGY STRUCTURE" BLOCK BELOW, in that exact order, narrated as one continuous story, not a checklist. Use those exact section headers, translated into the target language.`,
 };
 
 // Each discipline's system prompt keeps ONE shared 5-beat structure (so
@@ -366,12 +350,76 @@ const FOCUS_LENS: Record<"western" | "eastern" | "numerology", string[]> = {
     `FOCUS LENS — Zi Wei Dou Shu: this reading must answer "how are the fundamental areas of my destiny distributed?" This reading must be PALACE-LED: identify the 3-4 most significant palaces present in the data (the Origin palace, the Body palace, and any palace holding major stars or currently activated by the decadal/yearly cycle) and organize the entire narrative around those specific palaces — not a generic four-part life story that could apply to any chart.`,
   ],
   numerology: [
-    `FOCUS LENS — Camino de Vida: this reading must answer "what is my core life direction?" Center on the Life Path number as the foundational read, using Soul and Expression only as supporting context.`,
-    `FOCUS LENS — Expresión: this reading must answer "what are my talents and how do they manifest outwardly?" Center specifically on the Expression number — how it shows up in action and output — referencing Life Path only briefly as context.`,
-    `FOCUS LENS — Alma: this reading must answer "what motivates me from within?" Center specifically on the Soul number — the inner want beneath outward choices — referencing the other numbers only briefly as context.`,
-    `FOCUS LENS — Año Personal: this reading must answer "what is active this specific year?" Center on the Personal Year (and month/day if present in the data) as a timing layer — this is about the current cycle, not a repeat of the permanent core numbers; reference Life Path/Expression/Soul only briefly as anchor.`,
+    `FOCUS LENS — Camino de Vida: this reading must answer "what is my core life direction?" This report is ~90% permanent structure, 10% timing. Center on the Life Path number as the foundational read, using Soul and Expression only as supporting context. Mention the current Personal Year only as a brief closing note — do not build a section around it.`,
+    `FOCUS LENS — Expresión: this reading must answer "what are my talents and how do they manifest outwardly?" This report is ~90% permanent structure, 10% timing. Center specifically on the Expression number — how it shows up in action and output — referencing Life Path only briefly as context. Mention the current Personal Year only as a brief closing note — do not build a section around it.`,
+    `FOCUS LENS — Alma: this reading must answer "what motivates me from within?" This report is ~90% permanent structure, 10% timing. Center specifically on the Soul number — the inner want beneath outward choices — referencing the other numbers only briefly as context. Mention the current Personal Year only as a brief closing note — do not build a section around it.`,
+    `FOCUS LENS — Ciclos / Año Personal: this reading must answer "what is active this specific year?" This report FLIPS the usual balance: ~70% timing, 30% structure. The Personal Year (and month/day if present in the data) IS the main subject of the entire reading, not a footnote — reference Life Path/Expression/Soul only briefly as anchor.`,
   ],
 };
+
+// Numerology gets its own section-header set per focus (instead of the
+// shared 5-beat arc used by western/eastern) so Vida, Expresión, Alma, and
+// Ciclos read as four genuinely different report types, not the same
+// checklist re-labeled. Still exactly 5 "## " headers, so parsing on the
+// client stays unchanged.
+const NUMEROLOGY_STRUCTURE: string[] = [
+  `## Essential path
+[The Life Path number as core life direction — origin and foundation.]
+
+## Strengths
+[What this Life Path number equips the person with — natural resources and capacities.]
+
+## Learning
+[What this Life Path number is here to learn — its growth edge, drawn from the number's meaning and any karmic lessons present in the data.]
+
+## Life stages
+[The pinnacles and their age ranges present in the data, read as chapters of this Life Path unfolding over time.]
+
+## Integration
+[How to live this Life Path number well today. Mention the current Personal Year only briefly, as a closing note. Close with a single direct sentence.]`,
+  `## Talents
+[The Expression number's natural talents — origin and foundation.]
+
+## How you act
+[How this Expression number shows up in action and initiative.]
+
+## How you communicate
+[How this Expression number shows up in communication and self-presentation.]
+
+## Obstacles to manifestation
+[What blocks this Expression number from showing up fully — drawn from challenge numbers or karmic debts present in the data.]
+
+## Development
+[How to develop this Expression number further. Mention the current Personal Year only briefly, as a closing note. Close with a single direct sentence.]`,
+  `## Deep desire
+[The Soul number's core inner want — origin and foundation.]
+
+## Emotional need
+[What this Soul number needs emotionally to feel fulfilled.]
+
+## Inner tension
+[The friction between this Soul number's private want and the outward Personality/Expression, drawn from the data.]
+
+## What feeds the soul
+[What concretely satisfies this Soul number — activities, relationships, or environments implied by its meaning.]
+
+## Integration
+[How to honor this Soul number today. Mention the current Personal Year only briefly, as a closing note. Close with a single direct sentence.]`,
+  `## Current cycle
+[The Personal Year, Month, and Day as the primary subject of this entire reading — not a footnote.]
+
+## Opportunities
+[What this specific Personal Year/Month opens up, drawn from its number meaning.]
+
+## Tensions
+[What this specific Personal Year/Month makes difficult, drawn from its number meaning and any active challenge numbers.]
+
+## Where you are in the cycle
+[Which pinnacle period the person is currently in, and how the Personal Year sits inside that larger pinnacle.]
+
+## Next transition
+[When the current Personal Year or pinnacle period shifts, and what that means. Close with a single direct sentence.]`,
+];
 
 const ASTRO_ESSENTIALS_INSTRUCTION = `
 
@@ -382,6 +430,7 @@ Each takeaway must be a single short sentence (under 15 words), specific to this
 const getAstroUserPrompt = (language: string, discipline: string, focus: string, focusIndex: number | undefined, data: Record<string, unknown>, context?: { name?: string; birthDate?: string; question?: string }): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
   const lens = focusIndex !== undefined ? FOCUS_LENS[discipline as "western" | "eastern" | "numerology"]?.[focusIndex] : undefined;
+  const structure = discipline === "numerology" && focusIndex !== undefined ? NUMEROLOGY_STRUCTURE[focusIndex] : undefined;
   return `${instruction}
 
 Discipline: ${discipline}
@@ -393,7 +442,7 @@ ${context?.question ? `Consultant's question: ${context.question}` : "No specifi
 
 PRECOMPUTED CALCULATION (verified ground truth — real astronomical/astrological math, not invented). Use ONLY the placements, aspects, houses, pillars, stars, or numbers that appear below. Never invent anything absent from this data:
 ${JSON.stringify(data, null, 2)}
-
+${structure ? `\nNUMEROLOGY STRUCTURE — deliver exactly these five sections, in this order, with these exact headers translated into the target language:\n${structure}\n` : ""}
 Generate the full interpretation following the structure indicated in the system prompt. Entire response — every section, every sentence — must be written in ${LANGUAGE_NAMES[language] || "Spanish"}.`;
 };
 
