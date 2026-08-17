@@ -53,9 +53,11 @@ function parseSections(text) {
     .filter((section) => section.title && section.text);
 }
 
-function validateTrace(trace, sectionCount, validIds) {
-  if (trace.length < sectionCount) return false;
-  return trace.every((item) => item.sources.some((id) => validIds.has(id)));
+function validateTrace(trace, validIds) {
+  const allSources = trace.flatMap((item) => item.sources);
+  if (allSources.length === 0) return false;
+  const validCount = allSources.filter((id) => validIds.has(id)).length;
+  return validCount / allSources.length >= 0.5;
 }
 
 // A minimal REFLEXUS-shaped fixture, structurally identical to what
@@ -96,35 +98,42 @@ test("una respuesta sin TRACE_JSON es rechazada (trace vacío nunca valida)", ()
   const text = "## Síntesis editorial\ntexto\n## Estructura de base\ntexto\n## Momento actual\ntexto\n## Tendencia\ntexto\n## Integración y orientación\ntexto";
   const trace = parseTrace(text);
   assert.deepEqual(trace, []);
-  assert.equal(validateTrace(trace, 5, extractValidIds(fixtureReport.aiPayload)), false);
+  assert.equal(validateTrace(trace, extractValidIds(fixtureReport.aiPayload)), false);
 });
 
-test("una respuesta que cita un id inventado es rechazada", () => {
+test("una respuesta donde NINGÚN id citado es real es rechazada", () => {
   const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["id-que-no-existe"]}]}`;
   const trace = parseTrace(text);
   const validIds = extractValidIds(fixtureReport.aiPayload);
-  assert.equal(validateTrace(trace, 1, validIds), false);
+  assert.equal(validateTrace(trace, validIds), false);
 });
 
 test("una respuesta con ids reales y trazabilidad completa sí valida", () => {
   const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["reflexus:western:natal:sun-house-1:identity"]}]}`;
   const trace = parseTrace(text);
   const validIds = extractValidIds(fixtureReport.aiPayload);
-  assert.equal(validateTrace(trace, 1, validIds), true);
+  assert.equal(validateTrace(trace, validIds), true);
 });
 
-test("una sección con un id inventado MEZCLADO junto a un id real sí valida (tolerante a errores parciales de cita, no exige que TODOS los ids sean exactos)", () => {
+test("una sección con un id inventado MEZCLADO junto a un id real sigue validando (tolerante a errores parciales de cita)", () => {
   const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["reflexus:western:natal:sun-house-1:identity","id-con-typo-inventado"]}]}`;
   const trace = parseTrace(text);
   const validIds = extractValidIds(fixtureReport.aiPayload);
-  assert.equal(validateTrace(trace, 1, validIds), true);
+  assert.equal(validateTrace(trace, validIds), true);
 });
 
-test("una sección donde NINGÚN id citado es real sigue siendo rechazada (la tolerancia no equivale a aceptar cualquier cosa)", () => {
-  const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["id-inventado-1","id-inventado-2"]}]}`;
+test("una sección sin ninguna cita (sources vacío) ya no tumba toda la respuesta, mientras el resto tenga evidencia real mayoritaria — el cierre integrador suele no citar nada nuevo", () => {
+  const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["reflexus:western:natal:sun-house-1:identity","western:natal:sun-house-1"]},{"title":"Integración y orientación","sources":[]}]}`;
   const trace = parseTrace(text);
   const validIds = extractValidIds(fixtureReport.aiPayload);
-  assert.equal(validateTrace(trace, 1, validIds), false);
+  assert.equal(validateTrace(trace, validIds), true);
+});
+
+test("una respuesta mayormente inventada (más de la mitad de los ids citados son falsos) es rechazada", () => {
+  const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["id-falso-1","id-falso-2","reflexus:western:natal:sun-house-1:identity"]}]}`;
+  const trace = parseTrace(text);
+  const validIds = extractValidIds(fixtureReport.aiPayload);
+  assert.equal(validateTrace(trace, validIds), false);
 });
 
 test("una respuesta incompleta (menos de 5 secciones) se rechaza antes de llegar a trazabilidad", () => {

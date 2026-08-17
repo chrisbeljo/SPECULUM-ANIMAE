@@ -77,22 +77,27 @@ function parseSections(text: string): EditorialSection[] {
 }
 
 /**
- * A response is only accepted if it has exactly the expected number of
- * sections AND every section cites at least one id that genuinely appears
- * in the data we sent. Anything else — missing TRACE_JSON, no traceable
- * evidence at all for some section, an incomplete response — is rejected
- * and the caller falls back.
- *
- * Deliberately lenient on a per-section basis: requiring EVERY cited id in
- * a section to be exact (rather than at least one) rejected otherwise-good
- * responses whenever the model listed one slightly malformed id alongside
- * genuinely real ones — the text would stream in fine and then vanish at
- * the very end. A single real, verifiable citation per section is already
- * enough to prove the paragraph isn't fabricated from nothing.
+ * A response is accepted whenever it shows real, substantial evidence of
+ * being grounded in the data we sent, WITHOUT punishing minor imperfections
+ * in exactly how that grounding gets reported:
+ *   - TRACE_JSON must exist and cite at least one id at all (a response with
+ *     zero traceability — no marker, or a marker with empty "sources"
+ *     everywhere — is rejected: that's the one case this exists to catch).
+ *   - Of everything it cites across the whole response, at least half must
+ *     be real ids from the data. A handful of malformed ids, or one section
+ *     that forgot to cite anything (the closing/integrative section often
+ *     has nothing new to cite), no longer sinks an otherwise well-grounded
+ *     response.
+ * Earlier, stricter versions (every id in every section had to match
+ * exactly, and the trace array had to have one entry per parsed section)
+ * caused real, good-looking responses to stream in fully and then vanish
+ * right at the end — worse than just being loose here.
  */
-function validateTrace(trace: { section: string; sources: string[] }[], sectionCount: number, validIds: Set<string>): boolean {
-  if (trace.length < sectionCount) return false;
-  return trace.every((item) => item.sources.some((id) => validIds.has(id)));
+function validateTrace(trace: { section: string; sources: string[] }[], validIds: Set<string>): boolean {
+  const allSources = trace.flatMap((item) => item.sources);
+  if (allSources.length === 0) return false;
+  const validCount = allSources.filter((id) => validIds.has(id)).length;
+  return validCount / allSources.length >= 0.5;
 }
 
 async function streamAndValidate(body: unknown, validIds: Set<string>, onChunk: (full: string) => void, cancelledRef: { current: boolean }): Promise<EditorialSection[] | null> {
@@ -134,7 +139,7 @@ async function streamAndValidate(body: unknown, validIds: Set<string>, onChunk: 
     console.error("editorial rejected: too few sections", { found: sections.length, full });
     return null;
   }
-  if (!validateTrace(trace, sections.length, validIds)) {
+  if (!validateTrace(trace, validIds)) {
     console.error("editorial rejected: trace validation failed", { trace, validIds: [...validIds] });
     return null;
   }
