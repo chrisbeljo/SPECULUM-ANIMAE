@@ -1,4 +1,7 @@
-.astro-submit:disabled{cursor:wait;opacity:.65}.astro-reading-section{margin-top:18px;padding-top:14px;border-top:1px solid #332938}.astro-reading-section h4{margin:0 0 6px;color:#e2c77f;font:19px "Gilda Display",serif}.astro-reading-section p{margin:0}
+.astro-submit:disabled{cursor:wait;opacity:.65}
+.astro-result-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.astro-result-actions .astro-edit{margin:0}
+.astro-download-pdf:disabled{cursor:wait;opacity:.6}.astro-reading-section{margin-top:18px;padding-top:14px;border-top:1px solid #332938}.astro-reading-section h4{margin:0 0 6px;color:#e2c77f;font:19px "Gilda Display",serif}.astro-reading-section p{margin:0}
 .astro-ai-loading{margin:0 0 10px;font-style:italic;opacity:.7;color:#c7bcd1;font-size:13px}
 .astro-streaming-text p{margin:0 0 12px}
 .astro-streaming-text p:last-child::after{content:"▍";opacity:.6;animation:astro-cursor-blink 1s step-end infinite}
