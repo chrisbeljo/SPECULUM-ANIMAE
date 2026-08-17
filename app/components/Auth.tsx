@@ -10,18 +10,27 @@ export function Auth({ onSuccess, initialMode = 'login' }: { onSuccess?: () => v
   const [mode, setMode] = useState<AuthMode>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [nombre, setNombre] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [pendingConfirmation, setPendingConfirmation] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setPendingConfirmation(false)
 
     try {
       if (mode === 'register') {
-        await register(email, password, nombre)
+        const data = await register(email, password, nombre)
+        if (!data.session) {
+          // El proyecto de Supabase exige confirmar el correo antes de crear sesión:
+          // sin sesión activa no podemos abrir el formulario de perfil de Astros todavía.
+          setPendingConfirmation(true)
+          return
+        }
       } else {
         await login(email, password)
       }
@@ -40,6 +49,25 @@ export function Auth({ onSuccess, initialMode = 'login' }: { onSuccess?: () => v
 
         {error && <div className="auth-error">{error}</div>}
 
+        {pendingConfirmation ? (
+          <div className="auth-confirmation">
+            <p>
+              Te enviamos un correo a <strong>{email}</strong> para confirmar tu cuenta.
+              Ábrelo y confirma tu email — luego vuelve aquí e inicia sesión para completar
+              tu perfil y usar Astros.
+            </p>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => {
+                setMode('login')
+                setPendingConfirmation(false)
+              }}
+            >
+              Ya confirmé, iniciar sesión
+            </button>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit}>
           {mode === 'register' && (
             <label>
@@ -67,30 +95,43 @@ export function Auth({ onSuccess, initialMode = 'login' }: { onSuccess?: () => v
 
           <label>
             <span>Contraseña</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
+            <div className="password-field">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </label>
 
           <button type="submit" className="primary" disabled={loading}>
             {loading ? 'Procesando...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
           </button>
         </form>
+        )}
 
-        <button
-          type="button"
-          className="ghost"
-          onClick={() => {
-            setMode(mode === 'login' ? 'register' : 'login')
-            setError(null)
-          }}
-        >
-          {mode === 'login' ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
-        </button>
+        {!pendingConfirmation && (
+          <button
+            type="button"
+            className="ghost"
+            onClick={() => {
+              setMode(mode === 'login' ? 'register' : 'login')
+              setError(null)
+            }}
+          >
+            {mode === 'login' ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
+          </button>
+        )}
       </div>
 
       <style>{`
@@ -128,6 +169,25 @@ export function Auth({ onSuccess, initialMode = 'login' }: { onSuccess?: () => v
           border-left: 3px solid #d9534f;
         }
 
+        .auth-confirmation {
+          margin-bottom: 24px;
+        }
+
+        .auth-confirmation p {
+          margin: 0 0 20px;
+          padding: 14px 16px;
+          border-radius: 8px;
+          background: rgba(217, 181, 101, 0.1);
+          border-left: 3px solid #d9b565;
+          color: #eee4ef;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .auth-confirmation .primary {
+          width: 100%;
+        }
+
         form {
           display: flex;
           flex-direction: column;
@@ -161,6 +221,33 @@ export function Auth({ onSuccess, initialMode = 'login' }: { onSuccess?: () => v
         input:focus {
           outline: none;
           border-color: #765d3b;
+        }
+
+        .password-field {
+          position: relative;
+        }
+
+        .password-field input {
+          width: 100%;
+          padding-right: 42px;
+        }
+
+        .password-toggle {
+          position: absolute;
+          right: 4px;
+          top: 50%;
+          transform: translateY(-50%);
+          padding: 6px;
+          border: none;
+          background: none;
+          font-size: 16px;
+          line-height: 1;
+          cursor: pointer;
+          opacity: 0.75;
+        }
+
+        .password-toggle:hover {
+          opacity: 1;
         }
 
         button {
