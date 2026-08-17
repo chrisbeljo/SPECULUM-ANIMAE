@@ -1,7 +1,7 @@
 import type { AstroDiscipline } from "./AstroConsultationFlow";
 
 export const REFLEXUS_ENGINE_VERSION = "1.0.0";
-export const REFLEXUS_RULES_VERSION = "2026-08-17.2";
+export const REFLEXUS_RULES_VERSION = "2026-08-17.3";
 
 export const reflexusAreas = [
   "identity",

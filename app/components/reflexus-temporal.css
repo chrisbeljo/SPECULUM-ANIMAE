@@ -68,9 +68,28 @@ header.imago-hero h1{max-width:920px;font-size:clamp(56px,9vw,108px)}
 .imago-row:not(.imago-head):nth-child(even){background:rgba(54,39,61,.18)}
 .imago-row:not(.imago-head){border-radius:8px}
 
+.deterministic-interpretation{margin-top:24px;padding:34px;border:1px solid rgba(216,181,100,.48);border-radius:26px;background:radial-gradient(circle at 0 0,rgba(103,64,126,.22),transparent 42%),#151019}
+.deterministic-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;color:#e3bf6b;font-weight:800;letter-spacing:.2em;font-size:.72rem}
+.deterministic-heading span{display:grid;place-items:center;width:42px;height:42px;border:1px solid #d6ad55;border-radius:50%;font-size:21px}
+.deterministic-summary{max-width:960px;margin:22px 0 28px;color:#f2e8dc;font:clamp(22px,2.8vw,34px)/1.35 "Gilda Display",Georgia,serif}
+.deterministic-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.deterministic-sections article{display:flex;gap:18px;min-height:220px;padding:24px;border:1px solid rgba(216,181,100,.26);border-radius:17px;background:linear-gradient(145deg,rgba(61,42,67,.48),rgba(24,18,28,.96))}
+.deterministic-sections article:nth-child(3n+2){background:linear-gradient(145deg,rgba(31,66,78,.42),rgba(18,26,31,.96))}
+.deterministic-sections article:nth-child(3n+3){background:linear-gradient(145deg,rgba(43,69,46,.4),rgba(19,28,21,.96))}
+.deterministic-sections article>span{color:#e1bc67;font:25px/1 "Gilda Display",Georgia,serif}
+.deterministic-sections h2{margin:0 0 12px;color:#f5ece2;font:25px/1.15 "Gilda Display",Georgia,serif}
+.deterministic-sections p{margin:0;color:#cec3ce;line-height:1.7}
+.deterministic-sections details{margin-top:20px;color:#a99eaa;font-size:.68rem}
+.deterministic-sections summary{cursor:pointer;color:#d9b762;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.deterministic-sections code{display:block;margin-top:10px;overflow-wrap:anywhere;color:#8f8491;line-height:1.5}
+.deterministic-method{margin:24px 0 0;padding-top:20px;border-top:1px solid rgba(216,181,100,.18);color:#948995;font-size:.78rem;line-height:1.6}
+
 @media(max-width:800px){
   header.reflexus-hero{min-height:320px;padding:48px 22px;border-radius:22px}
   header.reflexus-hero h1{font-size:clamp(48px,15vw,72px)}
   header.imago-hero h1{font-size:clamp(50px,16vw,76px)}
   header.reflexus-hero>p{font-size:14px}
+  .deterministic-interpretation{padding:24px 18px;border-radius:22px}
+  .deterministic-sections{grid-template-columns:1fr}
+  .deterministic-sections article{min-height:0}
 }
