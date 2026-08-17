@@ -511,7 +511,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     }
     return callClaudeStream(env, {
       model: "claude-sonnet-5",
-      maxTokens: 4096,
+      maxTokens: 8192,
       systemPrompt,
       userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.focusIndex, astro.data, astro.context),
     });
@@ -634,6 +634,8 @@ async function callClaudeStream(env: Env, opts: { model: string; maxTokens: numb
       const reader = upstream.getReader();
       const blockTypes = new Map<number, string>();
       let buffer = "";
+      let relayedAny = false;
+      let stopReason: string | undefined;
       try {
         while (true) {
           const { done, value } = await reader.read();
@@ -655,13 +657,19 @@ async function callClaudeStream(env: Env, opts: { model: string; maxTokens: numb
               // Sonnet can emit a "thinking" block before the "text" block —
               // only relay actual answer text to the client.
               if (blockTypes.get(event.index) === "text" && event.delta?.type === "text_delta") {
+                relayedAny = true;
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
               }
+            } else if (event.type === "message_delta") {
+              stopReason = event.delta?.stop_reason || stopReason;
             }
           }
         }
-      } catch {
-        // fall through to done below; client falls back to deterministic reading
+        if (!relayedAny) {
+          console.error("callClaudeStream: no text relayed", { stopReason, blockTypes: Object.fromEntries(blockTypes) });
+        }
+      } catch (streamError) {
+        console.error("callClaudeStream: reader loop threw", streamError);
       } finally {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
         controller.close();
