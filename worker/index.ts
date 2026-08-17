@@ -475,12 +475,11 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
         headers: { "Content-Type": "application/json" },
       });
     }
-    return callClaude(env, {
+    return callClaudeStream(env, {
       model: "claude-sonnet-5",
       maxTokens: 4096,
       systemPrompt,
       userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.data, astro.context),
-      extractFollowup: false,
     });
   }
 
@@ -562,6 +561,88 @@ async function callClaude(env: Env, opts: { model: string; maxTokens: number; sy
       headers: { "Content-Type": "application/json" },
     });
   }
+}
+
+// Streams text deltas back to the client as they're generated instead of
+// waiting for the full ~4096-token response — Astros readings take 30-40s
+// on Sonnet, and a static spinner for that long reads as broken.
+async function callClaudeStream(env: Env, opts: { model: string; maxTokens: number; systemPrompt: string; userPrompt: string }): Promise<Response> {
+  const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: opts.model,
+      max_tokens: opts.maxTokens,
+      system: [{ type: "text", text: opts.systemPrompt, cache_control: { type: "ephemeral" } }],
+      messages: [{ role: "user", content: opts.userPrompt }],
+      stream: true,
+    }),
+  });
+
+  if (!anthropicResponse.ok || !anthropicResponse.body) {
+    const detail = await anthropicResponse.text().catch(() => "");
+    return new Response(JSON.stringify({ error: "Claude API error", detail }), {
+      status: anthropicResponse.status || 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const upstream = anthropicResponse.body;
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = upstream.getReader();
+      const blockTypes = new Map<number, string>();
+      let buffer = "";
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            let event: any;
+            try {
+              event = JSON.parse(line.slice(6));
+            } catch {
+              continue;
+            }
+            if (event.type === "content_block_start") {
+              blockTypes.set(event.index, event.content_block?.type);
+            } else if (event.type === "content_block_delta") {
+              // Sonnet can emit a "thinking" block before the "text" block —
+              // only relay actual answer text to the client.
+              if (blockTypes.get(event.index) === "text" && event.delta?.type === "text_delta") {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
+              }
+            }
+          }
+        }
+      } catch {
+        // fall through to done below; client falls back to deterministic reading
+      } finally {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
 
 // ─── Account Deletion ───────────────────────────────────────────────────────
