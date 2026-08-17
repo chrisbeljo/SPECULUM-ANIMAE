@@ -118,6 +118,7 @@ function westernSignals(data: FullAstroCalculation, referenceDate: string): Refl
   const signals = [
     ...planetSignals("western", "natal", "structure", chart.planets, referenceDate, westernSourceWeights.natal),
     ...aspectSignals("natal", "structure", chart.aspects, chart.planets, referenceDate, westernSourceWeights.natal),
+    ...planetSignals("western", "transits", "present", chart.transits, referenceDate, 0.76),
     ...aspectSignals("transits", "present", chart.transitAspects, chart.planets, referenceDate, westernSourceWeights.transits),
     ...planetSignals("western", "solar_return", "trend", chart.solarReturnPlanets, referenceDate, westernSourceWeights.solar_return),
     ...aspectSignals("solar_return", "trend", chart.solarReturnAspects, chart.solarReturnPlanets, referenceDate, westernSourceWeights.solar_return),
@@ -151,6 +152,8 @@ function easternSignals(data: FullAstroCalculation, referenceDate: string): Refl
     if (data.bazi.currentLuck) {
       const cycle = data.bazi.currentLuck;
       signals.push(makeSignal({ engine: "eastern", source: "bazi_luck_cycle", area: "direction", temporalClass: "current_cycle", relevance: 92, deterministicClass: "dominant", referenceDate, validFrom: String(cycle.startYear), validTo: String(cycle.endYear), evidence: `${cycle.ganZhi}-${cycle.startYear}-${cycle.endYear}`, evidenceIds: [`eastern:luck:${slug(cycle.ganZhi)}:${cycle.startYear}`], label: `${cycle.ganZhi} · ${cycle.startYear}–${cycle.endYear}`, rawData: { ...cycle } }));
+      const nextCycle = data.bazi.luckCycles.find(item => item.startYear > cycle.endYear);
+      if (nextCycle) signals.push(makeSignal({ engine: "eastern", source: "bazi_next_luck_cycle", area: "direction", temporalClass: "trend", relevance: 78, deterministicClass: "neutral", referenceDate, validFrom: String(nextCycle.startYear), validTo: String(nextCycle.endYear), evidence: `${nextCycle.ganZhi}-${nextCycle.startYear}-${nextCycle.endYear}`, evidenceIds: [`eastern:luck:next:${slug(nextCycle.ganZhi)}:${nextCycle.startYear}`], label: `${nextCycle.ganZhi} · ${nextCycle.startYear}–${nextCycle.endYear}`, rawData: { ...nextCycle } }));
     }
   }
   data.ziwei?.palaces.forEach(palace => {

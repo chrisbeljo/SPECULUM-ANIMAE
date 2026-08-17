@@ -1,0 +1,10 @@
+.imago-temporal,.imago-contrasts{border:1px solid rgba(154,112,169,.42);border-radius:26px;padding:30px;margin-top:24px;background:#130f18}
+.imago-temporal>small,.imago-contrasts>small{display:block;color:#e0bb68;font-weight:800;letter-spacing:.2em;font-size:.72rem}
+.imago-temporal>div{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+.imago-temporal article{padding:18px;border:1px solid rgba(216,181,100,.24);border-radius:15px;background:#1b1520}
+.imago-temporal article>small{display:block;min-height:2.6em;color:#d9b662;font-weight:800;letter-spacing:.12em}
+.imago-temporal button,.imago-contrasts button{display:flex;width:100%;justify-content:space-between;gap:10px;border:0;border-top:1px solid rgba(216,181,100,.16);padding:12px 0;background:transparent;color:#eee2ee;text-align:left}
+.imago-temporal button span,.imago-contrasts button span{color:#dcb867}
+.imago-contrasts>div{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.imago-contrasts button{padding:17px;border:1px solid rgba(216,181,100,.25);border-radius:13px;background:#1b1520}
+@media(max-width:800px){.imago-temporal>div,.imago-contrasts>div{grid-template-columns:1fr}}
