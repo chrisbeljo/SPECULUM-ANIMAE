@@ -741,7 +741,13 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
   if (reflexus) {
     return callClaudeStream(env, {
       model: "claude-sonnet-5",
-      maxTokens: 8192,
+      // Real production payloads carry all 11 areas with many signals per
+      // engine — far more than the small test fixtures this was tuned
+      // against — and the narrative-rich STYLE rewrite made responses
+      // longer. 8192 was getting exhausted mid-generation before the model
+      // reached all 5 sections + TRACE_JSON, causing the response to be
+      // rejected and silently fall back to the deterministic reading.
+      maxTokens: 16000,
       systemPrompt: REFLEXUS_SYSTEM_PROMPT,
       userPrompt: getReflexusUserPrompt(language, reflexus),
     });
@@ -750,7 +756,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
   if (imago) {
     return callClaudeStream(env, {
       model: "claude-sonnet-5",
-      maxTokens: 8192,
+      maxTokens: 16000,
       systemPrompt: IMAGO_SYSTEM_PROMPT,
       userPrompt: getImagoUserPrompt(language, imago),
     });
@@ -922,6 +928,13 @@ async function callClaudeStream(env: Env, opts: { model: string; maxTokens: numb
         }
         if (!relayedAny) {
           console.error("callClaudeStream: no text relayed", { stopReason, blockTypes: Object.fromEntries(blockTypes) });
+        } else if (stopReason === "max_tokens") {
+          // Some text streamed but the response was cut off before finishing —
+          // this is the "streams in then vanishes" symptom: the client-side
+          // validator correctly rejects the incomplete response (missing
+          // sections / TRACE_JSON) and falls back to the deterministic
+          // reading, but the root cause is here, not in validation.
+          console.error("callClaudeStream: response truncated at maxTokens", { blockTypes: Object.fromEntries(blockTypes) });
         }
       } catch (streamError) {
         console.error("callClaudeStream: reader loop threw", streamError);
