@@ -55,7 +55,7 @@ function parseSections(text) {
 
 function validateTrace(trace, sectionCount, validIds) {
   if (trace.length < sectionCount) return false;
-  return trace.every((item) => item.sources.length > 0 && item.sources.every((id) => validIds.has(id)));
+  return trace.every((item) => item.sources.some((id) => validIds.has(id)));
 }
 
 // A minimal REFLEXUS-shaped fixture, structurally identical to what
@@ -111,6 +111,20 @@ test("una respuesta con ids reales y trazabilidad completa sí valida", () => {
   const trace = parseTrace(text);
   const validIds = extractValidIds(fixtureReport.aiPayload);
   assert.equal(validateTrace(trace, 1, validIds), true);
+});
+
+test("una sección con un id inventado MEZCLADO junto a un id real sí valida (tolerante a errores parciales de cita, no exige que TODOS los ids sean exactos)", () => {
+  const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["reflexus:western:natal:sun-house-1:identity","id-con-typo-inventado"]}]}`;
+  const trace = parseTrace(text);
+  const validIds = extractValidIds(fixtureReport.aiPayload);
+  assert.equal(validateTrace(trace, 1, validIds), true);
+});
+
+test("una sección donde NINGÚN id citado es real sigue siendo rechazada (la tolerancia no equivale a aceptar cualquier cosa)", () => {
+  const text = `## Síntesis editorial\ntexto\n\nTRACE_JSON: {"sections":[{"title":"Síntesis editorial","sources":["id-inventado-1","id-inventado-2"]}]}`;
+  const trace = parseTrace(text);
+  const validIds = extractValidIds(fixtureReport.aiPayload);
+  assert.equal(validateTrace(trace, 1, validIds), false);
 });
 
 test("una respuesta incompleta (menos de 5 secciones) se rechaza antes de llegar a trazabilidad", () => {

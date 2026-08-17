@@ -79,12 +79,20 @@ function parseSections(text: string): EditorialSection[] {
 /**
  * A response is only accepted if it has exactly the expected number of
  * sections AND every section cites at least one id that genuinely appears
- * in the data we sent. Anything else — missing TRACE_JSON, an invented id,
- * an incomplete response — is rejected and the caller falls back.
+ * in the data we sent. Anything else — missing TRACE_JSON, no traceable
+ * evidence at all for some section, an incomplete response — is rejected
+ * and the caller falls back.
+ *
+ * Deliberately lenient on a per-section basis: requiring EVERY cited id in
+ * a section to be exact (rather than at least one) rejected otherwise-good
+ * responses whenever the model listed one slightly malformed id alongside
+ * genuinely real ones — the text would stream in fine and then vanish at
+ * the very end. A single real, verifiable citation per section is already
+ * enough to prove the paragraph isn't fabricated from nothing.
  */
 function validateTrace(trace: { section: string; sources: string[] }[], sectionCount: number, validIds: Set<string>): boolean {
   if (trace.length < sectionCount) return false;
-  return trace.every((item) => item.sources.length > 0 && item.sources.every((id) => validIds.has(id)));
+  return trace.every((item) => item.sources.some((id) => validIds.has(id)));
 }
 
 async function streamAndValidate(body: unknown, validIds: Set<string>, onChunk: (full: string) => void, cancelledRef: { current: boolean }): Promise<EditorialSection[] | null> {
@@ -122,7 +130,14 @@ async function streamAndValidate(body: unknown, validIds: Set<string>, onChunk: 
 
   const sections = parseSections(full);
   const trace = parseTrace(full);
-  if (sections.length < 5 || !validateTrace(trace, sections.length, validIds)) return null;
+  if (sections.length < 5) {
+    console.error("editorial rejected: too few sections", { found: sections.length, full });
+    return null;
+  }
+  if (!validateTrace(trace, sections.length, validIds)) {
+    console.error("editorial rejected: trace validation failed", { trace, validIds: [...validIds] });
+    return null;
+  }
   return sections;
 }
 
