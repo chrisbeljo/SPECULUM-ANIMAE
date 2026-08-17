@@ -46,6 +46,14 @@ interface InterpretRequest {
     focusIndex?: number;
     data: Record<string, unknown>;
     context?: { name?: string; birthDate?: string; question?: string };
+    theme?: {
+      id: string;
+      title: string;
+      description: string;
+      centralQuestion: string;
+      indicators: Record<string, unknown>;
+      evidence: Array<{ kind: string; label: string; value: string; source: string }>;
+    };
   };
 }
 
@@ -427,6 +435,65 @@ MANDATORY FINAL LINE: after delivering the full five-section interpretation abov
 ESSENTIALS: <first key takeaway> | <second key takeaway> | <third key takeaway>
 Each takeaway must be a single short sentence (under 15 words), specific to this exact reading and this exact focus — never a generic statement that could apply to any chart. Provide exactly 3 takeaways, separated by " | ". Nothing may come after this line. Omitting it is a critical error.`;
 
+const ASTRO_THEME_SYSTEM_PROMPT = `You write a specialized thematic report derived from an already-calculated Western astrology, Chinese astrology, or numerology report.
+
+NON-NEGOTIABLE GROUNDING:
+- Use only values present in PRECOMPUTED CALCULATION and VERIFIED EVIDENCE.
+- Never invent a planet, sign, house, aspect, orb, duration, stem, branch, Ten God, element, cycle, palace, star, number, pinnacle, challenge, or timing claim.
+- Every important paragraph must be supported by one or more exact VERIFIED EVIDENCE source strings.
+- If the evidence cannot support a requested conclusion, state the limitation briefly instead of filling the gap.
+- Preserve the original report as context, but answer only the selected thematic question. Do not repeat the general interpretation.
+- Distinguish permanent structure from timed activation. Include a current-moment section only when temporal evidence is supplied.
+- Describe symbolic tendencies, not inevitable events. Do not provide medical diagnosis, investment advice, legal certainty, or absolute predictions.
+- Chinese astrology must retain its own terminology; do not translate it automatically into Western astrology.
+
+DELIVER THESE SECTIONS, translating every visible header into the target language:
+## Opening
+One or two concise paragraphs defining the exact area being examined.
+## Main indicators
+Name the strongest calculated indicators that genuinely support this theme.
+## Interpretation
+Develop the selected theme specifically and coherently.
+## Strengths
+Explain configurations that favor this area.
+## Tensions or challenges
+Explain configurations that create friction without presenting them as fate.
+## Current moment
+Include only if temporal evidence exists; otherwise omit this entire section.
+## Integration
+Relate the theme to the original report without retelling it.
+## Guidance
+Offer a practical symbolic conclusion grounded in the evidence.
+## Method and scope
+State which calculations were used and what this report cannot establish.
+
+MANDATORY FINAL LINE: after all visible sections, output exactly one technical line in this format and nothing after it:
+TRACE_JSON: {"sections":[{"title":"<visible section title>","sources":["<exact source string from VERIFIED EVIDENCE>"]}]}
+Include one object for every visible section. The source strings must be copied exactly from VERIFIED EVIDENCE; never create new source identifiers.`;
+
+const getAstroThemeUserPrompt = (language:string, astro:NonNullable<InterpretRequest["astro"]>):string => {
+  const instruction=LANGUAGE_INSTRUCTIONS[language]||LANGUAGE_INSTRUCTIONS.ES;
+  return `${instruction}
+
+Discipline: ${astro.discipline}
+Original report: ${astro.focus}
+Selected thematic report: ${astro.theme?.title}
+Central question: ${astro.theme?.centralQuestion}
+Description: ${astro.theme?.description}
+Allowed indicator contract: ${JSON.stringify(astro.theme?.indicators||{},null,2)}
+${astro.context?.name?`Consultant: ${astro.context.name}`:""}
+${astro.context?.birthDate?`Birth date: ${astro.context.birthDate}`:""}
+${astro.context?.question?`Consultant question: ${astro.context.question}`:"No specific consultant question."}
+
+VERIFIED EVIDENCE (each source value is an internal trace identifier; cite only these identifiers in TRACE_JSON):
+${JSON.stringify(astro.theme?.evidence||[],null,2)}
+
+PRECOMPUTED CALCULATION (ground truth; use it to understand relationships, never to invent missing facts):
+${JSON.stringify(astro.data,null,2)}
+
+Write the specialized report now. Every visible word must be in ${LANGUAGE_NAMES[language]||"Spanish"}; keep only the technical marker TRACE_JSON and JSON keys in English.`;
+};
+
 const getAstroUserPrompt = (language: string, discipline: string, focus: string, focusIndex: number | undefined, data: Record<string, unknown>, context?: { name?: string; birthDate?: string; question?: string }): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
   const lens = focusIndex !== undefined ? FOCUS_LENS[discipline as "western" | "eastern" | "numerology"]?.[focusIndex] : undefined;
@@ -551,7 +618,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
   const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup, astro } = body;
 
   if (astro) {
-    const systemPrompt = ASTRO_SYSTEM_PROMPTS[astro.discipline] ? ASTRO_SYSTEM_PROMPTS[astro.discipline] + ASTRO_ESSENTIALS_INSTRUCTION : undefined;
+    const systemPrompt = astro.theme ? ASTRO_THEME_SYSTEM_PROMPT : ASTRO_SYSTEM_PROMPTS[astro.discipline] ? ASTRO_SYSTEM_PROMPTS[astro.discipline] + ASTRO_ESSENTIALS_INSTRUCTION : undefined;
     if (!systemPrompt) {
       return new Response(JSON.stringify({ error: "Unknown astro discipline" }), {
         status: 400,
@@ -562,7 +629,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
       model: "claude-sonnet-5",
       maxTokens: 8192,
       systemPrompt,
-      userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.focusIndex, astro.data, astro.context),
+      userPrompt: astro.theme ? getAstroThemeUserPrompt(language,astro) : getAstroUserPrompt(language, astro.discipline, astro.focus, astro.focusIndex, astro.data, astro.context),
     });
   }
 
