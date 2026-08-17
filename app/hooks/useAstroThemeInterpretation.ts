@@ -46,12 +46,13 @@ function fallback(contract:AstroThemeContract,evidence:AstroThemeEvidence[],lang
 
 export function useAstroThemeInterpretation(payload:AstroConsultationPayload,focusIndex:number,data:FullAstroCalculation,contract:AstroThemeContract){
   const evidence=useMemo(()=>buildAstroThemeEvidence(payload.discipline,focusIndex,contract,data),[payload.discipline,focusIndex,contract,data]);
+  const deterministic=useMemo(()=>fallback(contract,evidence,payload.language),[contract,evidence,payload.language]);
   const key=themeSessionKey(payload,focusIndex,contract.id);
-  const [result,setResult]=useState<AstroThemeInterpretation>(()=>sessionCache.get(key)||fallback(contract,evidence,payload.language));
+  const [result,setResult]=useState<AstroThemeInterpretation>(()=>sessionCache.get(key)||deterministic);
   const [streamingText,setStreamingText]=useState("");const [isLoading,setIsLoading]=useState(!sessionCache.has(key));const [usedFallback,setUsedFallback]=useState(false);
 
   useEffect(()=>{const cached=sessionCache.get(key);if(cached){setResult(cached);setIsLoading(false);setStreamingText("");return}let cancelled=false;setIsLoading(true);setStreamingText("");setUsedFallback(false);
     void(async()=>{try{const response=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({language:payload.language,astro:{discipline:payload.discipline,focus:payload.focus,focusIndex,data,context:{name:payload.birthName||payload.name,birthDate:payload.birthDate,question:payload.question},theme:{id:contract.id,title:contract.title,description:contract.description,centralQuestion:contract.centralQuestion,indicators:{planets:contract.planets,houses:contract.houses,palaces:contract.palaces,numberKeys:contract.numberKeys,temporal:contract.temporal},evidence}}})});if(!response.ok||!response.body)throw new Error(`Error ${response.status}`);const reader=response.body.getReader();const decoder=new TextDecoder();let full="",buffer="";while(true){const{done,value}=await reader.read();if(done)break;buffer+=decoder.decode(value,{stream:true});const events=buffer.split("\n\n");buffer=events.pop()||"";for(const raw of events){const line=raw.split("\n").find(item=>item.startsWith("data: "));if(!line)continue;try{const event=JSON.parse(line.slice(6)) as{text?:string};if(event.text){full+=event.text;if(!cancelled)setStreamingText(full)}}catch{}}}const sections=parseSections(full);if(sections.length<7)throw new Error("Incomplete thematic report");const interpreted={sections,trace:parseTrace(full)};sessionCache.set(key,interpreted);if(!cancelled){setResult(interpreted);setUsedFallback(false)}}catch{if(!cancelled){setResult(fallback(contract,evidence,payload.language));setUsedFallback(true)}}finally{if(!cancelled)setIsLoading(false)}})();return()=>{cancelled=true}},[key]);
 
-  return{...result,evidence,isLoading,streamingText:stripTrace(streamingText),usedFallback};
+  return{...result,deterministicSections:deterministic.sections,evidence,isLoading,streamingText:stripTrace(streamingText),usedFallback};
 }
