@@ -8,3 +8,69 @@
 .imago-contrasts>div{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
 .imago-contrasts button{padding:17px;border:1px solid rgba(216,181,100,.25);border-radius:13px;background:#1b1520}
 @media(max-width:800px){.imago-temporal>div,.imago-contrasts>div{grid-template-columns:1fr}}
+
+/* The global site header is sticky and horizontal. Report heroes are independent page headings. */
+header.reflexus-hero{
+  position:static;
+  inset:auto;
+  z-index:auto;
+  width:100%;
+  height:auto;
+  min-height:360px;
+  margin:30px 0 26px;
+  padding:64px 48px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  overflow:hidden;
+  text-align:center;
+  border:1px solid rgba(215,177,93,.58);
+  border-radius:28px;
+  background:radial-gradient(circle at 50% 0,rgba(116,72,141,.25),transparent 58%),#120d16;
+  backdrop-filter:none;
+}
+header.reflexus-hero h1{
+  max-width:100%;
+  margin:18px auto 14px;
+  color:#f4eadc;
+  font:clamp(54px,8vw,94px)/.92 "Gilda Display",Georgia,serif;
+  letter-spacing:-.045em;
+  overflow-wrap:normal;
+}
+header.reflexus-hero>small{color:#dcb967;font-size:10px;letter-spacing:.22em;text-transform:uppercase}
+header.reflexus-hero>strong{display:block;max-width:720px;color:#eccf89;font:clamp(21px,3vw,30px)/1.18 "Gilda Display",Georgia,serif}
+header.reflexus-hero>p{max-width:720px;margin:16px auto 0;color:#c8bdc9;font-size:15px;line-height:1.65}
+header.reflexus-hero>p:last-of-type{margin-top:22px;color:#8f8492;font-size:11px;letter-spacing:.06em}
+header.imago-hero{min-height:400px;background:radial-gradient(circle at 50% 0,rgba(193,145,61,.26),transparent 50%),radial-gradient(circle at 18% 82%,rgba(75,54,136,.3),transparent 46%),#0d0a11}
+header.imago-hero h1{max-width:920px;font-size:clamp(56px,9vw,108px)}
+
+/* Readable discipline palette, consistent with the focus menus. */
+.reflexus-ranking article:nth-child(4n+1),.reflexus-area-grid article:nth-child(4n+1){background:linear-gradient(135deg,rgba(77,44,91,.64),rgba(27,19,32,.97));border-color:rgba(157,104,181,.58)}
+.reflexus-ranking article:nth-child(4n+2),.reflexus-area-grid article:nth-child(4n+2){background:linear-gradient(135deg,rgba(24,67,91,.58),rgba(17,27,36,.98));border-color:rgba(83,145,177,.52)}
+.reflexus-ranking article:nth-child(4n+3),.reflexus-area-grid article:nth-child(4n+3){background:linear-gradient(135deg,rgba(38,77,50,.56),rgba(18,31,23,.98));border-color:rgba(87,150,98,.5)}
+.reflexus-ranking article:nth-child(4n+4),.reflexus-area-grid article:nth-child(4n+4){background:linear-gradient(135deg,rgba(87,56,24,.58),rgba(35,25,16,.98));border-color:rgba(173,121,56,.55)}
+.reflexus-ranking article,.reflexus-area-grid article{box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.reflexus-ranking h2,.reflexus-area-grid h3{color:#f4ece3}
+.reflexus-ranking p,.reflexus-area-grid p{color:#cabfca}
+
+.imago-source-status article:nth-child(1){background:linear-gradient(135deg,#2a1831,#1a131e);border:1px solid rgba(153,103,178,.4)}
+.imago-source-status article:nth-child(2){background:linear-gradient(135deg,#183225,#131d18);border:1px solid rgba(93,145,90,.4)}
+.imago-source-status article:nth-child(3){background:linear-gradient(135deg,#34201f,#201617);border:1px solid rgba(168,105,79,.42)}
+.imago-dominant button:nth-child(5n+1){background:linear-gradient(155deg,#321d3b,#17111b);border-color:#765087}
+.imago-dominant button:nth-child(5n+2){background:linear-gradient(155deg,#17344a,#101a23);border-color:#3e708c}
+.imago-dominant button:nth-child(5n+3){background:linear-gradient(155deg,#213d28,#121e16);border-color:#4d7955}
+.imago-dominant button:nth-child(5n+4){background:linear-gradient(155deg,#422d18,#21180f);border-color:#846035}
+.imago-dominant button:nth-child(5n+5){background:linear-gradient(155deg,#40202f,#21141b);border-color:#86516a}
+.imago-dominant h2{color:#f5ede4;font-size:1.24rem;line-height:1.2}
+.imago-dominant p{line-height:1.45}
+.imago-row:not(.imago-head):nth-child(even){background:rgba(54,39,61,.18)}
+.imago-row:not(.imago-head){border-radius:8px}
+
+@media(max-width:800px){
+  header.reflexus-hero{min-height:320px;padding:48px 22px;border-radius:22px}
+  header.reflexus-hero h1{font-size:clamp(48px,15vw,72px)}
+  header.imago-hero h1{font-size:clamp(50px,16vw,76px)}
+  header.reflexus-hero>p{font-size:14px}
+}
