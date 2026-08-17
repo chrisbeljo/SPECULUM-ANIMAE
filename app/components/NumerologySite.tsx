@@ -78,7 +78,7 @@ const meanings: Record<Language, string[]> = {
 const libraryNumbers = [1,2,3,4,5,6,7,8,9,11,22,33];
 const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back to focuses",FR:"Retour aux approches",DE:"Zurück zu den Schwerpunkten",PT:"Voltar aos enfoques"};
 
-export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void }) {
+export function NumerologySite({ lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile,onOpenAccount }: { lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void;onOpenAccount?:()=>void }) {
   const text = content[lang];
   const library: DisciplineLibraryItem[] = libraryNumbers.map((number, index) => ({ id: `number-${number}`, name: `${text.numberLabel} ${number}`, category: number > 9 ? text.masterLabel : text.numberLabel, description: meanings[lang][index], symbol: String(number), image:"/oracles/numerology/number-medallion-base-v1.webp", visual:"astro-medallion", tone:"numerology" }));
   const focus = selected === null ? null : text.focuses[selected];
@@ -87,7 +87,7 @@ export function NumerologySite({ lang, onBack, selected, consultationOpen, onSel
 
   if (consultationOpen && focus) return <section className="astrology-site numerology-site astrology-results-page">
     <button type="button" className="astrology-back" onClick={onCloseConsultation}>← {resultsBack[lang]}</button>
-    <AstroConsultationFlow discipline="numerology" focus={focus.title} focusIndex={selected!} lang={lang} fromProfile onOpenProfile={onOpenProfile} />
+    <AstroConsultationFlow discipline="numerology" focus={focus.title} focusIndex={selected!} lang={lang} fromProfile onOpenProfile={onOpenProfile} onOpenAccount={onOpenAccount} />
   </section>;
 
   return <section className="astrology-site numerology-site">

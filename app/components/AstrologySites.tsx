@@ -12,7 +12,7 @@ import "./astrology-introduction.css";
 import "./astro-artwork-v2.css";
 
 export type AstrologyBranch = "western" | "eastern";
-type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void };
+type AstrologySiteProps = { branch: AstrologyBranch; lang: Language; onBack: () => void; selected: number | null; consultationOpen: boolean; onSelect: (index: number, focus: string) => void; onCloseConsultation: () => void;onOpenProfile?:()=>void;onOpenAccount?:()=>void };
 type Focus = { symbol: string; title: string; level: string; description: string };
 type SiteCopy = { back: string; eyebrow: string; title: string; subtitle: string; introduction: string; choose: string; pending: string; pendingDescription: string; focuses: Focus[] };
 type IntroSection = { title: string; paragraphs: string[] };
@@ -151,7 +151,7 @@ const libraryCopy: Record<Language, { reference: string; westernWheel: string; w
 
 const resultsBack:Record<Language,string>={ES:"Volver a los enfoques",EN:"Back to focuses",FR:"Retour aux approches",DE:"Zurück zu den Schwerpunkten",PT:"Voltar aos enfoques"};
 
-export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile }: AstrologySiteProps) {
+export function AstrologySite({ branch, lang, onBack, selected, consultationOpen, onSelect, onCloseConsultation,onOpenProfile,onOpenAccount }: AstrologySiteProps) {
   const text = content[lang][branch];
   const introductionSections = branch === "western" ? westernIntroductions[lang] : easternIntroductions[lang];
   const lib = libraryCopy[lang];
@@ -174,7 +174,7 @@ export function AstrologySite({ branch, lang, onBack, selected, consultationOpen
 
   if (consultationOpen && focus) return <section className={`astrology-site astrology-${branch} astrology-results-page`}>
     <button type="button" className="astrology-back" onClick={onCloseConsultation}>← {resultsBack[lang]}</button>
-    <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} fromProfile onOpenProfile={onOpenProfile} />
+    <AstroConsultationFlow discipline={branch} focus={focus.title} focusIndex={selected!} lang={lang} fromProfile onOpenProfile={onOpenProfile} onOpenAccount={onOpenAccount} />
   </section>;
 
   return <section className={`astrology-site astrology-${branch}`}>
