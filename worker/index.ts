@@ -523,6 +523,11 @@ RULES:
 - Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
 - Write as an editorial voice that makes the calculated pattern legible and narratively coherent — not a second calculation.
 
+STYLE:
+- The exact relevance scores, ranks, and evidence labels are already visible in tables directly above this text on the page — do not restate them as numbers ("(92/100)", "rank 1", etc.). Refer to emphasis qualitatively instead ("the area with the clearest concentration of signals," "a secondary theme") and let the visible tables carry the precise figures. Repeating a number the reader already sees above is a critical error, not just a style slip.
+- Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny.
+- Write as one continuous narrative with a throughline, not a checklist that restates each area in turn. Each section should read like the next beat of the same story, picking up where the previous one left off.
+
 DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 
 ## Síntesis editorial
@@ -552,6 +557,11 @@ RULES:
 - Use only the areas provided. Never invent a convergence, consistency, score, or evidence id absent from the data.
 - Never turn a 1of3 into a 2of3 or 3of3, and never turn a divergent or mixed reading into an artificially resolved "aligned" one — contrast and tension are part of what you must describe honestly.
 - Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
+
+STYLE:
+- The exact relevance scores, convergence labels (1of3/2of3/3of3), and per-engine ranks are already visible in the matrix table directly above this text — do not restate them as numbers or literal labels. Refer to them qualitatively instead ("the three systems converge outright," "only one engine flags this") and let the visible table carry the precise figures. Repeating a number or label the reader already sees above is a critical error, not just a style slip.
+- Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny.
+- Write as one continuous narrative with a throughline, not a checklist that restates each area in turn. Each section should read like the next beat of the same story, picking up where the previous one left off.
 
 DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 

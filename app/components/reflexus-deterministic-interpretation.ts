@@ -123,8 +123,8 @@ function sectionText(engine: AstroDiscipline, classes: ReflexusTemporalClass[], 
   const primary = ranked[0];
   const secondary = ranked[1];
   const lead = classes.map(item => pack.engineLead[engine][item]).join(" ");
-  const primaryText = `${areaNames[lang][primary.area]} (${primary.relevance}/100) ${areaFocus[lang][primary.area]}. ${pack.classText[primary.deterministicClass]}`;
-  const secondaryText = secondary ? ` ${pack.secondaryLead}: ${areaNames[lang][secondary.area]} (${secondary.relevance}/100); ${areaFocus[lang][secondary.area]}.` : "";
+  const primaryText = `${areaNames[lang][primary.area]} ${areaFocus[lang][primary.area]}. ${pack.classText[primary.deterministicClass]}`;
+  const secondaryText = secondary ? ` ${pack.secondaryLead}: ${areaNames[lang][secondary.area]}; ${areaFocus[lang][secondary.area]}.` : "";
   const evidence = signals.slice(0, 2).map(signal => signal.label).join("; ");
   return `${lead} ${primaryText}${secondaryText} ${pack.evidenceLead}: ${evidence}.`;
 }
@@ -133,7 +133,7 @@ export function buildReflexusDeterministicInterpretation(report: ReflexusReport,
   const pack = packs[lang];
   const top = report.areas.filter(area => area.relevance > 0).slice(0, 3);
   const summary = top.length
-    ? `${pack.layerNames.integration}: ${top.map(area => `${areaNames[lang][area.area]} (${area.relevance}/100)`).join(" · ")}. ${areaFocus[lang][top[0].area]}. ${pack.scoreNote}`
+    ? `${pack.layerNames.integration}: ${top.map(area => areaNames[lang][area.area]).join(" · ")}. ${areaFocus[lang][top[0].area]}. ${pack.scoreNote}`
     : pack.insufficient;
   const sections = layersByEngine[report.engine].map((classes, index) => {
     const signals = report.signals.filter(signal => classes.includes(signal.temporalClass)).sort((a, b) => b.relevance - a.relevance);
@@ -151,16 +151,14 @@ export function buildReflexusDeterministicInterpretation(report: ReflexusReport,
 
 function imagoAreaText(area: ImagoArea, lang: Language) {
   const pack = packs[lang];
-  const activeEngines = area.engines.filter(engine => engine.rank <= 5 && engine.relevance >= 55);
-  const engineValues = activeEngines.map(engine => `${engine.engine} ${engine.relevance}/100`).join(" · ");
-  return `${areaNames[lang][area.area]} ${areaFocus[lang][area.area]}. ${pack.convergence[area.convergence]} ${pack.consistency[area.consistency]}${engineValues ? ` ${pack.evidenceLead}: ${engineValues}.` : ""}`;
+  return `${areaNames[lang][area.area]} ${areaFocus[lang][area.area]}. ${pack.convergence[area.convergence]} ${pack.consistency[area.consistency]}`;
 }
 
 export function buildImagoDeterministicInterpretation(imago: ImagoReport, lang: Language): ImagoDeterministicInterpretation {
   const pack = packs[lang];
   const prioritized = imago.areas.filter(area => area.relevance > 0).slice(0, 5);
   const lead = prioritized[0];
-  const summary = lead ? `${areaNames[lang][lead.area]} (${lead.relevance}/100). ${areaFocus[lang][lead.area]}. ${pack.convergence[lead.convergence]} ${pack.consistency[lead.consistency]} ${pack.scoreNote}` : pack.insufficient;
+  const summary = lead ? `${areaNames[lang][lead.area]}. ${areaFocus[lang][lead.area]}. ${pack.convergence[lead.convergence]} ${pack.consistency[lead.consistency]} ${pack.scoreNote}` : pack.insufficient;
   const sections = prioritized.slice(0, 3).map((area, index) => ({
     id: `imago-${area.area}-${index}`,
     title: areaNames[lang][area.area],
