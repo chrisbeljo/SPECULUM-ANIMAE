@@ -16,7 +16,10 @@ const ENDPOINT = "/api/interpretar";
 
 function parseAstroSections(text: string): { title: string; text: string }[] {
   if (!text) return [];
-  const parts = text.split(/^#+\s+/m).filter((s) => s.trim());
+  // The model sometimes prepends a "# <title>" line before the five "## "
+  // sections — strip it so it isn't mistaken for the first section's content.
+  const withoutTitle = text.replace(/^#\s+[^\n]*\n+/, "");
+  const parts = withoutTitle.split(/^##\s+/m).filter((s) => s.trim());
   return parts
     .map((part) => {
       const lines = part.split("\n");
