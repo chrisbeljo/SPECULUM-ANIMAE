@@ -525,7 +525,8 @@ RULES:
 
 STYLE:
 - The exact relevance scores, ranks, and evidence labels are already visible in tables directly above this text on the page — do not restate them as numbers ("(92/100)", "rank 1", etc.). Refer to emphasis qualitatively instead ("the area with the clearest concentration of signals," "a secondary theme") and let the visible tables carry the precise figures. Repeating a number the reader already sees above is a critical error, not just a style slip.
-- Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny.
+- Be concrete, not abstract. Every sentence must say something specific about THIS person's actual character, patterns, or circumstances — never a general statement about what a pattern's existence signifies, how reliable it is, or what data supports it. If a sentence could be copy-pasted into a different person's reading in a different area and still sound true, delete it and replace it with something that could only be said about this exact pattern.
+- Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny. Every paragraph must land on a specific, stated claim by its last sentence — never trail off into a description of the topic without ever saying what you concluded about it.
 - Write as one continuous narrative with a throughline, not a checklist that restates each area in turn. Each section should read like the next beat of the same story, picking up where the previous one left off.
 - NEVER narrate your own reasoning process. Do not write sentences whose content is "this signal says X, that signal says Y" or explain why a classification was assigned — that is showing your work, and the reader does not need or want to see it. Give the CONCLUSION: what this pattern means for the person's actual life, as a direct statement. If a sentence's only content is comparing what individual signals or engines said, delete it and replace it with what it adds up to.
 - One clear idea per paragraph, stated plainly. Prefer fewer, sharper sentences over an exhaustive account of every signal — the goal is signal, not coverage. If you can say it in half the words, do that instead.
@@ -561,28 +562,30 @@ RULES:
 - Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
 
 STYLE:
-- The exact relevance scores, convergence labels (1of3/2of3/3of3), and per-engine ranks are already visible in the matrix table directly above this text — do not restate them as numbers or literal labels. Refer to them qualitatively instead ("the three systems converge outright," "only one engine flags this") and let the visible table carry the precise figures. Repeating a number or label the reader already sees above is a critical error, not just a style slip.
-- Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny.
+- The exact relevance scores, convergence labels (1of3/2of3/3of3), and per-engine ranks are already visible in the matrix table directly above this text — do not restate them as numbers or literal labels.
+- Convergence and consistency govern HOW CONFIDENTLY you write about an area — state high-convergence areas plainly and directly, and treat low-convergence areas as a single-lens hypothesis rather than a settled fact — but they are never the SUBJECT of a sentence. Do not write sentences whose content is that systems agree, disagree, or that agreement is itself meaningful or reliable ("esto no es casualidad estadística," "cuando tres sistemas convergen, la probabilidad de ruido cae," "los tres lenguajes coinciden," "solo un lente lo registra"). The reader already sees exactly which areas converge and which don't in the table above — narrating that fact back to them, or philosophizing about what agreement-across-systems generally means, is empty meta-commentary, not interpretation. Every sentence must be about the PERSON — their character, their patterns, their circumstances — never about the reading process, the systems, or the reliability of a claim.
+- Where an area diverges or only partially agrees, do not isolate it into its own aside about the disagreement. Fold it into whichever section it temporally belongs to (structure/present/trend), and simply write about it with a softer, more provisional commitment than a fully-converged area gets — a shift in how sure you sound, not a sentence pointing out that you're being tentative or explaining why.
+- Be direct and assertive, never vague or hedging. Every paragraph must land on a specific, concrete claim about this person by its last sentence — never trail off after describing the topic without ever stating what you concluded. If a sentence could be copy-pasted into a different person's reading with different areas and still sound true, delete it and replace it with something that could only be said about this exact pattern.
 - Write as one continuous narrative with a throughline, not a checklist that restates each area in turn. Each section should read like the next beat of the same story, picking up where the previous one left off.
-- NEVER narrate your own reasoning process. The single most common failure mode here is writing, area by area, "the eastern engine ranks this first, numerology also treats it as central, while western supports it in more of a secondary role" — that is showing your work, not interpreting. The reader does not see the per-engine breakdown as prose; they see it in the table above. Give the CONCLUSION instead: what does it mean for this person that identity is where all three languages agree? Say that, in one or two sentences, and move on.
-- One clear idea per area, stated plainly. Prefer fewer, sharper sentences over an exhaustive account of what each engine contributed — the goal is signal, not coverage. If a sentence's only content is comparing what each engine individually said, delete it and replace it with what it adds up to.
+- NEVER narrate your own reasoning process. Do not describe what each individual engine said, how the engines were weighed, or why an area ranks where it does — that is showing your work, not interpreting. Go straight to the conclusion: what does this pattern actually mean for the person's life, stated as fact about them.
+- One clear idea per paragraph, stated plainly. Prefer fewer, sharper sentences over an exhaustive account of every area — the goal is signal, not coverage.
 
 DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 
 ## Imagen integrada
-State plainly what the highest-relevance areas mean for the person, together — the conclusion, not an inventory of what each system contributed.
+State plainly and concretely what the highest-relevance areas mean for this person's actual life — not that they are important, not that the systems agree on them, but what they are and what living with them looks like.
 
-## Convergencias principales
-Name the areas where the systems agree and say what that agreement means for the person in practical terms. Do not describe what each individual engine said — say what the agreement adds up to.
+## Estructura de base
+The deepest, most stable pattern across the map — what's structural (and "balance"/"stage" if present) about who this person is at the core. Describe the person directly; do not report which areas or how many systems support the description.
 
-## Contrastes y complementos
-Name the areas where the systems diverge or only partially agree, and state directly what that tension or nuance means to live with — not which engine said what.
+## Momento actual
+What is active right now across the map, stated as a direct conclusion about this person's present circumstances. If no "present"/"current_cycle" material exists among the higher-relevance areas, say so briefly instead of inventing one.
 
-## Estructura, presente y tendencia
-What the structure/present/trend pattern across areas means, stated directly.
+## Tendencia
+Where the overall emphasis is heading — described concretely as a direction this person's life is already moving in, not as a probability or a hedge.
 
 ## Orientación integradora
-A closing, integrative paragraph. Close with a single direct sentence.
+A closing, integrative paragraph connecting the base structure, the present, and the trend into one coherent, concrete orientation for how to live with this map. Close with a single direct sentence.
 
 MANDATORY FINAL LINE: after all five sections, output exactly one technical line in this format and nothing after it:
 TRACE_JSON: {"sections":[{"title":"<visible section title, in the target language>","sources":["<exact evidence id you actually used>"]}]}
