@@ -472,7 +472,7 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     }
     return callClaude(env, {
       model: "claude-sonnet-5",
-      maxTokens: 3000,
+      maxTokens: 4096,
       systemPrompt,
       userPrompt: getAstroUserPrompt(language, astro.discipline, astro.focus, astro.data, astro.context),
       extractFollowup: false,
@@ -537,7 +537,9 @@ async function callClaude(env: Env, opts: { model: string; maxTokens: number; sy
     }
 
     const data = await anthropicResponse.json() as { content: Array<{ type: string; text: string }> };
-    const rawText = data.content?.[0]?.text ?? "";
+    // Sonnet can return a "thinking" block before the "text" block — never assume
+    // content[0] is the answer; some models don't include a thinking block at all.
+    const rawText = data.content?.find((block) => block.type === "text")?.text ?? "";
     const { interpretation, followupQuestion } = opts.extractFollowup
       ? extractFollowupQuestion(rawText)
       : { interpretation: rawText.trim(), followupQuestion: null };
