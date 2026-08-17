@@ -527,20 +527,22 @@ STYLE:
 - The exact relevance scores, ranks, and evidence labels are already visible in tables directly above this text on the page — do not restate them as numbers ("(92/100)", "rank 1", etc.). Refer to emphasis qualitatively instead ("the area with the clearest concentration of signals," "a secondary theme") and let the visible tables carry the precise figures. Repeating a number the reader already sees above is a critical error, not just a style slip.
 - Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny.
 - Write as one continuous narrative with a throughline, not a checklist that restates each area in turn. Each section should read like the next beat of the same story, picking up where the previous one left off.
+- NEVER narrate your own reasoning process. Do not write sentences whose content is "this signal says X, that signal says Y" or explain why a classification was assigned — that is showing your work, and the reader does not need or want to see it. Give the CONCLUSION: what this pattern means for the person's actual life, as a direct statement. If a sentence's only content is comparing what individual signals or engines said, delete it and replace it with what it adds up to.
+- One clear idea per paragraph, stated plainly. Prefer fewer, sharper sentences over an exhaustive account of every signal — the goal is signal, not coverage. If you can say it in half the words, do that instead.
 
 DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 
 ## Síntesis editorial
-A short editorial overview naming the top-ranked areas (by relevance) and what ties them together.
+State plainly what this pattern means for the person — the conclusion, not the inventory of signals that produced it.
 
 ## Estructura de base
-Narrate the signals/areas whose temporalClass is "structure" (and "balance" or "stage" if present) — what this reveals about the person's underlying architecture.
+What the "structure" (and "balance"/"stage" if present) layer means about the person's underlying architecture — the takeaway, not a rundown of each signal.
 
 ## Momento actual
-Narrate the signals/areas whose temporalClass is "present" or "current_cycle" — what is active right now. If none are present in the data, say so briefly instead of inventing one.
+What is active right now, stated as a conclusion. If no "present"/"current_cycle" signals exist, say so briefly instead of inventing one.
 
 ## Tendencia
-Narrate the signals/areas whose temporalClass is "trend" — where the emphasis is heading.
+Where the emphasis is heading, stated directly.
 
 ## Integración y orientación
 A closing, integrative paragraph connecting structure, present, and trend into one coherent orientation. Close with a single direct sentence.
@@ -562,20 +564,22 @@ STYLE:
 - The exact relevance scores, convergence labels (1of3/2of3/3of3), and per-engine ranks are already visible in the matrix table directly above this text — do not restate them as numbers or literal labels. Refer to them qualitatively instead ("the three systems converge outright," "only one engine flags this") and let the visible table carry the precise figures. Repeating a number or label the reader already sees above is a critical error, not just a style slip.
 - Be direct and assertive, never vague or hedging. Commit to a clear reading of what the pattern shows — state it, don't dance around it — while still respecting that this describes a tendency, not a fixed destiny.
 - Write as one continuous narrative with a throughline, not a checklist that restates each area in turn. Each section should read like the next beat of the same story, picking up where the previous one left off.
+- NEVER narrate your own reasoning process. The single most common failure mode here is writing, area by area, "the eastern engine ranks this first, numerology also treats it as central, while western supports it in more of a secondary role" — that is showing your work, not interpreting. The reader does not see the per-engine breakdown as prose; they see it in the table above. Give the CONCLUSION instead: what does it mean for this person that identity is where all three languages agree? Say that, in one or two sentences, and move on.
+- One clear idea per area, stated plainly. Prefer fewer, sharper sentences over an exhaustive account of what each engine contributed — the goal is signal, not coverage. If a sentence's only content is comparing what each engine individually said, delete it and replace it with what it adds up to.
 
 DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language. Each header below is prefixed with TWO hash characters (##) — copy that exact prefix, not one hash (#) and not three:
 
 ## Imagen integrada
-An overview naming the highest-relevance areas and what the three systems together suggest.
+State plainly what the highest-relevance areas mean for the person, together — the conclusion, not an inventory of what each system contributed.
 
 ## Convergencias principales
-Narrate the 2of3/3of3 areas — where the systems agree.
+Name the areas where the systems agree and say what that agreement means for the person in practical terms. Do not describe what each individual engine said — say what the agreement adds up to.
 
 ## Contrastes y complementos
-Narrate the divergent/mixed/complementary areas honestly, without resolving the tension.
+Name the areas where the systems diverge or only partially agree, and state directly what that tension or nuance means to live with — not which engine said what.
 
 ## Estructura, presente y tendencia
-Connect the temporalClasses present across areas into a structure/present/trend narrative.
+What the structure/present/trend pattern across areas means, stated directly.
 
 ## Orientación integradora
 A closing, integrative paragraph. Close with a single direct sentence.
