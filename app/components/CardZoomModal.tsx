@@ -44,7 +44,7 @@ export function CardZoomModal({ isOpen, image, symbol, title, position, meaning,
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .card-zoom-overlay {
           position: fixed;
           inset: 0;

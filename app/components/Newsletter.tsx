@@ -81,7 +81,7 @@ export function Newsletter() {
 
       {message && <div className={`newsletter-message ${message.type}`}>{message.text}</div>}
 
-      <style jsx>{`
+      <style>{`
         .newsletter-form {
           max-width: 500px;
           margin: 40px auto;

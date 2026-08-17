@@ -1,0 +1,54 @@
+.discipline-library-astro {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1.3;
+  background: #09070c;
+}
+
+.discipline-library-astro img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+  transform: scale(1.02);
+}
+
+.discipline-library-astro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, #07060a18 0 16%, transparent 38%), linear-gradient(180deg, transparent 60%, #09070c66);
+}
+
+.discipline-library-astro b {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #edc977;
+  font-family: "Times New Roman", "DejaVu Serif", serif;
+  font-size: clamp(50px, 6vw, 82px);
+  font-style: normal;
+  font-weight: 400;
+  font-variant-emoji: text;
+  line-height: 1;
+  text-shadow: 0 2px 3px #000, 0 0 14px #d8a94688;
+}
+
+.discipline-library-astro.eastern b {
+  color: #edc977;
+  font-family: "Songti SC", "Noto Serif CJK SC", "Times New Roman", serif;
+  text-shadow: 0 2px 3px #000, 0 0 14px #d8a94688;
+}
+
+.discipline-library-astro.numerology b {
+  color: #edc977;
+  font-family: "Gilda Display", "Times New Roman", serif;
+  font-size: clamp(46px, 5.5vw, 76px);
+  text-shadow: 0 2px 3px #000, 0 0 14px #d8a94688;
+}
+
+.discipline-library-grid.single .discipline-library-astro b {
+  font-size: clamp(72px, 10vw, 120px);
+}

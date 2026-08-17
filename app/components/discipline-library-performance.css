@@ -1,0 +1,4 @@
+.discipline-library-grid article {
+  content-visibility: auto;
+  contain-intrinsic-size: 320px 410px;
+}

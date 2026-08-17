@@ -1,0 +1,193 @@
+.chamalongo-cast-experience {
+  --chamalongo-gold: #caa66b;
+  width: min(620px, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.chamalongo-hands-stage {
+  width: min(520px, 100%);
+  aspect-ratio: 1 / 1.08;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--chamalongo-gold) 55%, transparent);
+  border-radius: 24px;
+  background: #050505;
+  box-shadow: inset 0 0 70px #000, 0 24px 60px #0008;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.chamalongo-hands-stage:focus-visible {
+  outline: 2px solid #e4c486;
+  outline-offset: 5px;
+}
+
+.chamalongo-hands-stage:disabled {
+  cursor: progress;
+}
+
+.chamalongo-board {
+  position: absolute;
+  inset: 3.5%;
+  z-index: 0;
+  width: 93%;
+  height: 93%;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(.96);
+  filter: brightness(.82) saturate(.86);
+  transition: opacity .5s ease, transform .75s ease, filter .75s ease;
+  user-select: none;
+  pointer-events: none;
+}
+
+.chamalongo-hands {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.chamalongo-hands-open {
+  opacity: 0;
+}
+
+.is-shaking .chamalongo-hands-closed {
+  animation: chamalongo-three-shakes 2.4s cubic-bezier(.45, 0, .55, 1) both;
+  transform-origin: 50% 35%;
+}
+
+.is-released .chamalongo-hands-closed {
+  opacity: 0;
+}
+
+.is-released .chamalongo-hands-open {
+  animation: chamalongo-open-hands 1.05s ease-out both;
+}
+
+.is-released .chamalongo-board {
+  opacity: 1;
+  transform: scale(1);
+  filter: brightness(1) saturate(1);
+}
+
+@keyframes chamalongo-three-shakes {
+  0%, 100% { transform: translateY(0) scale(1); }
+  8%, 41%, 74% { transform: translateY(-8.5%) scale(1.015); }
+  24%, 57%, 90% { transform: translateY(7%) scale(.99); }
+}
+
+@keyframes chamalongo-open-hands {
+  0% { opacity: 0; transform: translateY(-5%) scale(.96); }
+  14% { opacity: 1; transform: translateY(0) scale(1); }
+  58% { opacity: 1; transform: translateY(-2%) scale(1); }
+  100% { opacity: 0; transform: translateY(-16%) scale(1.04); }
+}
+
+.chamalongo-fall {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.chamalongo-shell {
+  --landing-left: 50%;
+  --landing-top: 50%;
+  --turn: 280deg;
+  --drop-delay: 0s;
+  width: clamp(58px, 14%, 82px);
+  aspect-ratio: 1;
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  object-fit: cover;
+  border-radius: 50%;
+  opacity: 0;
+  filter: drop-shadow(0 12px 10px #000c);
+}
+
+.is-released .chamalongo-shell {
+  animation: chamalongo-shell-drop 1.28s cubic-bezier(.25, .72, .34, 1) both;
+  animation-delay: var(--drop-delay);
+}
+
+@keyframes chamalongo-shell-drop {
+  0% { left: 50%; top: 34%; opacity: 0; transform: translate(-50%, -80%) scale(.5) rotate(0); }
+  12% { opacity: 1; }
+  72% { left: var(--landing-left); top: var(--landing-top); transform: translate(-50%, -50%) scale(1) rotate(var(--turn)); }
+  84% { left: var(--landing-left); top: var(--landing-top); transform: translate(-50%, calc(-50% - 12px)) scale(1) rotate(var(--turn)); }
+  100% { left: var(--landing-left); top: var(--landing-top); opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(var(--turn)); }
+}
+
+.chamalongo-cast-instructions {
+  min-height: 1.5em;
+  margin: 18px auto 0;
+  color: #c8bdaf;
+  font-size: 13px;
+  letter-spacing: .03em;
+}
+
+.chamalongo-recast {
+  margin-top: 13px;
+  padding: 10px 17px;
+  border: 1px solid #80663e;
+  border-radius: 999px;
+  background: #15100b;
+  color: #e1c184;
+  font: 700 10px/1 system-ui, sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .chamalongo-hands-stage {
+    width: 100%;
+    border-radius: 18px;
+  }
+
+  .chamalongo-shell {
+    width: 15%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-shaking .chamalongo-hands-closed {
+    animation-duration: .35s;
+  }
+
+  .is-released .chamalongo-shell,
+  .is-released .chamalongo-hands-open {
+    animation-duration: .01ms;
+  }
+}
+
+.chamalongos-site{min-height:100vh;padding:28px clamp(18px,4vw,38px) 110px;background:radial-gradient(circle at 48% 12%,#4a2b1638,transparent 31%),linear-gradient(180deg,#0b0908,#070708 70%);color:#f1e9df}
+.chamalongos-back{padding:0;border:0;background:transparent;color:#d2ad6b;font-size:14px;cursor:pointer}
+.chamalongos-heading{width:min(880px,100%);height:auto;margin:42px auto 34px;padding:0;display:block;position:static;border:0;background:transparent;backdrop-filter:none;text-align:center}
+.chamalongos-heading>span,.chamalongos-mini-label{color:#d5ad65;font-size:10px;font-weight:800;letter-spacing:.28em;text-transform:uppercase}
+.chamalongos-heading h1{margin:0 0 16px;font:clamp(62px,8vw,96px)/.96 "Gilda Display",serif;letter-spacing:-.045em}
+.chamalongos-intro{margin-bottom:30px}
+.chamalongos-introduction-copy{width:min(1120px,100%);margin:0 auto 34px;padding-top:25px;border-top:1px solid #7c623a55;color:#cfc4c9;text-align:left;font-size:15px;line-height:1.72}
+.chamalongos-introduction-copy p{margin:0 0 14px}.chamalongos-introduction-copy p:last-of-type{margin-bottom:0}
+.chamalongos-introduction-copy small{display:block;margin-top:19px;color:#d5ad65;text-align:center;font-size:9px;font-weight:700;letter-spacing:.1em}
+.chamalongos-focus-panel{width:min(1120px,100%);margin:0 auto 50px;padding:40px 42px 42px;border:1px solid #493852;border-radius:22px;background:linear-gradient(145deg,#18111d,#0e0a13)}
+.chamalongos-mini-label{display:block;margin-bottom:24px}.chamalongos-focus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chamalongos-focus-card{min-height:110px;padding:15px 19px 15px 14px;display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:13px;border:1px solid;border-radius:15px;color:#f5eee4;text-align:left;cursor:pointer;transition:transform .25s ease,box-shadow .25s ease,filter .25s ease}
+.chamalongos-focus-card:hover{transform:translateY(-3px);filter:brightness(1.08);box-shadow:0 15px 30px #0006}.chamalongos-focus-card:focus-visible{outline:2px solid #e1c17d;outline-offset:3px}
+.chamalongos-focus-card.focus-1{border-color:#6b493d;background:linear-gradient(145deg,#38231e,#190f0d)}.chamalongos-focus-card.focus-2{border-color:#456478;background:linear-gradient(145deg,#1b3547,#0d1924)}.chamalongos-focus-card.focus-3{border-color:#6d4560;background:linear-gradient(145deg,#43263d,#21121e)}.chamalongos-focus-card.focus-4{border-color:#526a4c;background:linear-gradient(145deg,#203a28,#0e1c13)}
+.chamalongos-focus-symbol{position:relative;width:58px;aspect-ratio:1;display:grid;place-items:center;overflow:hidden;border:1px solid #e0bc72;border-radius:50%;background:radial-gradient(circle,#4b301b,#100b09 70%);box-shadow:inset 0 0 10px #0009,0 0 0 3px #0b0809cc,0 0 0 4px #b88c4177,0 10px 20px #0009}.chamalongos-focus-symbol:after{content:"";position:absolute;inset:4px;border-radius:50%;border-top:1px solid #fff0b188;background:linear-gradient(145deg,#fff4cb2e,transparent 38%);pointer-events:none}.chamalongos-focus-symbol img{width:100%;height:100%;display:block;object-fit:cover;filter:saturate(.86) contrast(1.08)}
+.chamalongos-focus-copy{min-width:0;display:block}.chamalongos-focus-copy strong{display:block;font:24px/1.08 "Gilda Display",serif}.chamalongos-focus-copy small{display:block;margin-top:5px;color:#b9aeb7;font-size:9px;letter-spacing:.13em;text-transform:uppercase}.chamalongos-focus-copy em{display:block;margin-top:7px;color:#b7abb2;font-size:11px;font-style:normal}.chamalongos-focus-card>b{color:#dfba70;font-size:20px;font-weight:400}
+.chamalongos-cast-heading h1{margin-top:14px;margin-bottom:10px;font-size:clamp(42px,6vw,68px)}.chamalongos-cast-heading p{margin:0 auto;color:#bdb1a5;font-size:clamp(14px,1.8vw,17px)}
+.chamalongos-ritual-shell{width:min(840px,100%);margin:0 auto;padding:clamp(24px,4vw,46px);border:1px solid #5e4529;border-radius:28px;background:linear-gradient(150deg,#18110d,#0b0908 68%);box-shadow:inset 0 0 70px #0006}.chamalongos-guidance{margin:0 auto 26px;color:#e5d8c9;font-weight:650;line-height:1.6;text-align:center}.chamalongos-result{margin:24px auto 0;padding:22px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border-top:1px solid #7c623a55;text-align:center}.chamalongos-result small{color:#d8b66f;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.chamalongos-result strong{max-width:660px;color:#f0e2ce;font:24px/1.4 "Gilda Display",serif}.chamalongos-result p{margin:0;color:#bcae9f;line-height:1.6}
+@media(max-width:760px){.chamalongos-site{padding:24px 14px 85px}.chamalongos-heading{margin-top:40px}.chamalongos-heading h1{font-size:clamp(52px,16vw,72px)}.chamalongos-introduction-copy{font-size:14px}.chamalongos-focus-panel{padding:28px 17px;border-radius:19px}.chamalongos-focus-grid{grid-template-columns:1fr}.chamalongos-focus-card{min-height:101px;grid-template-columns:56px 1fr auto;padding-inline:12px 15px}.chamalongos-focus-symbol{width:52px}.chamalongos-focus-copy strong{font-size:22px}.chamalongos-ritual-shell{padding:18px 12px 28px;border-radius:20px}.chamalongos-guidance{padding-inline:9px;font-size:13px}}

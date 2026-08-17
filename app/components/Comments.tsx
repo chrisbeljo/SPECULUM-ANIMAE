@@ -97,7 +97,7 @@ export function Comments() {
         <p className="comments-note">Los comentarios se copian al portapapeles. Comparte con nosotros por email, WhatsApp o Telegram.</p>
       )}
 
-      <style jsx>{`
+      <style>{`
         .comments-form {
           max-width: 500px;
           margin: 40px auto;

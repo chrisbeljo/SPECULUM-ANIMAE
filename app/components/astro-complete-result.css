@@ -1,0 +1,64 @@
+.astro-submit:disabled{cursor:wait;opacity:.65}.astro-reading-section{margin-top:18px;padding-top:14px;border-top:1px solid #332938}.astro-reading-section h4{margin:0 0 6px;color:#e2c77f;font:19px "Gilda Display",serif}.astro-reading-section p{margin:0}
+.astro-ai-loading{margin:0 0 10px;font-style:italic;opacity:.7;color:#c7bcd1;font-size:13px}
+
+/* Aumenta la separación tonal de los resultados sin perder el ambiente oscuro. */
+.astro-result .astro-result-hero {
+  background:
+    radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--astro-accent) 9%, transparent), transparent 38%),
+    linear-gradient(145deg, #1c1621, #100c14);
+}
+
+.astro-result .astro-result-grid article {
+  border-color: color-mix(in srgb, var(--astro-accent) 40%, #5a495e);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--astro-accent) 8%, #211925), #151019 72%);
+  box-shadow: inset 0 1px #ffffff08, 0 12px 28px #0003;
+}
+
+.astro-result .astro-result-grid p,
+.astro-result .astro-result-hero p {
+  color: #d4c9d1;
+}
+
+.astro-result .astro-key-grid p {
+  border-color: color-mix(in srgb, var(--astro-accent) 34%, #64536a);
+  background: #241b29a8;
+}
+
+.astro-result .astro-key-grid span { color: #c7bac4; }
+.astro-result .astro-reading-section { border-top-color: #59475e; }
+
+.astro-result .astro-chart,
+.astro-result .astro-calculation-details {
+  background:
+    radial-gradient(circle at 50% 0, color-mix(in srgb, var(--astro-accent) 7%, transparent), transparent 38%),
+    linear-gradient(145deg, #19131e, #100c14);
+}
+
+.astro-result .astro-detail-summary>b,
+.astro-result .astro-aspect-list span,
+.astro-result .luck-cycle-grid span,
+.astro-result .numerology-detail-grid b,
+.astro-result .numerology-cycles p {
+  border-color: #5a485f;
+  background: #211925;
+}
+
+.astro-result .astro-detail-summary>b,
+.astro-result .astro-aspect-list span,
+.astro-result .luck-cycle-grid span,
+.astro-result .numerology-cycles p {
+  color: #cfc2cc;
+}
+
+.astro-result .astro-data-table { border-color: #57465d; }
+.astro-result .astro-data-table th { background: #211925; }
+.astro-result .astro-data-table td { background: #17121b; }
+.astro-result .astro-data-table th,
+.astro-result .astro-data-table td { border-bottom-color: #403445; }
+
+.astro-result .bazi-pillar-grid article,
+.astro-result .ziwei-palace-grid article {
+  background: #211a1b;
+  border-color: #655248;
+}

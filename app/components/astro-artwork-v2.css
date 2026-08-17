@@ -1,0 +1,25 @@
+.astrology-western .astrology-focus-grid i {
+  background-image: radial-gradient(circle, #0b0909b3 0 31%, transparent 33%), url("/oracles/astrology/western-astrolabe-v2.jpg");
+}
+
+.astrology-eastern .astrology-focus-grid i {
+  background-image: radial-gradient(circle, #0c0806b8 0 31%, transparent 33%), url("/oracles/astrology/eastern-luopan-v2.jpg");
+}
+
+.astrology-western .discipline-library-grid i {
+  background-image: linear-gradient(#07060a2e, #07060a55), url("/oracles/astrology/western-astrolabe-v2.jpg");
+}
+
+.astrology-eastern .discipline-library-grid i {
+  background-image: linear-gradient(#08050424, #08050452), url("/oracles/astrology/eastern-luopan-v2.jpg");
+}
+
+.numerology-site .astrology-focus-grid i {
+  background-image: radial-gradient(circle, #0a0809b8 0 31%, transparent 33%), url("/oracles/numerology/numerology-oracle-v2.jpg");
+}
+
+.numerology-site .discipline-library-grid i {
+  background-image: linear-gradient(#09070c42, #09070c70), url("/oracles/numerology/numerology-oracle-v2.jpg");
+  background-position: center;
+  background-size: cover;
+}

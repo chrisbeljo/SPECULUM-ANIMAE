@@ -70,9 +70,9 @@ export const systemCategories = [
     title: "ASTROS",
     description: "Cálculos basados en datos de nacimiento y fechas.",
     systems: [
-      ["Astrología", "Próximamente"],
-      ["Horóscopo Chino", "Próximamente"],
-      ["Numerología", "Próximamente"],
+      ["Astrología Occidental", "Disponible"],
+      ["Astrología Oriental", "Disponible"],
+      ["Numerología", "Disponible"],
       ["Eneagramas", "Próximamente"],
     ],
   },
