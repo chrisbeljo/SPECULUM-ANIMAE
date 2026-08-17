@@ -55,6 +55,15 @@ interface InterpretRequest {
       evidence: Array<{ kind: string; label: string; value: string; source: string }>;
     };
   };
+  reflexus?: {
+    engine: "western" | "eastern" | "numerology";
+    facts: Array<Record<string, unknown>>;
+    classifications: Array<Record<string, unknown>>;
+  };
+  imago?: {
+    sourceReports: string[];
+    areas: Array<Record<string, unknown>>;
+  };
 }
 
 // ─── Language Configuration ────────────────────────────────────────────────
@@ -494,6 +503,104 @@ ${JSON.stringify(astro.data,null,2)}
 Write the specialized report now. Every visible word must be in ${LANGUAGE_NAMES[language]||"Spanish"}; keep only the technical marker TRACE_JSON and JSON keys in English.`;
 };
 
+// ─── REFLEXUS / IMAGO SPECULI editorial layer ──────────────────────────────
+// REFLEXUS and IMAGO SPECULI are entirely client-side, deterministic,
+// rule-based engines (app/components/reflexus-engine.ts) — the worker never
+// sees the underlying birth data for these, only the already-computed
+// signals/classifications/areas. Claude never calculates, ranks, or
+// classifies anything here; it narrates what the deterministic engine
+// already decided. TRACE_JSON follows the exact same contract as the theme
+// explorer above (extractTraceJson below), so the client can reject any
+// response that cites an id it wasn't actually given.
+
+const REFLEXUS_SYSTEM_PROMPT = `You are writing an editorial expansion of REFLEXUS, an already-complete, versioned, rule-based deterministic reading. You are NOT the calculation engine and NOT the source of truth — every score, ranking, classification, and area assignment you are given was computed by deterministic rules before you were called. None of it may be changed, recalculated, re-ranked, or contradicted.
+
+You will receive FACTS (individual calculated signals — each with an id, area, relevance, evidenceStrength, deterministicClass, temporalClass, and evidenceIds) and CLASSIFICATIONS (the life areas ranked by the deterministic engine, each with relevance, dominantClass, rank, and the signalIds that support it).
+
+RULES:
+- Use only the facts and classifications provided. Never invent a signal, score, area, or evidence id absent from the data.
+- Never state or imply a ranking, score, or classification different from what is given — narrate what the engine decided, do not re-decide it.
+- Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
+- Write as an editorial voice that makes the calculated pattern legible and narratively coherent — not a second calculation.
+
+DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language:
+
+## Síntesis editorial
+A short editorial overview naming the top-ranked areas (by relevance) and what ties them together.
+
+## Estructura de base
+Narrate the signals/areas whose temporalClass is "structure" (and "balance" or "stage" if present) — what this reveals about the person's underlying architecture.
+
+## Momento actual
+Narrate the signals/areas whose temporalClass is "present" or "current_cycle" — what is active right now. If none are present in the data, say so briefly instead of inventing one.
+
+## Tendencia
+Narrate the signals/areas whose temporalClass is "trend" — where the emphasis is heading.
+
+## Integración y orientación
+A closing, integrative paragraph connecting structure, present, and trend into one coherent orientation. Close with a single direct sentence.
+
+MANDATORY FINAL LINE: after all five sections, output exactly one technical line in this format and nothing after it:
+TRACE_JSON: {"sections":[{"title":"<visible section title, in the target language>","sources":["<exact fact or evidence id you actually used>"]}]}
+Include one object for every visible section, each with at least one real id. The ids must be copied exactly from the FACTS/CLASSIFICATIONS you received; never invent new ones. Omitting this line, or citing an id you were not given, is a critical error.`;
+
+const IMAGO_SYSTEM_PROMPT = `You are writing an editorial expansion of IMAGO SPECULI, an already-complete, deterministic comparison of three independent REFLEXUS readings (western astrology, eastern astrology, numerology). You are NOT the comparison engine — every convergence value (1of3/2of3/3of3), consistency label (aligned/complementary/mixed/divergent/insufficient_data), relevance score, and ranking was already computed. None of it may be changed, recalculated, or artificially "resolved."
+
+You will receive AREAS: the life areas as computed by IMAGO, each with relevance, convergence, consistency, per-engine relevance/rank/dominantClass, and evidenceIds.
+
+RULES:
+- Use only the areas provided. Never invent a convergence, consistency, score, or evidence id absent from the data.
+- Never turn a 1of3 into a 2of3 or 3of3, and never turn a divergent or mixed reading into an artificially resolved "aligned" one — contrast and tension are part of what you must describe honestly.
+- Never diagnose physical or mental health, never promise events, never present a tendency as fixed destiny.
+
+DELIVER EXACTLY THIS FIVE-SECTION STRUCTURE, in this order, translating every visible header into the target language:
+
+## Imagen integrada
+An overview naming the highest-relevance areas and what the three systems together suggest.
+
+## Convergencias principales
+Narrate the 2of3/3of3 areas — where the systems agree.
+
+## Contrastes y complementos
+Narrate the divergent/mixed/complementary areas honestly, without resolving the tension.
+
+## Estructura, presente y tendencia
+Connect the temporalClasses present across areas into a structure/present/trend narrative.
+
+## Orientación integradora
+A closing, integrative paragraph. Close with a single direct sentence.
+
+MANDATORY FINAL LINE: after all five sections, output exactly one technical line in this format and nothing after it:
+TRACE_JSON: {"sections":[{"title":"<visible section title, in the target language>","sources":["<exact evidence id you actually used>"]}]}
+Include one object for every visible section, each with at least one real id, copied exactly from the AREAS you received. Omitting this line, or citing an id you were not given, is a critical error.`;
+
+const getReflexusUserPrompt = (language: string, reflexus: NonNullable<InterpretRequest["reflexus"]>): string => {
+  const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
+  return `${instruction}
+
+Engine: ${reflexus.engine}
+
+FACTS (calculated signals — verified ground truth):
+${JSON.stringify(reflexus.facts, null, 2)}
+
+CLASSIFICATIONS (calculated area rankings — verified ground truth):
+${JSON.stringify(reflexus.classifications, null, 2)}
+
+Write the editorial expansion now. Every visible word must be in ${LANGUAGE_NAMES[language] || "Spanish"}; keep only the technical marker TRACE_JSON and its JSON keys in English.`;
+};
+
+const getImagoUserPrompt = (language: string, imago: NonNullable<InterpretRequest["imago"]>): string => {
+  const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
+  return `${instruction}
+
+Source REFLEXUS report keys: ${imago.sourceReports.join(", ")}
+
+AREAS (calculated convergence/consistency across the three engines — verified ground truth):
+${JSON.stringify(imago.areas, null, 2)}
+
+Write the editorial expansion now. Every visible word must be in ${LANGUAGE_NAMES[language] || "Spanish"}; keep only the technical marker TRACE_JSON and its JSON keys in English.`;
+};
+
 const getAstroUserPrompt = (language: string, discipline: string, focus: string, focusIndex: number | undefined, data: Record<string, unknown>, context?: { name?: string; birthDate?: string; question?: string }): string => {
   const instruction = LANGUAGE_INSTRUCTIONS[language] || LANGUAGE_INSTRUCTIONS.ES;
   const lens = focusIndex !== undefined ? FOCUS_LENS[discipline as "western" | "eastern" | "numerology"]?.[focusIndex] : undefined;
@@ -615,7 +722,25 @@ async function handleInterpret(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup, astro } = body;
+  const { discipline = "tarot", spread, question, cards, language = "ES", analysis, followup, astro, reflexus, imago } = body;
+
+  if (reflexus) {
+    return callClaudeStream(env, {
+      model: "claude-sonnet-5",
+      maxTokens: 8192,
+      systemPrompt: REFLEXUS_SYSTEM_PROMPT,
+      userPrompt: getReflexusUserPrompt(language, reflexus),
+    });
+  }
+
+  if (imago) {
+    return callClaudeStream(env, {
+      model: "claude-sonnet-5",
+      maxTokens: 8192,
+      systemPrompt: IMAGO_SYSTEM_PROMPT,
+      userPrompt: getImagoUserPrompt(language, imago),
+    });
+  }
 
   if (astro) {
     const systemPrompt = astro.theme ? ASTRO_THEME_SYSTEM_PROMPT : ASTRO_SYSTEM_PROMPTS[astro.discipline] ? ASTRO_SYSTEM_PROMPTS[astro.discipline] + ASTRO_ESSENTIALS_INSTRUCTION : undefined;
